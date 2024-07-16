@@ -11,6 +11,6 @@
 
 	<StackPanel Spacing="4">
 		<TextBlock Text="{Binding QueryText}"/>
-		<TextBox Text="{Binding TextBoxContent, Mode=TwoWay}"/>
+		<TextBox Text="{Binding TextBoxContent, Mode=TwoWay}" BeforeTextChanging="TextBox_BeforeTextChanging"/>
 	</StackPanel>
 </Page>

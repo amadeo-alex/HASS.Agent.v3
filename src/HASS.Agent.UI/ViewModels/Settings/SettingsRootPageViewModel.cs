@@ -22,7 +22,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace HASS.Agent.UI.ViewModels;
-public partial class SettingsPageViewModel : ViewModelBase, INavigationAware
+public partial class SettingsRootPageViewModel : ViewModelBase, INavigationAware
 {
     private readonly IPageService _pageService;
 
@@ -34,7 +34,7 @@ public partial class SettingsPageViewModel : ViewModelBase, INavigationAware
 
     public BindingList<IMenuItem> MenuItems => _pageService.Pages;
 
-    public SettingsPageViewModel(DispatcherQueue dispatcherQueue) : base(dispatcherQueue)
+    public SettingsRootPageViewModel(DispatcherQueue dispatcherQueue) : base(dispatcherQueue)
     {
         var menuPages = new Dictionary<IMenuItem, Type?>()
         {

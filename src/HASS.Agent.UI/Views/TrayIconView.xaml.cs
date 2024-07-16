@@ -55,6 +55,7 @@ public sealed partial class TrayIconView : UserControl
         _activationService = App.GetService<IActivationService>();
         this.InitializeComponent();
 
+        //TODO(Amadeo): for now needs to be done in code, xaml binding is not working properly?
         var flyout = new MenuFlyout();
         flyout.Items.Add(new MenuFlyoutItem() { Text = "Item1", Command = TrayIconDoubleClickCommand } );
         flyout.Items.Add(new MenuFlyoutItem() { Text = "Item2" });

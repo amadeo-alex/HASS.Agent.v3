@@ -1,23 +1,37 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace HASS.Agent.Base.Models.Settings;
-public class MqttSettings
+public partial class MqttSettings : ObservableObject
 {
-    public bool Enabled { get; set; } = true;
-    public string Address { get; set; } = "homeassistant.local";
-    public int Port { get; set; } = 1883;
-    public bool UseTls { get; set; }
-    public bool AllowUntrustedCertificates { get; set; } = true;
-    public string Username { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
-    public string DiscoveryPrefix { get; set; } = "homeassistant";
-    public string ClientId { get; set; } = string.Empty;
-    public bool UseRetainFlag { get; set; } = true;
-    public string RootCertificate { get; set; } = string.Empty;
-    public string ClientCertificate { get; set; } = string.Empty;
-    public int DisconnectedGracePeriodSeconds { get; set; } = 60;
+    [ObservableProperty]
+    private bool _enabled = true;
+    [ObservableProperty]
+    private string _address = "homeassistant.local";
+    [ObservableProperty]
+    private int _port  = 1883;
+    [ObservableProperty]
+    private bool _useTls = false;
+    [ObservableProperty]
+    private bool _allowUntrustedCertificates = true;
+    [ObservableProperty]
+    private string _username = string.Empty;
+    [ObservableProperty]
+    private string _password = string.Empty;
+    [ObservableProperty]
+    private string _discoveryPrefix = "homeassistant";
+    [ObservableProperty]
+    private string _clientId  = string.Empty;
+    [ObservableProperty]
+    private bool _useRetainFlag  = true;
+    [ObservableProperty]
+    private string _rootCertificate  = string.Empty;
+    [ObservableProperty]
+    private string _clientCertificate = string.Empty;
+    [ObservableProperty]
+    private int _disconnectedGracePeriodSeconds  = 60;
 }

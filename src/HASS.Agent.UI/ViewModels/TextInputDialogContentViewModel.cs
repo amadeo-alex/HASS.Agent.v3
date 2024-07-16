@@ -11,5 +11,6 @@ public class TextInputDialogContentViewModel
     public string QueryTextResourceKey { get; set; } = string.Empty;
     public string QueryText => LocalizerHelper.GetLocalizedString(QueryTextResourceKey);
     public string TextBoxContent {  get; set; } = string.Empty;
+    public bool NumericOnly { get; set; } = false;
 
 }

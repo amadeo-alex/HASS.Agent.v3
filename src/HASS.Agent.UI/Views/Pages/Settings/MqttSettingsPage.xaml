@@ -6,9 +6,54 @@
     xmlns:local="using:HASS.Agent.UI.Views.Pages.Settings"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:vc="using:HASS.Agent.UI.ValueConverters"
+	xmlns:l="using:WinUI3Localizer"
     mc:Ignorable="d">
 
-    <Grid>
-		<TextBlock Text="mqtt settings"/>
-	</Grid>
+    <Page.Resources>
+        <vc:LocalizerResourceConverter x:Key="LocalizerResourceConverter" />
+    </Page.Resources>
+
+    <Grid Margin="16">
+
+        <StackPanel Spacing="4">
+            <controls:SettingsExpander l:Uids.Uid="Page_MqttSettings_EnabledCard"
+                                       IsExpanded="{Binding SettingsManager.Settings.Mqtt.Enabled, Mode=OneWay}">
+
+                <ToggleSwitch l:Uids.Uid="Page_MqttSettings_Enabled_Switch"
+							  IsOn="{Binding SettingsManager.Settings.Mqtt.Enabled, Mode=TwoWay}"/>
+
+                <controls:SettingsExpander.Items>
+                    <controls:SettingsCard l:Uids.Uid="Page_MqttSettings_AddressCard"
+                                           IsEnabled="{Binding SettingsManager.Settings.Mqtt.Enabled, Mode=OneWay}">
+                        <controls:SettingsCard.Description>
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <TextBlock l:Uids.Uid="Page_MqttSettings_AddressCard_Description"/>
+                                <TextBlock Text="{Binding SettingsManager.Settings.Mqtt.Address, Mode=OneWay}"/>
+                            </StackPanel>
+                        </controls:SettingsCard.Description>
+                        <Button l:Uids.Uid="Page_MqttSettings_ChangeButton"
+						Style="{StaticResource AccentButtonStyle}"
+						Click="ChangeAddressButton_Click"/>
+                    </controls:SettingsCard>
+
+                    <controls:SettingsCard l:Uids.Uid="Page_MqttSettings_PortCard"
+                                           IsEnabled="{Binding SettingsManager.Settings.Mqtt.Enabled, Mode=OneWay}">
+                        <controls:SettingsCard.Description>
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <TextBlock l:Uids.Uid="Page_MqttSettings_PortCard_Description"/>
+                                <TextBlock Text="{Binding SettingsManager.Settings.Mqtt.Port, Mode=OneWay}"/>
+                            </StackPanel>
+                        </controls:SettingsCard.Description>
+                        <Button l:Uids.Uid="Page_MqttSettings_ChangeButton"
+						Style="{StaticResource AccentButtonStyle}"
+						Click="ChangePortButton_Click"/>
+                    </controls:SettingsCard>
+
+                </controls:SettingsExpander.Items>
+            </controls:SettingsExpander>
+        </StackPanel>
+
+    </Grid>
 </Page>

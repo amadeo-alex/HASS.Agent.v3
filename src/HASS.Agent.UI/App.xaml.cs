@@ -226,7 +226,7 @@ public partial class App : Application
         var footerPages = new Dictionary<IMenuItem, Type?>()
         {
             { new MenuItem { NavigateTo = "debug", ViewModelType = typeof(DebugPageViewModel), Title = "Debug", Glyph = "\uEBE8" }, typeof(DebugPage) },
-            { new MenuItem { NavigateTo = "settings", ViewModelType = typeof(SettingsPageViewModel), Title = "Settings", Glyph = "\uE713" }, typeof(SettingsPage) }
+            { new MenuItem { NavigateTo = "settings", ViewModelType = typeof(SettingsRootPageViewModel), Title = "Settings", Glyph = "\uE713" }, typeof(SettingsRootPage) }
         };
 
         return new PageService(menuPages, footerPages);
@@ -302,8 +302,8 @@ public partial class App : Application
                 services.AddTransient<NotificationSettingsPage>();
                 services.AddTransient<NotificationSettingsPageViewModel>();
 
-                services.AddTransient<SettingsPageViewModel>();
-                services.AddTransient<SettingsPage>();
+                services.AddTransient<SettingsRootPageViewModel>();
+                services.AddTransient<SettingsRootPage>();
 
 
 
