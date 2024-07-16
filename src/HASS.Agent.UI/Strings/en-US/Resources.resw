@@ -249,6 +249,15 @@
   <data name="Page_MqttSettings_AddressDialog_Title" xml:space="preserve">
     <value>Change MQTT address</value>
   </data>
+  <data name="Page_MqttSettings_AllowUntrustedCertCard.Header" xml:space="preserve">
+    <value>Allow untrusted certificates</value>
+  </data>
+  <data name="Page_MqttSettings_AllowUntrustedCertCard_Switch.OffContent" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="Page_MqttSettings_AllowUntrustedCertCard_Switch.OnContent" xml:space="preserve">
+    <value>On</value>
+  </data>
   <data name="Page_MqttSettings_ChangeButton.Content" xml:space="preserve">
     <value>Change</value>
   </data>
@@ -261,6 +270,15 @@
   <data name="Page_MqttSettings_Enabled_Switch.OnContent" xml:space="preserve">
     <value>On</value>
   </data>
+  <data name="Page_MqttSettings_PasswordCard.Header" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="Page_MqttSettings_PasswordDialog_Query" xml:space="preserve">
+    <value>Please provide new MQTT password</value>
+  </data>
+  <data name="Page_MqttSettings_PasswordDialog_Title" xml:space="preserve">
+    <value>Change MQTT password</value>
+  </data>
   <data name="Page_MqttSettings_PortCard.Header" xml:space="preserve">
     <value>Port</value>
   </data>
@@ -272,6 +290,27 @@
   </data>
   <data name="Page_MqttSettings_PortDialog_Title" xml:space="preserve">
     <value>Change MQTT port</value>
+  </data>
+  <data name="Page_MqttSettings_TlsCard.Header" xml:space="preserve">
+    <value>Use TLS</value>
+  </data>
+  <data name="Page_MqttSettings_TlsCard_Switch.OffContent" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="Page_MqttSettings_TlsCard_Switch.OnContent" xml:space="preserve">
+    <value>On</value>
+  </data>
+  <data name="Page_MqttSettings_UsernameCard.Header" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="Page_MqttSettings_UsernameCard_Description.Text" xml:space="preserve">
+    <value>Current username is:</value>
+  </data>
+  <data name="Page_MqttSettings_UsernameDialog_Query" xml:space="preserve">
+    <value>Please provide new MQTT username</value>
+  </data>
+  <data name="Page_MqttSettings_UsernameDialog_Title" xml:space="preserve">
+    <value>Change MQTT username</value>
   </data>
   <data name="Sensor_Category_Debug" xml:space="preserve">
     <value>Debug</value>

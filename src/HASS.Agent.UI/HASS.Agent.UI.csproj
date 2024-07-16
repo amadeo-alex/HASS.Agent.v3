@@ -19,7 +19,7 @@
   <ItemGroup>
     <None Remove="Assets\modern-tray-icon.ico" />
     <None Remove="Views\Dialogs\EntityContentDialog.xaml" />
-    <None Remove="Views\Dialogs\TextInputDialogContent.xaml" />
+    <None Remove="Views\Dialogs\InputDialogContent.xaml" />
     <None Remove="Views\Pages\CommandsPage.xaml" />
     <None Remove="Views\Pages\DebugPage.xaml" />
     <None Remove="Views\Pages\MainPage.xaml" />
@@ -90,7 +90,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Views\Dialogs\TextInputDialogContent.xaml">
+    <Page Update="Views\Dialogs\InputDialogContent.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

@@ -37,7 +37,7 @@ public sealed partial class MqttSettingsPage : Page
 
     private async void ChangeAddressButton_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new ContentDialog
+        var dialog = new InputContentDialog
         {
             XamlRoot = XamlRoot,
             Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
@@ -45,13 +45,13 @@ public sealed partial class MqttSettingsPage : Page
             PrimaryButtonText = LocalizerHelper.GetLocalizedString("General_Save"),
             CloseButtonText = LocalizerHelper.GetLocalizedString("General_Cancel"),
             DefaultButton = ContentDialogButton.Primary,
-            Content = new TextInputDialogContent("Page_MqttSettings_AddressDialog_Query", _viewModel.SettingsManager.Settings.Mqtt.Address)
+            Content = new InputDialogContent("Page_MqttSettings_AddressDialog_Query", _viewModel.SettingsManager.Settings.Mqtt.Address)
         };
 
         var result = await dialog.ShowAsync();
         if (result == ContentDialogResult.Primary)
         {
-            var newAddress = ((dialog.Content as TextInputDialogContent)?.DataContext as TextInputDialogContentViewModel)?.TextBoxContent;
+            var newAddress = dialog.GetInputContent<string>();
             if (newAddress != null)
                 _viewModel.SettingsManager.Settings.Mqtt.Address = newAddress;
         }
@@ -59,7 +59,7 @@ public sealed partial class MqttSettingsPage : Page
 
     private async void ChangePortButton_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new ContentDialog
+        var dialog = new InputContentDialog
         {
             XamlRoot = XamlRoot,
             Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
@@ -67,15 +67,59 @@ public sealed partial class MqttSettingsPage : Page
             PrimaryButtonText = LocalizerHelper.GetLocalizedString("General_Save"),
             CloseButtonText = LocalizerHelper.GetLocalizedString("General_Cancel"),
             DefaultButton = ContentDialogButton.Primary,
-            Content = new TextInputDialogContent("Page_MqttSettings_PortDialog_Query", Convert.ToString(_viewModel.SettingsManager.Settings.Mqtt.Port), true)
+            Content = new InputDialogContent("Page_MqttSettings_PortDialog_Query", Convert.ToString(_viewModel.SettingsManager.Settings.Mqtt.Port), true)
         };
 
         var result = await dialog.ShowAsync();
         if (result == ContentDialogResult.Primary)
         {
-            var newPort = ((dialog.Content as TextInputDialogContent)?.DataContext as TextInputDialogContentViewModel)?.TextBoxContent;
-            if (newPort != null)
-                _viewModel.SettingsManager.Settings.Mqtt.Port = Convert.ToInt32(newPort);
+            var newPort = dialog.GetInputContent<int>();
+            if (newPort != default)
+                _viewModel.SettingsManager.Settings.Mqtt.Port = newPort;
+        }
+    }
+
+    private async void ChangeUsernameButton_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new InputContentDialog
+        {
+            XamlRoot = XamlRoot,
+            Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+            Title = LocalizerHelper.GetLocalizedString("Page_MqttSettings_UsernameDialog_Title"),
+            PrimaryButtonText = LocalizerHelper.GetLocalizedString("General_Save"),
+            CloseButtonText = LocalizerHelper.GetLocalizedString("General_Cancel"),
+            DefaultButton = ContentDialogButton.Primary,
+            Content = new InputDialogContent("Page_MqttSettings_UsernameDialog_Query", _viewModel.SettingsManager.Settings.Mqtt.Username)
+        };
+
+        var result = await dialog.ShowAsync();
+        if (result == ContentDialogResult.Primary)
+        {
+            var newUsername = dialog.GetInputContent<string>();
+            if (newUsername != null)
+                _viewModel.SettingsManager.Settings.Mqtt.Username = newUsername;
+        }
+    }
+
+    private async void ChangePasswordButton_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new InputContentDialog
+        {
+            XamlRoot = XamlRoot,
+            Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+            Title = LocalizerHelper.GetLocalizedString("Page_MqttSettings_PasswordDialog_Title"),
+            PrimaryButtonText = LocalizerHelper.GetLocalizedString("General_Save"),
+            CloseButtonText = LocalizerHelper.GetLocalizedString("General_Cancel"),
+            DefaultButton = ContentDialogButton.Primary,
+            Content = new InputDialogContent("Page_MqttSettings_PasswordDialog_Query", _viewModel.SettingsManager.Settings.Mqtt.Password)
+        };
+
+        var result = await dialog.ShowAsync();
+        if (result == ContentDialogResult.Primary)
+        {
+            var newPassword = dialog.GetInputContent<string>();
+            if (newPassword != null)
+                _viewModel.SettingsManager.Settings.Mqtt.Password = newPassword;
         }
     }
 }

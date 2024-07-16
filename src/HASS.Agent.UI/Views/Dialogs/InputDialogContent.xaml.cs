@@ -22,20 +22,22 @@ namespace HASS.Agent.UI.Views.Dialogs;
 /// <summary>
 /// An empty page that can be used on its own or navigated to within a Frame.
 /// </summary>
-public sealed partial class TextInputDialogContent : Page
+public sealed partial class InputDialogContent : Page
 {
-    private readonly TextInputDialogContentViewModel _viewModel;
+    private readonly InputDialogContentViewModel _viewModel;
 
-    public TextInputDialogContent(string queryTextResourceKey, string initialTextBoxContent, bool numericOnly = false)
+    public InputDialogContent(string queryTextResourceKey, string initialTextBoxContent, bool numericOnly = false)
     {
-        _viewModel = new TextInputDialogContentViewModel()
+        _viewModel = new InputDialogContentViewModel()
         {
             QueryTextResourceKey = queryTextResourceKey,
-            TextBoxContent = initialTextBoxContent,
+            Content = initialTextBoxContent,
             NumericOnly = numericOnly
         };
-        this.InitializeComponent();
+
         DataContext = _viewModel;
+
+        this.InitializeComponent();
     }
 
     private void TextBox_BeforeTextChanging(TextBox sender, TextBoxBeforeTextChangingEventArgs args)

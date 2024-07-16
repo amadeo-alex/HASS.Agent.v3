@@ -36,7 +36,7 @@ public sealed partial class GeneralSettingsPage : Page
 
     private async void ChangeNameButton_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new ContentDialog
+        var dialog = new InputContentDialog
         {
             XamlRoot = XamlRoot,
             Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
@@ -44,13 +44,13 @@ public sealed partial class GeneralSettingsPage : Page
             PrimaryButtonText = LocalizerHelper.GetLocalizedString("General_Save"),
             CloseButtonText = LocalizerHelper.GetLocalizedString("General_Cancel"),
             DefaultButton = ContentDialogButton.Primary,
-            Content = new TextInputDialogContent("Page_GeneralSettings_NameDialog_Query", _viewModel.SettingsManager.Settings.Application.ConfiguredDeviceName)
+            Content = new InputDialogContent("Page_GeneralSettings_NameDialog_Query", _viewModel.SettingsManager.Settings.Application.ConfiguredDeviceName)
         };
 
         var result = await dialog.ShowAsync();
         if (result == ContentDialogResult.Primary)
         {
-            var newDeviceName = ((dialog.Content as TextInputDialogContent)?.DataContext as TextInputDialogContentViewModel)?.TextBoxContent;
+            var newDeviceName = dialog.GetInputContent<string>();
             if (newDeviceName != null)
                 _viewModel.SettingsManager.Settings.Application.ConfiguredDeviceName = newDeviceName;
         }

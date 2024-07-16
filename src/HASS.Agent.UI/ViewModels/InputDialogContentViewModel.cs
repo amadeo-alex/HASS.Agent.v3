@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 using HASS.Agent.UI.Helpers;
 
 namespace HASS.Agent.UI.ViewModels;
-public class TextInputDialogContentViewModel
+public class InputDialogContentViewModel
 {
     public string QueryTextResourceKey { get; set; } = string.Empty;
     public string QueryText => LocalizerHelper.GetLocalizedString(QueryTextResourceKey);
-    public string TextBoxContent {  get; set; } = string.Empty;
+    public object? Content { get; set; }
     public bool NumericOnly { get; set; } = false;
-
 }
