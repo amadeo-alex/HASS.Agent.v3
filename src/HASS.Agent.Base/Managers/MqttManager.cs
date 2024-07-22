@@ -352,20 +352,20 @@ public partial class MqttManager : ObservableObject, IMqttManager
             clientOptionsBuilder.WithCredentials(_settingsManager.Settings.Mqtt.Username, _settingsManager.Settings.Mqtt.Password);
 
         var certificates = new List<X509Certificate>();
-        if (!string.IsNullOrEmpty(_settingsManager.Settings.Mqtt.RootCertificate))
+        if (!string.IsNullOrEmpty(_settingsManager.Settings.Mqtt.RootCertificatePath))
         {
-            if (!File.Exists(_settingsManager.Settings.Mqtt.RootCertificate))
-                Log.Error("[MQTT] Provided root certificate not found: {cert}", _settingsManager.Settings.Mqtt.RootCertificate);
+            if (!File.Exists(_settingsManager.Settings.Mqtt.RootCertificatePath))
+                Log.Error("[MQTT] Provided root certificate not found: {cert}", _settingsManager.Settings.Mqtt.RootCertificatePath);
             else
-                certificates.Add(new X509Certificate2(_settingsManager.Settings.Mqtt.RootCertificate));
+                certificates.Add(new X509Certificate2(_settingsManager.Settings.Mqtt.RootCertificatePath));
         }
 
-        if (!string.IsNullOrEmpty(_settingsManager.Settings.Mqtt.ClientCertificate))
+        if (!string.IsNullOrEmpty(_settingsManager.Settings.Mqtt.ClientCertificatePath))
         {
-            if (!File.Exists(_settingsManager.Settings.Mqtt.ClientCertificate))
-                Log.Error("[MQTT] Provided client certificate not found: {cert}", _settingsManager.Settings.Mqtt.ClientCertificate);
+            if (!File.Exists(_settingsManager.Settings.Mqtt.ClientCertificatePath))
+                Log.Error("[MQTT] Provided client certificate not found: {cert}", _settingsManager.Settings.Mqtt.ClientCertificatePath);
             else
-                certificates.Add(new X509Certificate2(_settingsManager.Settings.Mqtt.ClientCertificate));
+                certificates.Add(new X509Certificate2(_settingsManager.Settings.Mqtt.ClientCertificatePath));
         }
 
         var clientTlsOptions = new MqttClientTlsOptions()

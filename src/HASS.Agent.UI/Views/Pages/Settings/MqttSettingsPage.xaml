@@ -11,80 +11,143 @@
 	xmlns:l="using:WinUI3Localizer"
     mc:Ignorable="d">
 
-    <Page.Resources>
-        <vc:LocalizerResourceConverter x:Key="LocalizerResourceConverter" />
-    </Page.Resources>
+	<Page.Resources>
+		<vc:LocalizerResourceConverter x:Key="LocalizerResourceConverter" />
+	</Page.Resources>
+	<ScrollViewer>
+		<Grid Margin="16">
 
-    <Grid Margin="16">
+			<StackPanel Spacing="4">
 
-        <StackPanel Spacing="4">
-            <controls:SettingsExpander l:Uids.Uid="Page_MqttSettings_EnabledCard"
-                                       IsExpanded="{Binding SettingsManager.Settings.Mqtt.Enabled, Mode=OneWay}">
+				<controls:SettingsCard l:Uids.Uid="Page_MqttSettings_EnabledCard">
+					<ToggleSwitch l:Uids.Uid="Page_MqttSettings_Enabled_Switch"
+								  IsOn="{Binding SettingsManager.Settings.Mqtt.Enabled, Mode=TwoWay}"/>
+				</controls:SettingsCard>
 
-                <ToggleSwitch l:Uids.Uid="Page_MqttSettings_Enabled_Switch"
-							  IsOn="{Binding SettingsManager.Settings.Mqtt.Enabled, Mode=TwoWay}"/>
+				<controls:SettingsExpander l:Uids.Uid="Page_MqttSettings_GeneralCard"
+										   IsExpanded="True">
 
-                <controls:SettingsExpander.Items>
-                    <controls:SettingsCard l:Uids.Uid="Page_MqttSettings_AddressCard"
-                                           IsEnabled="{Binding SettingsManager.Settings.Mqtt.Enabled, Mode=OneWay}">
-                        <controls:SettingsCard.Description>
-                            <StackPanel Orientation="Horizontal" Spacing="4">
-                                <TextBlock l:Uids.Uid="Page_MqttSettings_AddressCard_Description"/>
-                                <TextBlock Text="{Binding SettingsManager.Settings.Mqtt.Address, Mode=OneWay}"/>
-                            </StackPanel>
-                        </controls:SettingsCard.Description>
-                        <Button l:Uids.Uid="Page_MqttSettings_ChangeButton"
-						        Style="{StaticResource AccentButtonStyle}"
-						        Click="ChangeAddressButton_Click"/>
-                    </controls:SettingsCard>
+					<controls:SettingsExpander.Items>
+						<controls:SettingsCard l:Uids.Uid="Page_MqttSettings_AddressCard">
+							<controls:SettingsCard.Description>
+								<StackPanel Orientation="Horizontal" Spacing="4">
+									<TextBlock l:Uids.Uid="Page_MqttSettings_AddressCard_Description"/>
+									<TextBlock Text="{Binding SettingsManager.Settings.Mqtt.Address, Mode=OneWay}"/>
+								</StackPanel>
+							</controls:SettingsCard.Description>
+							<Button l:Uids.Uid="Page_MqttSettings_ChangeButton"
+									Style="{StaticResource AccentButtonStyle}"
+									Click="ChangeAddressButton_Click"/>
+						</controls:SettingsCard>
 
-                    <controls:SettingsCard l:Uids.Uid="Page_MqttSettings_PortCard"
-                                           IsEnabled="{Binding SettingsManager.Settings.Mqtt.Enabled, Mode=OneWay}">
-                        <controls:SettingsCard.Description>
-                            <StackPanel Orientation="Horizontal" Spacing="4">
-                                <TextBlock l:Uids.Uid="Page_MqttSettings_PortCard_Description"/>
-                                <TextBlock Text="{Binding SettingsManager.Settings.Mqtt.Port, Mode=OneWay}"/>
-                            </StackPanel>
-                        </controls:SettingsCard.Description>
-                        <Button l:Uids.Uid="Page_MqttSettings_ChangeButton"
-						        Style="{StaticResource AccentButtonStyle}"
-						        Click="ChangePortButton_Click"/>
-                    </controls:SettingsCard>
+						<controls:SettingsCard l:Uids.Uid="Page_MqttSettings_PortCard">
+							<controls:SettingsCard.Description>
+								<StackPanel Orientation="Horizontal" Spacing="4">
+									<TextBlock l:Uids.Uid="Page_MqttSettings_PortCard_Description"/>
+									<TextBlock Text="{Binding SettingsManager.Settings.Mqtt.Port, Mode=OneWay}"/>
+								</StackPanel>
+							</controls:SettingsCard.Description>
+							<Button l:Uids.Uid="Page_MqttSettings_ChangeButton"
+									Style="{StaticResource AccentButtonStyle}"
+									Click="ChangePortButton_Click"/>
+						</controls:SettingsCard>
 
-                    <controls:SettingsCard l:Uids.Uid="Page_MqttSettings_TlsCard"
-                                           IsEnabled="{Binding SettingsManager.Settings.Mqtt.Enabled, Mode=OneWay}">
-                        <ToggleSwitch l:Uids.Uid="Page_MqttSettings_TlsCard_Switch"
-                                      IsOn="{Binding SettingsManager.Settings.Mqtt.UseTls, Mode=TwoWay}"/>
-                    </controls:SettingsCard>
+						<controls:SettingsCard l:Uids.Uid="Page_MqttSettings_DiscoveryPrefixCard">
+							<controls:SettingsCard.Description>
+								<StackPanel Orientation="Horizontal" Spacing="4">
+									<TextBlock l:Uids.Uid="Page_MqttSettings_DiscoveryPrefixCard_Description"/>
+									<TextBlock Text="{Binding SettingsManager.Settings.Mqtt.DiscoveryPrefix, Mode=OneWay}"/>
+								</StackPanel>
+							</controls:SettingsCard.Description>
+							<Button l:Uids.Uid="Page_MqttSettings_ChangeButton"
+									Style="{StaticResource AccentButtonStyle}"
+									Click="ChangeDiscoveryPrefixButton_Click"/>
+						</controls:SettingsCard>
 
-                    <controls:SettingsCard l:Uids.Uid="Page_MqttSettings_AllowUntrustedCertCard"
-                                           IsEnabled="{Binding SettingsManager.Settings.Mqtt.Enabled, Mode=OneWay}">
-                        <ToggleSwitch l:Uids.Uid="Page_MqttSettings_AllowUntrustedCertCard_Switch"
-                                      IsOn="{Binding SettingsManager.Settings.Mqtt.AllowUntrustedCertificates, Mode=TwoWay}"/>
-                    </controls:SettingsCard>
+						<controls:SettingsCard l:Uids.Uid="Page_MqttSettings_ClientIdCard">
+							<controls:SettingsCard.Description>
+								<StackPanel Orientation="Horizontal" Spacing="4">
+									<TextBlock l:Uids.Uid="Page_MqttSettings_ClientIdCard_Description"/>
+									<TextBlock Text="{Binding SettingsManager.Settings.Mqtt.ClientId, Mode=OneWay}"/>
+								</StackPanel>
+							</controls:SettingsCard.Description>
+							<Button l:Uids.Uid="Page_MqttSettings_ChangeButton"
+									Style="{StaticResource AccentButtonStyle}"
+									Click="ChangeClientIdButton_Click"/>
+						</controls:SettingsCard>
 
-                    <controls:SettingsCard l:Uids.Uid="Page_MqttSettings_UsernameCard"
-                                           IsEnabled="{Binding SettingsManager.Settings.Mqtt.Enabled, Mode=OneWay}">
-                        <controls:SettingsCard.Description>
-                            <StackPanel Orientation="Horizontal" Spacing="4">
-                                <TextBlock l:Uids.Uid="Page_MqttSettings_UsernameCard_Description"/>
-                                <TextBlock Text="{Binding SettingsManager.Settings.Mqtt.Username, Mode=OneWay}"/>
-                            </StackPanel>
-                        </controls:SettingsCard.Description>
-                        <Button l:Uids.Uid="Page_MqttSettings_ChangeButton"
-						        Style="{StaticResource AccentButtonStyle}"
-						        Click="ChangeUsernameButton_Click"/>
-                    </controls:SettingsCard>
+						<controls:SettingsCard l:Uids.Uid="Page_MqttSettings_GracePeriodCard">
+							<controls:SettingsCard.Description>
+								<StackPanel Orientation="Horizontal" Spacing="4">
+									<TextBlock l:Uids.Uid="Page_MqttSettings_GracePeriodCard_Description"/>
+									<TextBlock Text="{Binding SettingsManager.Settings.Mqtt.GracePeriodSeconds, Mode=OneWay}"/>
+									<TextBlock l:Uids.Uid="Page_MqttSettings_GracePeriodCard_Description_Seconds"/>
+								</StackPanel>
+							</controls:SettingsCard.Description>
+							<Button l:Uids.Uid="Page_MqttSettings_ChangeButton"
+									Style="{StaticResource AccentButtonStyle}"
+									Click="ChangeGracePeriodButton_Click"/>
+						</controls:SettingsCard>
+					</controls:SettingsExpander.Items>
+				</controls:SettingsExpander>
 
-                    <controls:SettingsCard l:Uids.Uid="Page_MqttSettings_PasswordCard"
-                                           IsEnabled="{Binding SettingsManager.Settings.Mqtt.Password, Mode=OneWay}">
-                        <Button l:Uids.Uid="Page_MqttSettings_ChangeButton"
-						        Style="{StaticResource AccentButtonStyle}"
-						        Click="ChangePasswordButton_Click"/>
-                    </controls:SettingsCard>
-                </controls:SettingsExpander.Items>
-            </controls:SettingsExpander>
-        </StackPanel>
+				<controls:SettingsExpander l:Uids.Uid="Page_MqttSettings_SecurityCard"
+                                       IsExpanded="True">
+					<controls:SettingsExpander.Items>
+						<controls:SettingsCard l:Uids.Uid="Page_MqttSettings_TlsCard">
+							<ToggleSwitch l:Uids.Uid="Page_MqttSettings_TlsCard_Switch"
+										  IsOn="{Binding SettingsManager.Settings.Mqtt.UseTls, Mode=TwoWay}"/>
+						</controls:SettingsCard>
 
-    </Grid>
+						<controls:SettingsCard l:Uids.Uid="Page_MqttSettings_AllowUntrustedCertCard">
+							<ToggleSwitch l:Uids.Uid="Page_MqttSettings_AllowUntrustedCertCard_Switch"
+										  IsOn="{Binding SettingsManager.Settings.Mqtt.AllowUntrustedCertificates, Mode=TwoWay}"/>
+						</controls:SettingsCard>
+
+						<controls:SettingsCard l:Uids.Uid="Page_MqttSettings_UsernameCard">
+							<controls:SettingsCard.Description>
+								<StackPanel Orientation="Horizontal" Spacing="4">
+									<TextBlock l:Uids.Uid="Page_MqttSettings_UsernameCard_Description"/>
+									<TextBlock Text="{Binding SettingsManager.Settings.Mqtt.Username, Mode=OneWay}"/>
+								</StackPanel>
+							</controls:SettingsCard.Description>
+							<Button l:Uids.Uid="Page_MqttSettings_ChangeButton"
+									Style="{StaticResource AccentButtonStyle}"
+									Click="ChangeUsernameButton_Click"/>
+						</controls:SettingsCard>
+
+						<controls:SettingsCard l:Uids.Uid="Page_MqttSettings_PasswordCard">
+							<Button l:Uids.Uid="Page_MqttSettings_ChangeButton"
+									Style="{StaticResource AccentButtonStyle}"
+									Click="ChangePasswordButton_Click"/>
+						</controls:SettingsCard>
+
+						<controls:SettingsCard l:Uids.Uid="Page_MqttSettings_ClientCertificateCard">
+							<controls:SettingsCard.Description>
+								<StackPanel Orientation="Horizontal" Spacing="4">
+									<TextBlock Text="{Binding SettingsManager.Settings.Mqtt.ClientCertificatePath, Mode=OneWay}"/>
+								</StackPanel>
+							</controls:SettingsCard.Description>
+							<Button l:Uids.Uid="Page_MqttSettings_ChangeButton"
+									Style="{StaticResource AccentButtonStyle}"
+									Click="ChangeClientCertificateButton_Click"/>
+						</controls:SettingsCard>
+
+						<controls:SettingsCard l:Uids.Uid="Page_MqttSettings_RootCertificateCard">
+							<controls:SettingsCard.Description>
+								<StackPanel Orientation="Horizontal" Spacing="4">
+									<TextBlock Text="{Binding SettingsManager.Settings.Mqtt.RootCertificatePath, Mode=OneWay}"/>
+								</StackPanel>
+							</controls:SettingsCard.Description>
+							<Button l:Uids.Uid="Page_MqttSettings_ChangeButton"
+									Style="{StaticResource AccentButtonStyle}"
+									Click="ChangeRootCertificateButton_Click"/>
+						</controls:SettingsCard>
+						
+					</controls:SettingsExpander.Items>
+				</controls:SettingsExpander>
+			</StackPanel>
+
+		</Grid>
+	</ScrollViewer>
 </Page>

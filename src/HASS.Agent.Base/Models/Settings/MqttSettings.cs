@@ -29,9 +29,9 @@ public partial class MqttSettings : ObservableObject
     [ObservableProperty]
     private bool _useRetainFlag  = true;
     [ObservableProperty]
-    private string _rootCertificate  = string.Empty;
+    private string _rootCertificatePath  = string.Empty;
     [ObservableProperty]
-    private string _clientCertificate = string.Empty;
+    private string _clientCertificatePath = string.Empty;
     [ObservableProperty]
-    private int _disconnectedGracePeriodSeconds  = 60;
+    private int _gracePeriodSeconds  = 60;
 }

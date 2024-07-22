@@ -244,10 +244,10 @@
     <value>Current address is:</value>
   </data>
   <data name="Page_MqttSettings_AddressDialog_Query" xml:space="preserve">
-    <value>Please provide new MQTT address</value>
+    <value>Please provide new address</value>
   </data>
   <data name="Page_MqttSettings_AddressDialog_Title" xml:space="preserve">
-    <value>Change MQTT address</value>
+    <value>Change address</value>
   </data>
   <data name="Page_MqttSettings_AllowUntrustedCertCard.Header" xml:space="preserve">
     <value>Allow untrusted certificates</value>
@@ -261,6 +261,33 @@
   <data name="Page_MqttSettings_ChangeButton.Content" xml:space="preserve">
     <value>Change</value>
   </data>
+  <data name="Page_MqttSettings_ClientCertificateCard.Header" xml:space="preserve">
+    <value>Client certificate</value>
+  </data>
+  <data name="Page_MqttSettings_ClientIdCard.Header" xml:space="preserve">
+    <value>Client ID</value>
+  </data>
+  <data name="Page_MqttSettings_ClientIdCard_Description.Text" xml:space="preserve">
+    <value>Current ID is:</value>
+  </data>
+  <data name="Page_MqttSettings_ClientIdDialog_Query" xml:space="preserve">
+    <value>Please provide new client ID</value>
+  </data>
+  <data name="Page_MqttSettings_ClientIdDialog_Title" xml:space="preserve">
+    <value>Change client ID</value>
+  </data>
+  <data name="Page_MqttSettings_DiscoveryPrefixCard.Header" xml:space="preserve">
+    <value>Home Assistant prefix</value>
+  </data>
+  <data name="Page_MqttSettings_DiscoveryPrefixCard_Description.Text" xml:space="preserve">
+    <value>Current prefix is:</value>
+  </data>
+  <data name="Page_MqttSettings_DiscoveryPrefixDialog_Query" xml:space="preserve">
+    <value>Please provide new discovery prefix</value>
+  </data>
+  <data name="Page_MqttSettings_DiscoveryPrefixDialog_Title" xml:space="preserve">
+    <value>Change discovery prefix</value>
+  </data>
   <data name="Page_MqttSettings_EnabledCard.Header" xml:space="preserve">
     <value>Enabled</value>
   </data>
@@ -270,14 +297,32 @@
   <data name="Page_MqttSettings_Enabled_Switch.OnContent" xml:space="preserve">
     <value>On</value>
   </data>
+  <data name="Page_MqttSettings_GeneralCard.Header" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="Page_MqttSettings_GracePeriodCard.Header" xml:space="preserve">
+    <value>Disconnection grace period</value>
+  </data>
+  <data name="Page_MqttSettings_GracePeriodCard_Description.Text" xml:space="preserve">
+    <value>Current grace period is:</value>
+  </data>
+  <data name="Page_MqttSettings_GracePeriodCard_Description_Seconds.Text" xml:space="preserve">
+    <value>seconds</value>
+  </data>
+  <data name="Page_MqttSettings_GracePeriodDialog_Query.Text" xml:space="preserve">
+    <value>Please provide new grace period</value>
+  </data>
+  <data name="Page_MqttSettings_GracePeriodDialog_Title" xml:space="preserve">
+    <value>Change grace period</value>
+  </data>
   <data name="Page_MqttSettings_PasswordCard.Header" xml:space="preserve">
     <value>Password</value>
   </data>
   <data name="Page_MqttSettings_PasswordDialog_Query" xml:space="preserve">
-    <value>Please provide new MQTT password</value>
+    <value>Please provide new password</value>
   </data>
   <data name="Page_MqttSettings_PasswordDialog_Title" xml:space="preserve">
-    <value>Change MQTT password</value>
+    <value>Change password</value>
   </data>
   <data name="Page_MqttSettings_PortCard.Header" xml:space="preserve">
     <value>Port</value>
@@ -286,10 +331,16 @@
     <value>Current port is:</value>
   </data>
   <data name="Page_MqttSettings_PortDialog_Query" xml:space="preserve">
-    <value>Please provide new MQTT port</value>
+    <value>Please provide new port</value>
   </data>
   <data name="Page_MqttSettings_PortDialog_Title" xml:space="preserve">
-    <value>Change MQTT port</value>
+    <value>Change port</value>
+  </data>
+  <data name="Page_MqttSettings_RootCertificateCard.Header" xml:space="preserve">
+    <value>Root certificate</value>
+  </data>
+  <data name="Page_MqttSettings_SecurityCard.Header" xml:space="preserve">
+    <value>Security</value>
   </data>
   <data name="Page_MqttSettings_TlsCard.Header" xml:space="preserve">
     <value>Use TLS</value>
@@ -307,10 +358,10 @@
     <value>Current username is:</value>
   </data>
   <data name="Page_MqttSettings_UsernameDialog_Query" xml:space="preserve">
-    <value>Please provide new MQTT username</value>
+    <value>Please provide new username</value>
   </data>
   <data name="Page_MqttSettings_UsernameDialog_Title" xml:space="preserve">
-    <value>Change MQTT username</value>
+    <value>Change username</value>
   </data>
   <data name="Sensor_Category_Debug" xml:space="preserve">
     <value>Debug</value>
