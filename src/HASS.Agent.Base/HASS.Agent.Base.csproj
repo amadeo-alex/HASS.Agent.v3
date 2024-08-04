@@ -18,4 +18,12 @@
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EditorConfigFiles Remove="D:\Programowanie\Visual CS\Projects\HASS.Agent.v3\src\HASS.Agent.Base\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="D:\Programowanie\Visual CS\Projects\HASS.Agent.v3\src\HASS.Agent.Base\.editorconfig" />
+  </ItemGroup>
+
 </Project>

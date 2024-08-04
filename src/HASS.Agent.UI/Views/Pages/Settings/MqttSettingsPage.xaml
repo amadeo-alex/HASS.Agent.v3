@@ -21,7 +21,7 @@
 
 				<controls:SettingsCard l:Uids.Uid="Page_MqttSettings_EnabledCard">
 					<ToggleSwitch l:Uids.Uid="Page_MqttSettings_Enabled_Switch"
-								  IsOn="{Binding SettingsManager.Settings.Mqtt.Enabled, Mode=TwoWay}"/>
+								  IsOn="{Binding Enabled, Mode=TwoWay}"/>
 				</controls:SettingsCard>
 
 				<controls:SettingsExpander l:Uids.Uid="Page_MqttSettings_GeneralCard"
@@ -32,7 +32,7 @@
 							<controls:SettingsCard.Description>
 								<StackPanel Orientation="Horizontal" Spacing="4">
 									<TextBlock l:Uids.Uid="Page_MqttSettings_AddressCard_Description"/>
-									<TextBlock Text="{Binding SettingsManager.Settings.Mqtt.Address, Mode=OneWay}"/>
+									<TextBlock Text="{Binding Address, Mode=OneWay}"/>
 								</StackPanel>
 							</controls:SettingsCard.Description>
 							<Button l:Uids.Uid="Page_MqttSettings_ChangeButton"
@@ -44,7 +44,7 @@
 							<controls:SettingsCard.Description>
 								<StackPanel Orientation="Horizontal" Spacing="4">
 									<TextBlock l:Uids.Uid="Page_MqttSettings_PortCard_Description"/>
-									<TextBlock Text="{Binding SettingsManager.Settings.Mqtt.Port, Mode=OneWay}"/>
+									<TextBlock Text="{Binding Port, Mode=OneWay}"/>
 								</StackPanel>
 							</controls:SettingsCard.Description>
 							<Button l:Uids.Uid="Page_MqttSettings_ChangeButton"
@@ -56,7 +56,7 @@
 							<controls:SettingsCard.Description>
 								<StackPanel Orientation="Horizontal" Spacing="4">
 									<TextBlock l:Uids.Uid="Page_MqttSettings_DiscoveryPrefixCard_Description"/>
-									<TextBlock Text="{Binding SettingsManager.Settings.Mqtt.DiscoveryPrefix, Mode=OneWay}"/>
+									<TextBlock Text="{Binding DiscoveryPrefix, Mode=OneWay}"/>
 								</StackPanel>
 							</controls:SettingsCard.Description>
 							<Button l:Uids.Uid="Page_MqttSettings_ChangeButton"
@@ -68,7 +68,7 @@
 							<controls:SettingsCard.Description>
 								<StackPanel Orientation="Horizontal" Spacing="4">
 									<TextBlock l:Uids.Uid="Page_MqttSettings_ClientIdCard_Description"/>
-									<TextBlock Text="{Binding SettingsManager.Settings.Mqtt.ClientId, Mode=OneWay}"/>
+									<TextBlock Text="{Binding ClientId, Mode=OneWay}"/>
 								</StackPanel>
 							</controls:SettingsCard.Description>
 							<Button l:Uids.Uid="Page_MqttSettings_ChangeButton"
@@ -80,7 +80,7 @@
 							<controls:SettingsCard.Description>
 								<StackPanel Orientation="Horizontal" Spacing="4">
 									<TextBlock l:Uids.Uid="Page_MqttSettings_GracePeriodCard_Description"/>
-									<TextBlock Text="{Binding SettingsManager.Settings.Mqtt.GracePeriodSeconds, Mode=OneWay}"/>
+									<TextBlock Text="{Binding GracePeriodSeconds, Mode=OneWay}"/>
 									<TextBlock l:Uids.Uid="Page_MqttSettings_GracePeriodCard_Description_Seconds"/>
 								</StackPanel>
 							</controls:SettingsCard.Description>
@@ -96,19 +96,19 @@
 					<controls:SettingsExpander.Items>
 						<controls:SettingsCard l:Uids.Uid="Page_MqttSettings_TlsCard">
 							<ToggleSwitch l:Uids.Uid="Page_MqttSettings_TlsCard_Switch"
-										  IsOn="{Binding SettingsManager.Settings.Mqtt.UseTls, Mode=TwoWay}"/>
+										  IsOn="{Binding UseTls, Mode=TwoWay}"/>
 						</controls:SettingsCard>
 
 						<controls:SettingsCard l:Uids.Uid="Page_MqttSettings_AllowUntrustedCertCard">
 							<ToggleSwitch l:Uids.Uid="Page_MqttSettings_AllowUntrustedCertCard_Switch"
-										  IsOn="{Binding SettingsManager.Settings.Mqtt.AllowUntrustedCertificates, Mode=TwoWay}"/>
+										  IsOn="{Binding AllowUntrustedCertificates, Mode=TwoWay}"/>
 						</controls:SettingsCard>
 
 						<controls:SettingsCard l:Uids.Uid="Page_MqttSettings_UsernameCard">
 							<controls:SettingsCard.Description>
 								<StackPanel Orientation="Horizontal" Spacing="4">
 									<TextBlock l:Uids.Uid="Page_MqttSettings_UsernameCard_Description"/>
-									<TextBlock Text="{Binding SettingsManager.Settings.Mqtt.Username, Mode=OneWay}"/>
+									<TextBlock Text="{Binding Username, Mode=OneWay}"/>
 								</StackPanel>
 							</controls:SettingsCard.Description>
 							<Button l:Uids.Uid="Page_MqttSettings_ChangeButton"
@@ -125,7 +125,7 @@
 						<controls:SettingsCard l:Uids.Uid="Page_MqttSettings_ClientCertificateCard">
 							<controls:SettingsCard.Description>
 								<StackPanel Orientation="Horizontal" Spacing="4">
-									<TextBlock Text="{Binding SettingsManager.Settings.Mqtt.ClientCertificatePath, Mode=OneWay}"/>
+									<TextBlock Text="{Binding ClientCertificatePath, Mode=OneWay}"/>
 								</StackPanel>
 							</controls:SettingsCard.Description>
 							<Button l:Uids.Uid="Page_MqttSettings_ChangeButton"
@@ -136,7 +136,7 @@
 						<controls:SettingsCard l:Uids.Uid="Page_MqttSettings_RootCertificateCard">
 							<controls:SettingsCard.Description>
 								<StackPanel Orientation="Horizontal" Spacing="4">
-									<TextBlock Text="{Binding SettingsManager.Settings.Mqtt.RootCertificatePath, Mode=OneWay}"/>
+									<TextBlock Text="{Binding RootCertificatePath, Mode=OneWay}"/>
 								</StackPanel>
 							</controls:SettingsCard.Description>
 							<Button l:Uids.Uid="Page_MqttSettings_ChangeButton"

@@ -7,7 +7,7 @@ using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Sensors.SingleValue;
 
 namespace HASS.Agent.UI.ViewModels.SensorConfigs;
-public class DummySensorAddSettingsViewModel
+public class DummySensorAdvSettingsViewModel
 {
     private readonly ConfiguredEntity _entity;
 
@@ -35,7 +35,7 @@ public class DummySensorAddSettingsViewModel
         set => _entity.SetIntParameter(DummySensor.MaxRetriesKey, value);
     }
 
-    public DummySensorAddSettingsViewModel(ConfiguredEntity entity)
+    public DummySensorAdvSettingsViewModel(ConfiguredEntity entity)
     {
         _entity = entity;
     }

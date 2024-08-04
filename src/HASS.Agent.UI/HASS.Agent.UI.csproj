@@ -167,4 +167,10 @@
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
   </PropertyGroup>
+  <ItemGroup>
+    <EditorConfigFiles Remove="D:\Programowanie\Visual CS\Projects\HASS.Agent.v3\src\HASS.Agent.UI\.editorconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\Programowanie\Visual CS\Projects\HASS.Agent.v3\src\HASS.Agent.UI\.editorconfig" />
+  </ItemGroup>
 </Project>

@@ -13,11 +13,12 @@
 			<TextBlock Text="Dummy Settings Page" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 			<TextBlock Text="{Binding MqttStatus, Mode=OneWay}"/>
 			<Button Content="plus" Command="{Binding ButtonCommand}"/>
-			<Button Content="stop mqtt" Command="{Binding ButtonCommand2}"/>
+			<Button Content="stop mqtt client" Command="{Binding ButtonCommand2}"/>
 			<Button Content="show dialog" Click="Button_Click"/>
 			<Button Content="GC" Command="{Binding ButtonCommand3}"/>
 			<Button Content="Save" Command="{Binding ButtonCommand4}"/>
 			<Button Content="close main window" Command="{Binding ButtonCommand5}"/>
+			<Button Content="start mqtt client" Command="{Binding ButtonCommand6}"/>
 		</StackPanel>
 
 	</Grid>

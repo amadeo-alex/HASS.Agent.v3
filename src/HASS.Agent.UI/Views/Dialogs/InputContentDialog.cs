@@ -8,17 +8,20 @@ using System.Threading.Tasks;
 
 namespace HASS.Agent.UI.Views.Dialogs
 {
-    public class InputContentDialog : ContentDialog
-    {
-        public T? GetInputContent<T>()
-        {
-            if (Content is not Page contentPage)
-                throw new InvalidOperationException($"Content is not of type {typeof(Page)}");
+	public class InputContentDialog : ContentDialog
+	{
+		public T? GetInputContent<T>()
+		{
+			if (Content is not Page contentPage)
+				throw new InvalidOperationException($"Content is not of type {typeof(Page)}");
 
-            if (contentPage.DataContext is not InputDialogContentViewModel viewModel)
-                throw new InvalidOperationException($"DataContext is not assignable to {typeof(InputDialogContentViewModel)}");
+			if (contentPage.DataContext is not InputDialogContentViewModel viewModel)
+				throw new InvalidOperationException($"DataContext is not assignable to {typeof(InputDialogContentViewModel)}");
 
-            return viewModel.Content == null ? default : (T)viewModel.Content;
-        }
-    }
+			if (viewModel.Content is T content)
+				return content;
+
+			return viewModel.Content == null ? default : (T)Convert.ChangeType(viewModel.Content, typeof(T));
+		}
+	}
 }

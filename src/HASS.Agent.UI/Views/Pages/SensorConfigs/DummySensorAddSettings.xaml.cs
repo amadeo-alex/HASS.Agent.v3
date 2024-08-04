@@ -26,11 +26,11 @@ namespace HASS.Agent.UI.Views.Pages.SensorConfigs;
 /// </summary>
 public sealed partial class DummySensorAddSettings : Page
 {
-    private readonly DummySensorAddSettingsViewModel _viewModel;
+    private readonly DummySensorAdvSettingsViewModel _viewModel;
 
     public DummySensorAddSettings(ConfiguredEntity entity)
     {
-        _viewModel = new DummySensorAddSettingsViewModel(entity);
+        _viewModel = new DummySensorAdvSettingsViewModel(entity);
         DataContext = _viewModel;
 
         this.InitializeComponent();

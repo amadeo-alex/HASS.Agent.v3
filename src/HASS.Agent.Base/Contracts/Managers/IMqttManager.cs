@@ -18,10 +18,9 @@ public interface IMqttMessageHandler
 }
 public interface IMqttManager : INotifyPropertyChanged
 {
-
     MqttStatus Status { get; }
     bool Ready { get; }
-    AbstractMqttDeviceConfigModel DeviceConfigModel { get; }
+    AbstractMqttDeviceConfigModel? DeviceConfigModel { get; }
 
     void RegisterMessageHandler(string topic, IMqttMessageHandler handler);
     void UnregisterMessageHandler(string topic);
@@ -29,8 +28,5 @@ public interface IMqttManager : INotifyPropertyChanged
     Task PublishAsync(MqttApplicationMessage message);
     Task AnnounceDeviceConfigModelAsync();
     Task ClearDeviceConfigModelAsync();
-    Task DisconnectAsync();
-    Task SubscribeAsync(AbstractDiscoverable command);
-    Task UnsubscribeAsync(AbstractDiscoverable command);
-    Task ReinitializeAsync();
+    Task StopClientAsync();
 }

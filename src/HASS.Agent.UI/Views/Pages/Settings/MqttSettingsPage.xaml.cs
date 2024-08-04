@@ -39,65 +39,79 @@ public sealed partial class MqttSettingsPage : Page
 
     private async void ChangeAddressButton_Click(object sender, RoutedEventArgs e)
     {
-        var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_AddressDialog_Title", "Page_MqttSettings_AddressDialog_Query", _viewModel.SettingsManager.Settings.Mqtt.Address);
+        var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_AddressDialog_Title", "Page_MqttSettings_AddressDialog_Query", _viewModel.Address);
         if (!string.IsNullOrEmpty(newValue))
         {
-            _viewModel.SettingsManager.Settings.Mqtt.Address = newValue;
-        }
+			await _viewModel.StopClientAsync();
+			_viewModel.Address = newValue;
+			await _viewModel.StartClientAsync();
+		}
     }
 
     private async void ChangePortButton_Click(object sender, RoutedEventArgs e)
     {
-        var newValue = await GetNewSettingValueAsync<int>("Page_MqttSettings_PortDialog_Title", "Page_MqttSettings_PortDialog_Query", Convert.ToString(_viewModel.SettingsManager.Settings.Mqtt.Port), true);
+        var newValue = await GetNewSettingValueAsync<int>("Page_MqttSettings_PortDialog_Title", "Page_MqttSettings_PortDialog_Query", Convert.ToString(_viewModel.Port), true);
         if (newValue != default)
         {
-            _viewModel.SettingsManager.Settings.Mqtt.Port = newValue;
-        }
+			await _viewModel.StopClientAsync();
+			_viewModel.Port = newValue;
+			await _viewModel.StartClientAsync();
+		}
     }
 
     private async void ChangeUsernameButton_Click(object sender, RoutedEventArgs e)
     {
-        var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_UsernameDialog_Title", "Page_MqttSettings_UsernameDialog_Query", _viewModel.SettingsManager.Settings.Mqtt.Username);
+        var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_UsernameDialog_Title", "Page_MqttSettings_UsernameDialog_Query", _viewModel.Username);
         if (!string.IsNullOrEmpty(newValue))
         {
-            _viewModel.SettingsManager.Settings.Mqtt.Username = newValue;
-        }
+			await _viewModel.StopClientAsync();
+			_viewModel.Username = newValue;
+			await _viewModel.StartClientAsync();
+		}
     }
 
     private async void ChangePasswordButton_Click(object sender, RoutedEventArgs e)
     {
-        var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_PasswordDialog_Title", "Page_MqttSettings_PasswordDialog_Query", _viewModel.SettingsManager.Settings.Mqtt.Password);
+        var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_PasswordDialog_Title", "Page_MqttSettings_PasswordDialog_Query", _viewModel.Password);
         if (!string.IsNullOrEmpty(newValue))
         {
-            _viewModel.SettingsManager.Settings.Mqtt.Password = newValue;
-        }
+			await _viewModel.StopClientAsync();
+			_viewModel.Password = newValue;
+			await _viewModel.StartClientAsync();
+		}
     }
 
     private async void ChangeDiscoveryPrefixButton_Click(object sender, RoutedEventArgs e)
     {
-        var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_DiscoveryPrefixDialog_Title", "Page_MqttSettings_DiscoveryPrefixDialog_Query", _viewModel.SettingsManager.Settings.Mqtt.DiscoveryPrefix);
+        var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_DiscoveryPrefixDialog_Title", "Page_MqttSettings_DiscoveryPrefixDialog_Query", _viewModel.DiscoveryPrefix);
         if (!string.IsNullOrEmpty(newValue))
         {
-            _viewModel.SettingsManager.Settings.Mqtt.DiscoveryPrefix = newValue;
-        }
+			await _viewModel.StopClientAsync();
+			_viewModel.DiscoveryPrefix = newValue;
+			await _viewModel.StartClientAsync();
+		}
     }
 
     private async void ChangeClientIdButton_Click(object sender, RoutedEventArgs e)
     {
-        var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_ClientIdDialog_Title", "Page_MqttSettings_ClientIdDialog_Query", _viewModel.SettingsManager.Settings.Mqtt.ClientId);
+        var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_ClientIdDialog_Title", "Page_MqttSettings_ClientIdDialog_Query", _viewModel.ClientId);
         if (!string.IsNullOrEmpty(newValue))
         {
-            _viewModel.SettingsManager.Settings.Mqtt.ClientId = newValue;
-        }
+			await _viewModel.StopClientAsync();
+            _viewModel.ClientId = newValue;
+			await _viewModel.StartClientAsync();
+		}
     }
 
     private async void ChangeGracePeriodButton_Click(object sender, RoutedEventArgs e)
     {
-        var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_GracePeriodDialog_Title", "Page_MqttSettings_GracePeriodDialog_Query", Convert.ToString(_viewModel.SettingsManager.Settings.Mqtt.GracePeriodSeconds), true);
+        var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_GracePeriodDialog_Title", "Page_MqttSettings_GracePeriodDialog_Query", Convert.ToString(_viewModel.GracePeriodSeconds), true);
         if (!string.IsNullOrEmpty(newValue))
         {
-            _viewModel.SettingsManager.Settings.Mqtt.ClientId = newValue;
-        }
+			await _viewModel.StopClientAsync();
+			_viewModel.ClientId = newValue;
+			await _viewModel.StartClientAsync();
+		}
     }
 
     private async void ChangeClientCertificateButton_Click(object sender, RoutedEventArgs e)
@@ -112,8 +126,9 @@ public sealed partial class MqttSettingsPage : Page
         var certificateFile = await openPicker.PickSingleFileAsync();
         if (certificateFile != null)
         {
-            _viewModel.SettingsManager.Settings.Mqtt.ClientCertificatePath = certificateFile.Path;
-        }
+            _viewModel.ClientCertificatePath = certificateFile.Path;
+			await _viewModel.StartClientAsync();
+		}
     }
 
     private async void ChangeRootCertificateButton_Click(object sender, RoutedEventArgs e)
@@ -128,8 +143,9 @@ public sealed partial class MqttSettingsPage : Page
         var certificateFile = await openPicker.PickSingleFileAsync();
         if (certificateFile != null)
         {
-            _viewModel.SettingsManager.Settings.Mqtt.RootCertificatePath = certificateFile.Path;
-        }
+            _viewModel.RootCertificatePath = certificateFile.Path;
+			await _viewModel.StartClientAsync();
+		}
     }
 
     private async Task<T?> GetNewSettingValueAsync<T>(string titleResourceKey, string queryResourceKey, string currentValue, bool numericOnly = false)

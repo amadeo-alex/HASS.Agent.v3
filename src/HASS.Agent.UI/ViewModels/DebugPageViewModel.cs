@@ -29,7 +29,8 @@ public partial class DebugPageViewModel : ViewModelBase
     public RelayCommand ButtonCommand3 { get; set; }
     public RelayCommand ButtonCommand4 { get; set; }
     public RelayCommand ButtonCommand5 { get; set; }
-    public Base.Enums.MqttStatus MqttStatus => _mqttManager.Status;
+	public RelayCommand ButtonCommand6 { get; set; }
+	public Base.Enums.MqttStatus MqttStatus => _mqttManager.Status;
 
     public List<SomeItem> SomeItems = new List<SomeItem>()
     {
@@ -59,11 +60,16 @@ public partial class DebugPageViewModel : ViewModelBase
 
         ButtonCommand2 = new RelayCommand(() =>
         {
-            _mqttManager.DisconnectAsync();
+            _mqttManager.StopClientAsync();
         });
 
+		ButtonCommand6 = new RelayCommand(() =>
+		{
+			_mqttManager.StartClientAsync();
+		});
 
-        ButtonCommand3 = new RelayCommand(async () =>
+
+		ButtonCommand3 = new RelayCommand(async () =>
         {
             Debug.WriteLine("GC collect");
             GC.Collect();
