@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.Input;
 using HASS.Agent.Base.Contracts.Managers;
 using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Sensors.SingleValue;
+using HASS.Agent.UI.Contracts.ViewModels;
 using HASS.Agent.UI.Views.Dialogs;
 using HASS.Agent.UI.Views.Pages;
 using Microsoft.UI.Dispatching;
@@ -17,7 +18,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace HASS.Agent.UI.ViewModels;
-public partial class DebugPageViewModel : ViewModelBase
+public partial class DebugPageViewModel : ViewModelBase, INavigationAware
 {
     private ISettingsManager _settingsManager;
     private IMqttManager _mqttManager;
@@ -86,8 +87,6 @@ public partial class DebugPageViewModel : ViewModelBase
         {
             App.MainWindow.Close();
         });
-
-        _mqttManager.PropertyChanged += OnMqttPropertyChanged; //Note(Amadeo): leaks
     }
 
     private void OnMqttPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -97,4 +96,14 @@ public partial class DebugPageViewModel : ViewModelBase
             RaiseOnPropertyChanged(nameof(MqttStatus));
         }
     }
+
+	public void OnNavigatedTo(object parameter)
+	{
+		_mqttManager.PropertyChanged += OnMqttPropertyChanged;
+	}
+
+	public void OnNavigatedFrom()
+	{
+		_mqttManager.PropertyChanged -= OnMqttPropertyChanged; //Note(Amadeo): leaks
+	}
 }
