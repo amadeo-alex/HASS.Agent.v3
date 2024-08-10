@@ -14,230 +14,143 @@ using System.Threading.Tasks;
 namespace HASS.Agent.UI.ViewModels.Settings;
 public partial class MqttSettingsPageViewModel : ViewModelBase, INavigationAware
 {
-	private IMqttManager _mqttManager { get; set; }
+	private IMqttManager _mqttManager;
 	private readonly MqttSettings _mqttSettings;
 
-	[ObservableProperty]
-	private bool _restartRequired;
-	[ObservableProperty]
-	public bool _restarting;
+	public bool DetailsExpanded => Status != MqttStatus.Connected || RestartRequired;
 
 	public MqttStatus Status => _mqttManager.Status;
+	public bool RestartRequired
+	{
+		get => _mqttSettings.RestartRequired;
+		set => _mqttSettings.RestartRequired = value;
+	}
 
 	public bool Enabled
 	{
-		get {
-			return _mqttSettings.Enabled;
-		}
-		set {
-			if (_mqttSettings.Enabled != value)
-			{
-				_mqttSettings.Enabled = value;
-				OnPropertyChanged(nameof(Enabled));
-				RestartRequired = true;
-			}
-		}
+		get => _mqttSettings.Enabled;
+		set => _mqttSettings.Enabled = value;
 	}
 
 	public string Address
 	{
-		get {
-			return _mqttSettings.Address;
-		}
-		set {
-			if (_mqttSettings.Address != value)
-			{
-				_mqttSettings.Address = value;
-				OnPropertyChanged(nameof(Address));
-				RestartRequired = true;
-			}
-		}
+		get => _mqttSettings.Address;
+		set => _mqttSettings.Address = value;
 	}
 
 	public int Port
 	{
-		get {
-			return _mqttSettings.Port;
-		}
-		set {
-			if (_mqttSettings.Port != value)
-			{
-				_mqttSettings.Port = value;
-				OnPropertyChanged(nameof(Port));
-				RestartRequired = true;
-			}
-		}
+		get => _mqttSettings.Port;
+		set => _mqttSettings.Port = value;
 	}
 
 	public bool UseTls
 	{
-		get {
-			return _mqttSettings.UseTls;
-		}
-		set {
-			if (_mqttSettings.UseTls != value)
-			{
-				_mqttSettings.UseTls = value;
-				OnPropertyChanged(nameof(UseTls));
-				RestartRequired = true;
-			}
-		}
+		get => _mqttSettings.UseTls;
+		set => _mqttSettings.UseTls = value;
 	}
 
 	public bool AllowUntrustedCertificates
 	{
-		get {
-			return _mqttSettings.AllowUntrustedCertificates;
-		}
-		set {
-			if (_mqttSettings.AllowUntrustedCertificates != value)
-			{
-				_mqttSettings.AllowUntrustedCertificates = value;
-				OnPropertyChanged(nameof(AllowUntrustedCertificates));
-				RestartRequired = true;
-			}
-		}
+		get => _mqttSettings.AllowUntrustedCertificates;
+		set => _mqttSettings.AllowUntrustedCertificates = value;
 	}
 
 	public string Username
 	{
-		get {
-			return _mqttSettings.Username;
-		}
-		set {
-			if (_mqttSettings.Username != value)
-			{
-				_mqttSettings.Username = value;
-				OnPropertyChanged(nameof(Username));
-				RestartRequired = true;
-			}
-		}
+		get => _mqttSettings.Username;
+		set => _mqttSettings.Username = value;
 	}
 
 	public string Password
 	{
-		get {
-			return _mqttSettings.Password;
-		}
-		set {
-			if (_mqttSettings.Password != value)
-			{
-				_mqttSettings.Password = value;
-				OnPropertyChanged(nameof(Password));
-				RestartRequired = true;
-			}
-		}
+		get => _mqttSettings.Password;
+		set => _mqttSettings.Password = value;
 	}
 
 	public string DiscoveryPrefix
 	{
-		get {
-			return _mqttSettings.DiscoveryPrefix;
-		}
-		set {
-			if (_mqttSettings.DiscoveryPrefix != value)
-			{
-				_mqttSettings.DiscoveryPrefix = value;
-				OnPropertyChanged(nameof(DiscoveryPrefix));
-				RestartRequired = true;
-			}
-		}
+		get => _mqttSettings.DiscoveryPrefix;
+		set => _mqttSettings.DiscoveryPrefix = value;
 	}
 
 	public string ClientId
 	{
-		get {
-			return _mqttSettings.ClientId;
-		}
-		set {
-			if (_mqttSettings.ClientId != value)
-			{
-				_mqttSettings.ClientId = value;
-				OnPropertyChanged(nameof(ClientId));
-				RestartRequired = true;
-			}
-		}
+		get => _mqttSettings.ClientId;
+		set => _mqttSettings.ClientId = value;
 	}
 
 	public bool UseRetainFlag
 	{
-		get {
-			return _mqttSettings.UseRetainFlag;
-		}
-		set {
-			if (_mqttSettings.UseRetainFlag != value)
-			{
-				_mqttSettings.UseRetainFlag = value;
-				OnPropertyChanged(nameof(UseRetainFlag));
-				RestartRequired = true;
-			}
-		}
+		get => _mqttSettings.UseRetainFlag;
+		set => _mqttSettings.UseRetainFlag = value;
 	}
 
 	public string RootCertificatePath
 	{
-		get {
-			return _mqttSettings.RootCertificatePath;
-		}
-		set {
-			if (_mqttSettings.RootCertificatePath != value)
-			{
-				_mqttSettings.RootCertificatePath = value;
-				OnPropertyChanged(nameof(RootCertificatePath));
-				RestartRequired = true;
-			}
-		}
+		get => _mqttSettings.RootCertificatePath;
+		set => _mqttSettings.RootCertificatePath = value;
 	}
 
 	public string ClientCertificatePath
 	{
-		get {
-			return _mqttSettings.ClientCertificatePath;
-		}
-		set {
-			if (_mqttSettings.ClientCertificatePath != value)
-			{
-				_mqttSettings.ClientCertificatePath = value;
-				OnPropertyChanged(nameof(ClientCertificatePath));
-				RestartRequired = true;
-			}
-		}
+		get => _mqttSettings.ClientCertificatePath;
+		set => _mqttSettings.ClientCertificatePath = value;
 	}
 
 	public int GracePeriodSeconds
 	{
-		get {
-			return _mqttSettings.GracePeriodSeconds;
-		}
-		set {
-			if (_mqttSettings.GracePeriodSeconds != value)
-			{
-				_mqttSettings.GracePeriodSeconds = value;
-				OnPropertyChanged(nameof(GracePeriodSeconds));
-				RestartRequired = true;
-			}
-		}
+		get => _mqttSettings.GracePeriodSeconds;
+		set => _mqttSettings.GracePeriodSeconds = value;
 	}
 
 	public MqttSettingsPageViewModel(DispatcherQueue dispatcherQueue, IMqttManager mqttManager, ISettingsManager settingsManager) : base(dispatcherQueue)
 	{
 		_mqttManager = mqttManager;
 		_mqttSettings = settingsManager.Settings.Mqtt;
+
+		AddPropertyListenerMap(nameof(_mqttManager.Status), new List<string>
+		{
+			nameof(Status),
+			nameof(DetailsExpanded)
+		});
+
+		AddPropertyListenerMap(nameof(_mqttSettings.RestartRequired), new List<string>
+		{
+			nameof(RestartRequired),
+			nameof(DetailsExpanded)
+		});
+
+		AddPropertyListenerMap(new List<string>{
+			nameof(_mqttSettings.Enabled),
+			nameof(_mqttSettings.Address),
+			nameof(_mqttSettings.Port),
+			nameof(_mqttSettings.UseTls),
+			nameof(_mqttSettings.AllowUntrustedCertificates),
+			nameof(_mqttSettings.Username),
+			nameof(_mqttSettings.Password),
+			nameof(_mqttSettings.DiscoveryPrefix),
+			nameof(_mqttSettings.ClientId),
+			nameof(_mqttSettings.UseRetainFlag),
+			nameof(_mqttSettings.RootCertificatePath),
+			nameof(_mqttSettings.ClientCertificatePath),
+			nameof(_mqttSettings.GracePeriodSeconds)
+		});
 	}
 
 	private void OnMqttPropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
-		if (e.PropertyName == nameof(_mqttManager.Status))
+		ParseSourcePropertyChanged(e);
+
+		if (sender is MqttSettings && e.PropertyName != nameof(RestartRequired))
 		{
-			RaiseOnPropertyChanged(nameof(Status));
+			RestartRequired = true;
 		}
 	}
 
 	public async Task RestartClientAsync()
 	{
-		Restarting = true;
 		await _mqttManager.RestartClientAsync();
-		Restarting = false;
 
 		RestartRequired = false;
 	}
@@ -245,10 +158,12 @@ public partial class MqttSettingsPageViewModel : ViewModelBase, INavigationAware
 	public void OnNavigatedTo(object parameter)
 	{
 		_mqttManager.PropertyChanged += OnMqttPropertyChanged;
+		_mqttSettings.PropertyChanged += OnMqttPropertyChanged;
 	}
 
 	public void OnNavigatedFrom()
 	{
 		_mqttManager.PropertyChanged -= OnMqttPropertyChanged;
+		_mqttSettings.PropertyChanged -= OnMqttPropertyChanged;
 	}
 }

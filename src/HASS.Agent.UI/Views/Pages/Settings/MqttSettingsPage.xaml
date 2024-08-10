@@ -27,7 +27,7 @@
 				<StackPanel Grid.Row="1" Spacing="4">
 
 					<controls:SettingsExpander l:Uids.Uid="Page_MqttSettings_EnabledCard"
-										   IsExpanded="{Binding RestartRequired}">
+										   IsExpanded="{Binding DetailsExpanded, Mode=OneWay}">
 						<ToggleSwitch l:Uids.Uid="Page_MqttSettings_Enabled_Switch"
 								  IsOn="{Binding Enabled, Mode=TwoWay}"/>
 						<controls:SettingsExpander.ItemsHeader>
@@ -187,7 +187,7 @@
 				 IsOpen="{Binding RestartRequired}"
 				 IsClosable="False"
 				 Severity="Warning"
-				 Title="MQTT client restart required to restart required to apply the changes">
+				 Title="MQTT client restart required to apply the changes">
 
 			<InfoBar.ActionButton>
 				<Button Content="Restart" IsEnabled="{Binding RestartRequired}" Click="RestartButton_Click"/>
