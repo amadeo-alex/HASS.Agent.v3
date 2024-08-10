@@ -2,6 +2,7 @@
 using HASS.Agent.Base.Contracts.Managers;
 using HASS.Agent.Base.Enums;
 using HASS.Agent.Base.Models.Settings;
+using HASS.Agent.UI.Contracts.ViewModels;
 using Microsoft.UI.Dispatching;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace HASS.Agent.UI.ViewModels.Settings;
-public partial class MqttSettingsPageViewModel : ViewModelBase
+public partial class MqttSettingsPageViewModel : ViewModelBase, INavigationAware
 {
 	private IMqttManager _mqttManager { get; set; }
 	private readonly MqttSettings _mqttSettings;
@@ -222,8 +223,6 @@ public partial class MqttSettingsPageViewModel : ViewModelBase
 	{
 		_mqttManager = mqttManager;
 		_mqttSettings = settingsManager.Settings.Mqtt;
-
-		_mqttManager.PropertyChanged += OnMqttPropertyChanged;
 	}
 
 	private void OnMqttPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -241,5 +240,15 @@ public partial class MqttSettingsPageViewModel : ViewModelBase
 		Restarting = false;
 
 		RestartRequired = false;
+	}
+
+	public void OnNavigatedTo(object parameter)
+	{
+		_mqttManager.PropertyChanged += OnMqttPropertyChanged;
+	}
+
+	public void OnNavigatedFrom()
+	{
+		_mqttManager.PropertyChanged -= OnMqttPropertyChanged;
 	}
 }
