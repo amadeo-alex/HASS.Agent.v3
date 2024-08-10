@@ -42,9 +42,7 @@ public sealed partial class MqttSettingsPage : Page
         var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_AddressDialog_Title", "Page_MqttSettings_AddressDialog_Query", _viewModel.Address);
         if (!string.IsNullOrEmpty(newValue))
         {
-			await _viewModel.StopClientAsync();
 			_viewModel.Address = newValue;
-			await _viewModel.StartClientAsync();
 		}
     }
 
@@ -53,9 +51,7 @@ public sealed partial class MqttSettingsPage : Page
         var newValue = await GetNewSettingValueAsync<int>("Page_MqttSettings_PortDialog_Title", "Page_MqttSettings_PortDialog_Query", Convert.ToString(_viewModel.Port), true);
         if (newValue != default)
         {
-			await _viewModel.StopClientAsync();
 			_viewModel.Port = newValue;
-			await _viewModel.StartClientAsync();
 		}
     }
 
@@ -64,9 +60,7 @@ public sealed partial class MqttSettingsPage : Page
         var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_UsernameDialog_Title", "Page_MqttSettings_UsernameDialog_Query", _viewModel.Username);
         if (!string.IsNullOrEmpty(newValue))
         {
-			await _viewModel.StopClientAsync();
 			_viewModel.Username = newValue;
-			await _viewModel.StartClientAsync();
 		}
     }
 
@@ -75,9 +69,7 @@ public sealed partial class MqttSettingsPage : Page
         var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_PasswordDialog_Title", "Page_MqttSettings_PasswordDialog_Query", _viewModel.Password);
         if (!string.IsNullOrEmpty(newValue))
         {
-			await _viewModel.StopClientAsync();
 			_viewModel.Password = newValue;
-			await _viewModel.StartClientAsync();
 		}
     }
 
@@ -86,9 +78,7 @@ public sealed partial class MqttSettingsPage : Page
         var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_DiscoveryPrefixDialog_Title", "Page_MqttSettings_DiscoveryPrefixDialog_Query", _viewModel.DiscoveryPrefix);
         if (!string.IsNullOrEmpty(newValue))
         {
-			await _viewModel.StopClientAsync();
 			_viewModel.DiscoveryPrefix = newValue;
-			await _viewModel.StartClientAsync();
 		}
     }
 
@@ -97,9 +87,7 @@ public sealed partial class MqttSettingsPage : Page
         var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_ClientIdDialog_Title", "Page_MqttSettings_ClientIdDialog_Query", _viewModel.ClientId);
         if (!string.IsNullOrEmpty(newValue))
         {
-			await _viewModel.StopClientAsync();
             _viewModel.ClientId = newValue;
-			await _viewModel.StartClientAsync();
 		}
     }
 
@@ -108,9 +96,7 @@ public sealed partial class MqttSettingsPage : Page
         var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_GracePeriodDialog_Title", "Page_MqttSettings_GracePeriodDialog_Query", Convert.ToString(_viewModel.GracePeriodSeconds), true);
         if (!string.IsNullOrEmpty(newValue))
         {
-			await _viewModel.StopClientAsync();
 			_viewModel.ClientId = newValue;
-			await _viewModel.StartClientAsync();
 		}
     }
 
@@ -127,7 +113,6 @@ public sealed partial class MqttSettingsPage : Page
         if (certificateFile != null)
         {
             _viewModel.ClientCertificatePath = certificateFile.Path;
-			await _viewModel.StartClientAsync();
 		}
     }
 
@@ -144,7 +129,6 @@ public sealed partial class MqttSettingsPage : Page
         if (certificateFile != null)
         {
             _viewModel.RootCertificatePath = certificateFile.Path;
-			await _viewModel.StartClientAsync();
 		}
     }
 
@@ -165,4 +149,9 @@ public sealed partial class MqttSettingsPage : Page
 
         return result == ContentDialogResult.Primary ? dialog.GetInputContent<T>() : default;
     }
+
+	private async void RestartButton_Click(object sender, RoutedEventArgs e)
+	{
+		await _viewModel.RestartClientAsync();
+	}
 }

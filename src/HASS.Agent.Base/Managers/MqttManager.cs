@@ -15,6 +15,8 @@ using HASS.Agent.Base.Contracts.Models.Mqtt;
 using HASS.Agent.Base.Enums;
 using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Models.Mqtt;
+using HASS.Agent.Base.Models.Settings;
+using HASS.Agent.Helpers;
 using MQTTnet;
 using MQTTnet.Adapter;
 using MQTTnet.Client;
@@ -29,7 +31,7 @@ namespace HASS.Agent.Base.Managers;
 
 public partial class MqttManager : ObservableObject, IMqttManager
 {
-	public const string DefaultMqttDiscoveryPrefix = "homeassistant";
+	//public const string DefaultMqttDiscoveryPrefix = "homeassistant";
 	public const string PayloadOnline = "online";
 	public const string PayloadOffline = "offline";
 
@@ -52,6 +54,9 @@ public partial class MqttManager : ObservableObject, IMqttManager
 
 	private bool _connectionErrorLogged = false;
 
+	private ApplicationSettings _applicationSettingsSnapshot;
+	private MqttSettings _mqttSettingsSnapshot;
+
 	private DateTime _lastAvailabilityAnnouncment = DateTime.MinValue;
 	private DateTime _lastAvailabilityAnnouncmentFailed = DateTime.MinValue;
 
@@ -59,7 +64,11 @@ public partial class MqttManager : ObservableObject, IMqttManager
 
 	[ObservableProperty]
 	public MqttStatus status = MqttStatus.NotInitialized;
-	public bool Ready { get; private set; } = false;
+	public bool Initialized { get; private set; } = false;
+	public bool Ready
+	{
+		get => Initialized && Status == MqttStatus.Connected;
+	}
 
 	public AbstractMqttDeviceConfigModel DeviceConfigModel { get; set; }
 
@@ -70,6 +79,10 @@ public partial class MqttManager : ObservableObject, IMqttManager
 		_settingsManager = settingsManager;
 		_applicationInfo = applicationInfo;
 		_guidManager = guidManager;
+
+		_mqttSettingsSnapshot = settingsManager.Settings.Mqtt.JsonClone<MqttSettings>();
+		_applicationSettingsSnapshot = settingsManager.Settings.Application.JsonClone<ApplicationSettings>();
+
 
 		// default initialization
 		DeviceConfigModel = GetDeviceConfigModel();
@@ -82,7 +95,7 @@ public partial class MqttManager : ObservableObject, IMqttManager
 
 	private MqttDeviceDiscoveryConfigModel GetDeviceConfigModel()
 	{
-		var deviceName = _settingsManager.Settings.Application.DeviceName;
+		var deviceName = _applicationSettingsSnapshot.DeviceName;
 
 		return new MqttDeviceDiscoveryConfigModel()
 		{
@@ -98,22 +111,18 @@ public partial class MqttManager : ObservableObject, IMqttManager
 	{
 		Log.Information("[MQTT] Initializing client");
 
-		if (!_settingsManager.Settings.Mqtt.Enabled)
+		if (!_mqttSettingsSnapshot.Enabled)
 		{
 			Log.Information("[MQTT] Initialization stopped, disabled through settings");
-			//return new MqttFactory().CreateManagedMqttClient();
 		}
 
-		//_mqttClient = new MqttFactory().CreateManagedMqttClient();
 		_mqttClient.ConnectedAsync += OnConnectedAsync;
 		_mqttClient.ConnectingFailedAsync += OnConnectingFailedAsync;
 		_mqttClient.ApplicationMessageReceivedAsync += OnApplicationMessageReceivedAsync;
-		_mqttClient.DisconnectedAsync += OnDisconnected;
-		_mqttClient.ApplicationMessageSkippedAsync += OnApplicationMessageSkipped;
+		_mqttClient.DisconnectedAsync += OnDisconnectedAsync;
+		_mqttClient.ApplicationMessageSkippedAsync += OnApplicationMessageSkippedAsync;
 
 		Log.Debug("[MQTT] Client initialized");
-
-		//return _mqttClient;
 	}
 
 	public void RegisterMessageHandler(string topic, IMqttMessageHandler handler)
@@ -133,8 +142,12 @@ public partial class MqttManager : ObservableObject, IMqttManager
 
 	public async Task StartClientAsync()
 	{
+		Log.Debug("[MQTT] Attempting to start the client");
+
 		try
 		{
+			TakeSettingsSnapshot();
+
 			DeviceConfigModel = GetDeviceConfigModel();
 
 			//_mqttClient = GetMqttClient();
@@ -157,18 +170,54 @@ public partial class MqttManager : ObservableObject, IMqttManager
 		}
 	}
 
+	public async Task StopClientAsync()
+	{
+		Log.Debug("[MQTT] Attempting to stop the client");
+
+		Initialized = false;
+
+		Status = MqttStatus.Disconnecting;
+		await _mqttClient.StopAsync();
+		Log.Debug("[MQTT] Attempting to stop the client - finished A");
+		await _mqttClient.InternalClient.DisconnectAsync();
+
+		Log.Debug("[MQTT] Attempting to stop the client - finished B");
+		Status = MqttStatus.Disconnected;
+
+		return;
+	}
+
+	public async Task RestartClientAsync()
+	{
+		Log.Debug("[MQTT] Restarting client");
+
+		await StopClientAsync();
+		while (Status == MqttStatus.Disconnecting)
+		{
+			await Task.Delay(100);
+		}
+
+		await StartClientAsync();
+	}
+
+	private void TakeSettingsSnapshot()
+	{
+		_mqttSettingsSnapshot = _settingsManager.Settings.Mqtt.JsonClone<MqttSettings>();
+		_applicationSettingsSnapshot = _settingsManager.Settings.Application.JsonClone<ApplicationSettings>();
+	}
+
 	private async void InitialRegistration()
 	{
-		while (!_mqttClient.IsConnected)
+		while (!_mqttClient.IsConnected || Status != MqttStatus.Connected)
 			await Task.Delay(2000);
 
 		await AnnounceAvailabilityAsync();
-		Ready = true;
+		Initialized = true;
 
 		Log.Information("[MQTT] Initial registration completed");
 	}
 
-	private async Task AnnounceAvailabilityAsync(bool offline = false)
+	private async Task AnnounceAvailabilityAsync(bool offline = false) //TODO(Amadeo): move to separate handler?
 	{
 		try
 		{
@@ -180,11 +229,11 @@ public partial class MqttManager : ObservableObject, IMqttManager
 
 			if (_mqttClient.IsConnected)
 			{
-				var topic = $"{_settingsManager.Settings.Mqtt.DiscoveryPrefix}/hass.agent/{_settingsManager.Settings.Application.DeviceName}/availability";
+				var topic = $"{_mqttSettingsSnapshot.DiscoveryPrefix}/hass.agent/{_applicationSettingsSnapshot.DeviceName}/availability";
 				var availabilityMessage = new MqttApplicationMessageBuilder()
 					.WithTopic(topic)
 					.WithPayload(offline ? PayloadOffline : PayloadOnline)
-					.WithRetainFlag(_settingsManager.Settings.Mqtt.UseRetainFlag)
+					.WithRetainFlag(_mqttSettingsSnapshot.UseRetainFlag)
 					.Build();
 
 				await _mqttClient.EnqueueAsync(availabilityMessage);
@@ -209,13 +258,13 @@ public partial class MqttManager : ObservableObject, IMqttManager
 		}
 	}
 
-	private async Task OnDisconnected(MqttClientDisconnectedEventArgs args)
+	private async Task OnDisconnectedAsync(MqttClientDisconnectedEventArgs args)
 	{
 		Status = MqttStatus.Disconnected;
 		Log.Information("[MQTT] Disconnected");
 	}
 
-	private async Task OnApplicationMessageSkipped(ApplicationMessageSkippedEventArgs args)
+	private async Task OnApplicationMessageSkippedAsync(ApplicationMessageSkippedEventArgs args)
 	{
 		Log.Information("[MQTT] Message skipped/dropped");
 	}
@@ -340,7 +389,7 @@ public partial class MqttManager : ObservableObject, IMqttManager
 
 	private ManagedMqttClientOptions GetMqttClientOptions()
 	{
-		if (string.IsNullOrWhiteSpace(_settingsManager.Settings.Mqtt.Address))
+		if (string.IsNullOrWhiteSpace(_mqttSettingsSnapshot.Address))
 		{
 			Log.Warning("[MQTT] Required configuration missing");
 
@@ -348,55 +397,55 @@ public partial class MqttManager : ObservableObject, IMqttManager
 		}
 
 		// id can be random, but we'll store it for consistency (unless user-defined)
-		if (string.IsNullOrWhiteSpace(_settingsManager.Settings.Mqtt.ClientId))
+		if (string.IsNullOrWhiteSpace(_mqttSettingsSnapshot.ClientId))
 		{
 			Log.Information("[MQTT] ClientId is empty, generating new one");
-			_settingsManager.Settings.Mqtt.ClientId = _guidManager.GenerateShortGuid();
+			_mqttSettingsSnapshot.ClientId = _guidManager.GenerateShortGuid();
 			//TODO(Amadeo): save settings to file
 			//SettingsManager.StoreAppSettings();
 		}
 
 		var clientOptionsBuilder = new MqttClientOptionsBuilder()
-			.WithClientId(_settingsManager.Settings.Mqtt.ClientId)
-			.WithTcpServer(_settingsManager.Settings.Mqtt.Address, _settingsManager.Settings.Mqtt.Port)
+			.WithClientId(_mqttSettingsSnapshot.ClientId)
+			.WithTcpServer(_mqttSettingsSnapshot.Address, _mqttSettingsSnapshot.Port)
 			.WithCleanSession()
-			.WithWillTopic($"{_settingsManager.Settings.Mqtt.DiscoveryPrefix}/sensor/{DeviceConfigModel.Name}/availability")
+			.WithWillTopic($"{_mqttSettingsSnapshot.DiscoveryPrefix}/sensor/{DeviceConfigModel.Name}/availability")
 			.WithWillPayload(PayloadOffline)
-			.WithWillRetain(_settingsManager.Settings.Mqtt.UseRetainFlag)
+			.WithWillRetain(_mqttSettingsSnapshot.UseRetainFlag)
 			.WithKeepAlivePeriod(TimeSpan.FromSeconds(15));
 
-		if (!string.IsNullOrEmpty(_settingsManager.Settings.Mqtt.Username))
-			clientOptionsBuilder.WithCredentials(_settingsManager.Settings.Mqtt.Username, _settingsManager.Settings.Mqtt.Password);
+		if (!string.IsNullOrEmpty(_mqttSettingsSnapshot.Username))
+			clientOptionsBuilder.WithCredentials(_mqttSettingsSnapshot.Username, _mqttSettingsSnapshot.Password);
 
 		var certificates = new List<X509Certificate>();
-		if (!string.IsNullOrEmpty(_settingsManager.Settings.Mqtt.RootCertificatePath))
+		if (!string.IsNullOrEmpty(_mqttSettingsSnapshot.RootCertificatePath))
 		{
-			if (!File.Exists(_settingsManager.Settings.Mqtt.RootCertificatePath))
-				Log.Error("[MQTT] Provided root certificate not found: {cert}", _settingsManager.Settings.Mqtt.RootCertificatePath);
+			if (!File.Exists(_mqttSettingsSnapshot.RootCertificatePath))
+				Log.Error("[MQTT] Provided root certificate not found: {cert}", _mqttSettingsSnapshot.RootCertificatePath);
 			else
-				certificates.Add(new X509Certificate2(_settingsManager.Settings.Mqtt.RootCertificatePath));
+				certificates.Add(new X509Certificate2(_mqttSettingsSnapshot.RootCertificatePath));
 		}
 
-		if (!string.IsNullOrEmpty(_settingsManager.Settings.Mqtt.ClientCertificatePath))
+		if (!string.IsNullOrEmpty(_mqttSettingsSnapshot.ClientCertificatePath))
 		{
-			if (!File.Exists(_settingsManager.Settings.Mqtt.ClientCertificatePath))
-				Log.Error("[MQTT] Provided client certificate not found: {cert}", _settingsManager.Settings.Mqtt.ClientCertificatePath);
+			if (!File.Exists(_mqttSettingsSnapshot.ClientCertificatePath))
+				Log.Error("[MQTT] Provided client certificate not found: {cert}", _mqttSettingsSnapshot.ClientCertificatePath);
 			else
-				certificates.Add(new X509Certificate2(_settingsManager.Settings.Mqtt.ClientCertificatePath));
+				certificates.Add(new X509Certificate2(_mqttSettingsSnapshot.ClientCertificatePath));
 		}
 
 		var clientTlsOptions = new MqttClientTlsOptions()
 		{
-			UseTls = _settingsManager.Settings.Mqtt.UseTls,
-			AllowUntrustedCertificates = _settingsManager.Settings.Mqtt.AllowUntrustedCertificates,
-			SslProtocol = _settingsManager.Settings.Mqtt.UseTls ? SslProtocols.Tls12 : SslProtocols.None,
+			UseTls = _mqttSettingsSnapshot.UseTls,
+			AllowUntrustedCertificates = _mqttSettingsSnapshot.AllowUntrustedCertificates,
+			SslProtocol = _mqttSettingsSnapshot.UseTls ? SslProtocols.Tls12 : SslProtocols.None,
 		};
 
 		//TODO(Amadeo): add more granular control to the UI
-		if (_settingsManager.Settings.Mqtt.AllowUntrustedCertificates)
+		if (_mqttSettingsSnapshot.AllowUntrustedCertificates)
 		{
-			clientTlsOptions.IgnoreCertificateChainErrors = _settingsManager.Settings.Mqtt.AllowUntrustedCertificates;
-			clientTlsOptions.IgnoreCertificateRevocationErrors = _settingsManager.Settings.Mqtt.AllowUntrustedCertificates;
+			clientTlsOptions.IgnoreCertificateChainErrors = _mqttSettingsSnapshot.AllowUntrustedCertificates;
+			clientTlsOptions.IgnoreCertificateRevocationErrors = _mqttSettingsSnapshot.AllowUntrustedCertificates;
 			clientTlsOptions.CertificateValidationHandler = delegate (MqttClientCertificateValidationEventArgs _)
 			{
 				return true;
@@ -422,18 +471,6 @@ public partial class MqttManager : ObservableObject, IMqttManager
 
 	public async Task ClearDeviceConfigModelAsync()
 	{
-
-		return;
-	}
-
-	public async Task StopClientAsync()
-	{
-		Log.Information("[MQTT] Attempting to stop the client");
-
-		Ready = false;
-
-		Status = MqttStatus.Disconnecting;
-		await _mqttClient.StopAsync();
 
 		return;
 	}

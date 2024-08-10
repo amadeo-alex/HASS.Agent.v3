@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace HASS.Agent.Base.Models;
-public class ApplicationInfo
+public class ApplicationInfo //TODO(Amadeo): readonly?
 {
     public string Name { get; set; } = string.Empty;
     public string Version { get; set; } = string.Empty;

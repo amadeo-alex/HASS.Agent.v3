@@ -29,4 +29,5 @@ public interface IMqttManager : INotifyPropertyChanged
     Task AnnounceDeviceConfigModelAsync();
     Task ClearDeviceConfigModelAsync();
     Task StopClientAsync();
+	Task RestartClientAsync();
 }

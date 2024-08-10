@@ -2,17 +2,26 @@
 using HASS.Agent.Base.Contracts.Managers;
 using HASS.Agent.Base.Enums;
 using HASS.Agent.Base.Models.Settings;
+using Microsoft.UI.Dispatching;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace HASS.Agent.UI.ViewModels.Settings;
-public partial class MqttSettingsPageViewModel : ObservableObject
+public partial class MqttSettingsPageViewModel : ViewModelBase
 {
-	private readonly IMqttManager _mqttManager;
+	private IMqttManager _mqttManager { get; set; }
 	private readonly MqttSettings _mqttSettings;
+
+	[ObservableProperty]
+	private bool _restartRequired;
+	[ObservableProperty]
+	public bool _restarting;
+
+	public MqttStatus Status => _mqttManager.Status;
 
 	public bool Enabled
 	{
@@ -20,8 +29,12 @@ public partial class MqttSettingsPageViewModel : ObservableObject
 			return _mqttSettings.Enabled;
 		}
 		set {
-			_mqttSettings.Enabled = value;
-			OnPropertyChanged(nameof(Enabled));
+			if (_mqttSettings.Enabled != value)
+			{
+				_mqttSettings.Enabled = value;
+				OnPropertyChanged(nameof(Enabled));
+				RestartRequired = true;
+			}
 		}
 	}
 
@@ -31,8 +44,12 @@ public partial class MqttSettingsPageViewModel : ObservableObject
 			return _mqttSettings.Address;
 		}
 		set {
-			_mqttSettings.Address = value;
-			OnPropertyChanged(nameof(Address));
+			if (_mqttSettings.Address != value)
+			{
+				_mqttSettings.Address = value;
+				OnPropertyChanged(nameof(Address));
+				RestartRequired = true;
+			}
 		}
 	}
 
@@ -42,8 +59,12 @@ public partial class MqttSettingsPageViewModel : ObservableObject
 			return _mqttSettings.Port;
 		}
 		set {
-			_mqttSettings.Port = value;
-			OnPropertyChanged(nameof(Port));
+			if (_mqttSettings.Port != value)
+			{
+				_mqttSettings.Port = value;
+				OnPropertyChanged(nameof(Port));
+				RestartRequired = true;
+			}
 		}
 	}
 
@@ -53,8 +74,12 @@ public partial class MqttSettingsPageViewModel : ObservableObject
 			return _mqttSettings.UseTls;
 		}
 		set {
-			_mqttSettings.UseTls = value;
-			OnPropertyChanged(nameof(UseTls));
+			if (_mqttSettings.UseTls != value)
+			{
+				_mqttSettings.UseTls = value;
+				OnPropertyChanged(nameof(UseTls));
+				RestartRequired = true;
+			}
 		}
 	}
 
@@ -64,8 +89,12 @@ public partial class MqttSettingsPageViewModel : ObservableObject
 			return _mqttSettings.AllowUntrustedCertificates;
 		}
 		set {
-			_mqttSettings.AllowUntrustedCertificates = value;
-			OnPropertyChanged(nameof(AllowUntrustedCertificates));
+			if (_mqttSettings.AllowUntrustedCertificates != value)
+			{
+				_mqttSettings.AllowUntrustedCertificates = value;
+				OnPropertyChanged(nameof(AllowUntrustedCertificates));
+				RestartRequired = true;
+			}
 		}
 	}
 
@@ -75,8 +104,12 @@ public partial class MqttSettingsPageViewModel : ObservableObject
 			return _mqttSettings.Username;
 		}
 		set {
-			_mqttSettings.Username = value;
-			OnPropertyChanged(nameof(Username));
+			if (_mqttSettings.Username != value)
+			{
+				_mqttSettings.Username = value;
+				OnPropertyChanged(nameof(Username));
+				RestartRequired = true;
+			}
 		}
 	}
 
@@ -86,8 +119,12 @@ public partial class MqttSettingsPageViewModel : ObservableObject
 			return _mqttSettings.Password;
 		}
 		set {
-			_mqttSettings.Password = value;
-			OnPropertyChanged(nameof(Password));
+			if (_mqttSettings.Password != value)
+			{
+				_mqttSettings.Password = value;
+				OnPropertyChanged(nameof(Password));
+				RestartRequired = true;
+			}
 		}
 	}
 
@@ -97,8 +134,12 @@ public partial class MqttSettingsPageViewModel : ObservableObject
 			return _mqttSettings.DiscoveryPrefix;
 		}
 		set {
-			_mqttSettings.DiscoveryPrefix = value;
-			OnPropertyChanged(nameof(DiscoveryPrefix));
+			if (_mqttSettings.DiscoveryPrefix != value)
+			{
+				_mqttSettings.DiscoveryPrefix = value;
+				OnPropertyChanged(nameof(DiscoveryPrefix));
+				RestartRequired = true;
+			}
 		}
 	}
 
@@ -108,8 +149,12 @@ public partial class MqttSettingsPageViewModel : ObservableObject
 			return _mqttSettings.ClientId;
 		}
 		set {
-			_mqttSettings.ClientId = value;
-			OnPropertyChanged(nameof(ClientId));
+			if (_mqttSettings.ClientId != value)
+			{
+				_mqttSettings.ClientId = value;
+				OnPropertyChanged(nameof(ClientId));
+				RestartRequired = true;
+			}
 		}
 	}
 
@@ -119,8 +164,12 @@ public partial class MqttSettingsPageViewModel : ObservableObject
 			return _mqttSettings.UseRetainFlag;
 		}
 		set {
-			_mqttSettings.UseRetainFlag = value;
-			OnPropertyChanged(nameof(UseRetainFlag));
+			if (_mqttSettings.UseRetainFlag != value)
+			{
+				_mqttSettings.UseRetainFlag = value;
+				OnPropertyChanged(nameof(UseRetainFlag));
+				RestartRequired = true;
+			}
 		}
 	}
 
@@ -130,8 +179,12 @@ public partial class MqttSettingsPageViewModel : ObservableObject
 			return _mqttSettings.RootCertificatePath;
 		}
 		set {
-			_mqttSettings.RootCertificatePath = value;
-			OnPropertyChanged(nameof(RootCertificatePath));
+			if (_mqttSettings.RootCertificatePath != value)
+			{
+				_mqttSettings.RootCertificatePath = value;
+				OnPropertyChanged(nameof(RootCertificatePath));
+				RestartRequired = true;
+			}
 		}
 	}
 
@@ -141,8 +194,12 @@ public partial class MqttSettingsPageViewModel : ObservableObject
 			return _mqttSettings.ClientCertificatePath;
 		}
 		set {
-			_mqttSettings.ClientCertificatePath = value;
-			OnPropertyChanged(nameof(ClientCertificatePath));
+			if (_mqttSettings.ClientCertificatePath != value)
+			{
+				_mqttSettings.ClientCertificatePath = value;
+				OnPropertyChanged(nameof(ClientCertificatePath));
+				RestartRequired = true;
+			}
 		}
 	}
 
@@ -152,31 +209,37 @@ public partial class MqttSettingsPageViewModel : ObservableObject
 			return _mqttSettings.GracePeriodSeconds;
 		}
 		set {
-			_mqttSettings.GracePeriodSeconds = value;
-			OnPropertyChanged(nameof(GracePeriodSeconds));
+			if (_mqttSettings.GracePeriodSeconds != value)
+			{
+				_mqttSettings.GracePeriodSeconds = value;
+				OnPropertyChanged(nameof(GracePeriodSeconds));
+				RestartRequired = true;
+			}
 		}
 	}
 
-	public MqttSettingsPageViewModel(IMqttManager mqttManager, ISettingsManager settingsManager)
+	public MqttSettingsPageViewModel(DispatcherQueue dispatcherQueue, IMqttManager mqttManager, ISettingsManager settingsManager) : base(dispatcherQueue)
 	{
 		_mqttManager = mqttManager;
 		_mqttSettings = settingsManager.Settings.Mqtt;
+
+		_mqttManager.PropertyChanged += OnMqttPropertyChanged;
 	}
 
-	public async Task StartClientAsync() => await _mqttManager.StartClientAsync();
-	public async Task StopClientAsync()
+	private void OnMqttPropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
-		await _mqttManager.StopClientAsync();
-		while (_mqttManager.Status == MqttStatus.Connected)
-			await Task.Delay(TimeSpan.FromMilliseconds(100)); //TODO(Amadeo): add hardcoded failure timeout 
+		if (e.PropertyName == nameof(_mqttManager.Status))
+		{
+			RaiseOnPropertyChanged(nameof(Status));
+		}
 	}
 
-	public async Task RestartMqttClientAsync()
+	public async Task RestartClientAsync()
 	{
-		await _mqttManager.StopClientAsync();
-		while (_mqttManager.Status != MqttStatus.Disconnected)
-			await Task.Delay(TimeSpan.FromMilliseconds(100));
+		Restarting = true;
+		await _mqttManager.RestartClientAsync();
+		Restarting = false;
 
-		await _mqttManager.StartClientAsync();
+		RestartRequired = false;
 	}
 }
