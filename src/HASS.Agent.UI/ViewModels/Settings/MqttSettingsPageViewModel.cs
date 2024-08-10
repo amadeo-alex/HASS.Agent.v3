@@ -56,6 +56,18 @@ public partial class MqttSettingsPageViewModel : ViewModelBase, INavigationAware
 		set => _mqttSettings.AllowUntrustedCertificates = value;
 	}
 
+	public bool AllowCertificateChainErrors
+	{
+		get => _mqttSettings.AllowCertificateChainErrors;
+		set => _mqttSettings.AllowCertificateChainErrors = value;
+	}
+
+	public bool AllowCertificationRevokationErrors
+	{
+		get => _mqttSettings.AllowCertificationRevokationErrors;
+		set => _mqttSettings.AllowCertificationRevokationErrors = value;
+	}
+
 	public string Username
 	{
 		get => _mqttSettings.Username;
@@ -86,10 +98,22 @@ public partial class MqttSettingsPageViewModel : ViewModelBase, INavigationAware
 		set => _mqttSettings.UseRetainFlag = value;
 	}
 
+	public bool UseCustomRootCertificate
+	{
+		get => _mqttSettings.UseCustomRootCertificate;
+		set => _mqttSettings.UseCustomRootCertificate = value;
+	}
+
 	public string RootCertificatePath
 	{
 		get => _mqttSettings.RootCertificatePath;
 		set => _mqttSettings.RootCertificatePath = value;
+	}
+
+	public bool UseClientCertificate
+	{
+		get => _mqttSettings.UseClientCertificate;
+		set => _mqttSettings.UseClientCertificate = value;
 	}
 
 	public string ClientCertificatePath
@@ -134,7 +158,11 @@ public partial class MqttSettingsPageViewModel : ViewModelBase, INavigationAware
 			nameof(_mqttSettings.UseRetainFlag),
 			nameof(_mqttSettings.RootCertificatePath),
 			nameof(_mqttSettings.ClientCertificatePath),
-			nameof(_mqttSettings.GracePeriodSeconds)
+			nameof(_mqttSettings.GracePeriodSeconds),
+			nameof(_mqttSettings.UseClientCertificate),
+			nameof(_mqttSettings.UseCustomRootCertificate),
+			nameof(_mqttSettings.AllowCertificateChainErrors),
+			nameof(_mqttSettings.AllowCertificationRevokationErrors),
 		});
 	}
 

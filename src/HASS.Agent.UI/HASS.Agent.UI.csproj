@@ -19,6 +19,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Assets\modern-tray-icon.ico" />
+    <None Remove="Styles\SpacingMargin.xaml" />
     <None Remove="Views\Dialogs\EntityContentDialog.xaml" />
     <None Remove="Views\Dialogs\InputDialogContent.xaml" />
     <None Remove="Views\Pages\CommandsPage.xaml" />
@@ -172,5 +173,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="D:\Programowanie\Visual CS\Projects\HASS.Agent.v3\src\HASS.Agent.UI\.editorconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Styles\SpacingMargin.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 </Project>

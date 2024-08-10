@@ -418,7 +418,7 @@ public partial class MqttManager : ObservableObject, IMqttManager
 			clientOptionsBuilder.WithCredentials(_mqttSettingsSnapshot.Username, _mqttSettingsSnapshot.Password);
 
 		var certificates = new List<X509Certificate>();
-		if (!string.IsNullOrEmpty(_mqttSettingsSnapshot.RootCertificatePath))
+		if (_mqttSettingsSnapshot.UseCustomRootCertificate && !string.IsNullOrEmpty(_mqttSettingsSnapshot.RootCertificatePath))
 		{
 			if (!File.Exists(_mqttSettingsSnapshot.RootCertificatePath))
 				Log.Error("[MQTT] Provided root certificate not found: {cert}", _mqttSettingsSnapshot.RootCertificatePath);
@@ -426,7 +426,8 @@ public partial class MqttManager : ObservableObject, IMqttManager
 				certificates.Add(new X509Certificate2(_mqttSettingsSnapshot.RootCertificatePath));
 		}
 
-		if (!string.IsNullOrEmpty(_mqttSettingsSnapshot.ClientCertificatePath))
+
+		if (_mqttSettingsSnapshot.UseClientCertificate && !string.IsNullOrEmpty(_mqttSettingsSnapshot.ClientCertificatePath))
 		{
 			if (!File.Exists(_mqttSettingsSnapshot.ClientCertificatePath))
 				Log.Error("[MQTT] Provided client certificate not found: {cert}", _mqttSettingsSnapshot.ClientCertificatePath);
@@ -438,14 +439,14 @@ public partial class MqttManager : ObservableObject, IMqttManager
 		{
 			UseTls = _mqttSettingsSnapshot.UseTls,
 			AllowUntrustedCertificates = _mqttSettingsSnapshot.AllowUntrustedCertificates,
-			SslProtocol = _mqttSettingsSnapshot.UseTls ? SslProtocols.Tls12 : SslProtocols.None,
+			SslProtocol = _mqttSettingsSnapshot.UseTls ? SslProtocols.Tls12 : SslProtocols.None, //TODO(Amadeo): TLS1.3?
 		};
 
-		//TODO(Amadeo): add more granular control to the UI
+		//TODO(Amadeo): verify the validation handler and options working as expected
 		if (_mqttSettingsSnapshot.AllowUntrustedCertificates)
 		{
-			clientTlsOptions.IgnoreCertificateChainErrors = _mqttSettingsSnapshot.AllowUntrustedCertificates;
-			clientTlsOptions.IgnoreCertificateRevocationErrors = _mqttSettingsSnapshot.AllowUntrustedCertificates;
+			clientTlsOptions.IgnoreCertificateChainErrors = _mqttSettingsSnapshot.AllowCertificateChainErrors;
+			clientTlsOptions.IgnoreCertificateRevocationErrors = _mqttSettingsSnapshot.AllowCertificationRevokationErrors;
 			clientTlsOptions.CertificateValidationHandler = delegate (MqttClientCertificateValidationEventArgs _)
 			{
 				return true;

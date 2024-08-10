@@ -252,6 +252,12 @@
   <data name="Page_MqttSettings_AllowUntrustedCertCard.Header" xml:space="preserve">
     <value>Allow untrusted certificates</value>
   </data>
+  <data name="Page_MqttSettings_AllowUntrustedCertCard_Chain.Header" xml:space="preserve">
+    <value>Allow certificate chain errors</value>
+  </data>
+  <data name="Page_MqttSettings_AllowUntrustedCertCard_Revokation.Header" xml:space="preserve">
+    <value>Allow certificate revokation errors</value>
+  </data>
   <data name="Page_MqttSettings_AllowUntrustedCertCard_Switch.OffContent" xml:space="preserve">
     <value>Off</value>
   </data>
@@ -262,7 +268,16 @@
     <value>Change</value>
   </data>
   <data name="Page_MqttSettings_ClientCertificateCard.Header" xml:space="preserve">
-    <value>Client certificate</value>
+    <value>Use client certificate</value>
+  </data>
+  <data name="Page_MqttSettings_ClientCertificateCard_Path.Header" xml:space="preserve">
+    <value>Client certificate path</value>
+  </data>
+  <data name="Page_MqttSettings_ClientCertificate_Switch.OffContent" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="Page_MqttSettings_ClientCertificate_Switch.OnContent" xml:space="preserve">
+    <value>On</value>
   </data>
   <data name="Page_MqttSettings_ClientIdCard.Header" xml:space="preserve">
     <value>Client ID</value>
@@ -297,7 +312,7 @@
   <data name="Page_MqttSettings_Enabled_Switch.OnContent" xml:space="preserve">
     <value>On</value>
   </data>
-  <data name="Page_MqttSettings_GeneralCard.Header" xml:space="preserve">
+  <data name="Page_MqttSettings_GeneralSection.Text" xml:space="preserve">
     <value>General</value>
   </data>
   <data name="Page_MqttSettings_GracePeriodCard.Header" xml:space="preserve">
@@ -337,9 +352,18 @@
     <value>Change port</value>
   </data>
   <data name="Page_MqttSettings_RootCertificateCard.Header" xml:space="preserve">
-    <value>Root certificate</value>
+    <value>Use custom root certificate</value>
   </data>
-  <data name="Page_MqttSettings_SecurityCard.Header" xml:space="preserve">
+  <data name="Page_MqttSettings_RootCertificateCard_Path.Header" xml:space="preserve">
+    <value>Root certificate path</value>
+  </data>
+  <data name="Page_MqttSettings_RootCertificateCard_Switch.OffContent" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="Page_MqttSettings_RootCertificateCard_Switch.OnContent" xml:space="preserve">
+    <value>On</value>
+  </data>
+  <data name="Page_MqttSettings_SecuritySection.Text" xml:space="preserve">
     <value>Security</value>
   </data>
   <data name="Page_MqttSettings_TlsCard.Header" xml:space="preserve">
