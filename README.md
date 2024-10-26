@@ -1,1 +1,3 @@
 ### Soooomeee daaayyyy, over the rainbow...
+
+What you see here at some point will become HASS.Agent v3 or something with different name, we'll see :D
