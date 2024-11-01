@@ -11,17 +11,18 @@ using HASS.Agent.UI.Contracts.ViewModels;
 namespace HASS.Agent.UI.ValueConverters;
 public class InfoBadgeTypeToStyleConverter : IValueConverter
 {
-    public Style AttentionStyle { get; set; }
-    public Style InformationStyle { get; set; }
-    public Style SuccessStyle { get; set; }
-    public Style CriticalStyle { get; set; }
+    public Style? AttentionStyle { get; set; }
+    public Style? InformationStyle { get; set; }
+    public Style? SuccessStyle { get; set; }
+    public Style? CriticalStyle { get; set; }
 
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         if (value is not InfoBadgeType type)
         {
             throw new InvalidOperationException("provided value is not InfoBadgeType");
         }
+        
         
         return type switch
         {
@@ -33,7 +34,7 @@ public class InfoBadgeTypeToStyleConverter : IValueConverter
         };
     }
 
-    public object Convert(object value, Type targetType, object parameter, string language) => Convert(value, targetType, parameter, CultureInfo.InvariantCulture);
+    public object? Convert(object value, Type targetType, object parameter, string language) => Convert(value, targetType, parameter, CultureInfo.InvariantCulture);
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
