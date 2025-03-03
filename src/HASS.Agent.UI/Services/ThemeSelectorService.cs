@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HASS.Agent.Base.Contracts.Managers;
+using HASS.Agent.Contracts.Managers;
 using HASS.Agent.Base.Models;
 using HASS.Agent.UI.Contracts.Services;
 using HASS.Agent.UI.Helpers;
 using Microsoft.UI.Xaml;
+using HASS.Agent.Contracts.Models;
 
 namespace HASS.Agent.UI.Services;
 public class ThemeSelectorService : IThemeSelectorService

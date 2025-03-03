@@ -1,4 +1,4 @@
-﻿using HASS.Agent.Base.Models.Entity;
+﻿using HASS.Agent.Contracts.Models.Entity;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;

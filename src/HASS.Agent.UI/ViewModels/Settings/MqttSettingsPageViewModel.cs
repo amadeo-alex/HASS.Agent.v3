@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using HASS.Agent.Base.Contracts.Managers;
-using HASS.Agent.Base.Enums;
-using HASS.Agent.Base.Models.Settings;
+using HASS.Agent.Contracts.Managers;
+using HASS.Agent.Contracts.Enums;
+using HASS.Agent.Contracts.Models.Settings;
 using HASS.Agent.UI.Contracts.ViewModels;
 using Microsoft.UI.Dispatching;
 using System;

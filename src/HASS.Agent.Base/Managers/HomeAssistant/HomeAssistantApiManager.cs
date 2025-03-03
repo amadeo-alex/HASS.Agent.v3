@@ -6,25 +6,29 @@ using System.Text;
 using System.Threading.Tasks;
 using HADotNet.Core;
 using HADotNet.Core.Clients;
-using HASS.Agent.Base.Contracts.Managers;
-using Serilog;
+using HASS.Agent.Contracts.Managers;
+using Microsoft.Extensions.Logging;
 
 namespace HASS.Agent.Base.Managers.HomeAssistant;
 public class HomeAssistantApiManager : IHomeAssistantApiManager
 {
+    private readonly ILogger _logger;
+
     private readonly ISettingsManager _settingsManager;
 
     private ServiceClient? _serviceClient;
     private EventClient? _eventClient;
 
-    public HomeAssistantApiManager(ISettingsManager settingsManager)
+    public HomeAssistantApiManager(ILogger<HomeAssistantApiManager> logger, ISettingsManager settingsManager)
     {
+        _logger = logger;
+
         _settingsManager = settingsManager;
     }
 
     public async Task InitializeAsync()
     {
-        Log.Debug("[HAAPI] Initializing");
+        _logger.LogDebug("[HAAPI] Initializing");
 
         try
         {
@@ -53,11 +57,11 @@ public class HomeAssistantApiManager : IHomeAssistantApiManager
             _serviceClient = ClientFactory.GetClient<ServiceClient>();
             _eventClient = ClientFactory.GetClient<EventClient>();
 
-            Log.Information("[HAAPI] Initialized");
+            _logger.LogInformation("[HAAPI] Initialized");
         }
         catch (Exception ex)
         {
-            Log.Fatal(ex, "[HAAPI] Error during initialization: {err}", ex.Message);
+            _logger.LogCritical(ex, "[HAAPI] Error during initialization: {err}", ex.Message);
         }
     }
 

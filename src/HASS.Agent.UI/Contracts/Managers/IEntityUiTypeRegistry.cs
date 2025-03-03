@@ -1,5 +1,5 @@
-﻿using HASS.Agent.Base.Contracts.Models.Entity;
-using HASS.Agent.Base.Models.Entity;
+﻿using HASS.Agent.Contracts.Models.Entity;
+using HASS.Agent.Contracts.Models.Entity;
 using HASS.Agent.Base.Models;
 using System;
 using System.Collections.Generic;

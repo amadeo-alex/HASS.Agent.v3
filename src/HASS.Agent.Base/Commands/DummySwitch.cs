@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HASS.Agent.Base.Contracts.Managers;
-using HASS.Agent.Base.Contracts.Models.Entity;
-using HASS.Agent.Base.Contracts.Models.Mqtt;
-using HASS.Agent.Base.Enums;
+using HASS.Agent.Contracts.Managers;
+using HASS.Agent.Contracts.Models.Entity;
+using HASS.Agent.Contracts.Models.Mqtt;
 using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Models.Mqtt;
 using Microsoft.Extensions.DependencyInjection;
-using Serilog;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using HASS.Agent.Contracts.Enums;
+using Microsoft.Extensions.Logging;
 
 namespace HASS.Agent.Base.Commands;
 public class DummySwitch : AbstractCommand
@@ -22,7 +22,7 @@ public class DummySwitch : AbstractCommand
     private MqttCommandDiscoveryConfigModel? _discoveryConfigModel;
     private string _state = StateOff;
 
-    public DummySwitch(IServiceProvider serviceProvider, ConfiguredEntity configuredSensor) : base(serviceProvider, configuredSensor)
+    public DummySwitch(ILogger<DummySwitch> logger, IServiceProvider serviceProvider, ConfiguredEntity configuredSensor) : base(logger, serviceProvider, configuredSensor)
     {
         Domain = HassDomain.Switch.ToString().ToLower();
         var mqtt = serviceProvider.GetService<IMqttManager>();
@@ -51,17 +51,17 @@ public class DummySwitch : AbstractCommand
 
     public async override Task TurnOn()
     {
-        Log.Debug("[{name}] turned on");
+        _logger.LogDebug("[{name}] turned on");
         _state = StateOn;
     }
     public async override Task TurnOn(string action)
     {
-        Log.Debug("[{name}] turned with action");
+        _logger.LogDebug("[{name}] turned with action");
         _state = action;
     }
     public async override Task TurnOff()
     {
-        Log.Debug("[{name}] turned off");
+        _logger.LogDebug("[{name}] turned off");
         _state = StateOff;
     }
 

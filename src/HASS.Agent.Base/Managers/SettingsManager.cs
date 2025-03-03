@@ -5,18 +5,19 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HASS.Agent.Base.Contracts.Managers;
-using HASS.Agent.Base.Contracts.Models;
-using HASS.Agent.Base.Contracts.Models.Entity;
 using HASS.Agent.Base.Models;
-using HASS.Agent.Base.Models.Settings;
+using HASS.Agent.Contracts.Managers;
+using HASS.Agent.Contracts.Models;
+using HASS.Agent.Contracts.Models.Entity;
+using HASS.Agent.Contracts.Models.Settings;
+using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using Newtonsoft.Json;
-using Serilog;
 
 namespace HASS.Agent.Base.Managers;
 public class SettingsManager : ISettingsManager
 {
+    private readonly ILogger _logger;
     private readonly IVariableManager _variableManager;
     private readonly IGuidManager _guidManager;
 
@@ -25,14 +26,15 @@ public class SettingsManager : ISettingsManager
     public ObservableCollection<ConfiguredEntity> ConfiguredCommands { get; private set; }
     public ObservableCollection<IQuickAction> ConfiguredQuickActions { get; private set; }
 
-    public SettingsManager(IVariableManager variableManager, IGuidManager guidManager)
+    public SettingsManager(ILogger<SettingsManager> logger, IVariableManager variableManager, IGuidManager guidManager)
     {
+        _logger = logger;
         _variableManager = variableManager;
         _guidManager = guidManager;
 
         if (!Directory.Exists(_variableManager.ConfigPath))
         {
-            Log.Debug("[SETTINGS] Creating initial config directory: {path}", _variableManager.ConfigPath);
+            _logger.LogDebug("[SETTINGS] Creating initial config directory: {path}", _variableManager.ConfigPath);
             Directory.CreateDirectory(_variableManager.ConfigPath);
         }
 
@@ -97,7 +99,7 @@ public class SettingsManager : ISettingsManager
 
     private ObservableCollection<IQuickAction> GetConfiguredQuickActions()
     {
-        Log.Debug("[SETTINGS] Loading quick action configuration");
+        _logger.LogDebug("[SETTINGS] Loading quick action configuration");
 
         var configuredQuickActions = new ObservableCollection<IQuickAction>();
 
@@ -105,29 +107,29 @@ public class SettingsManager : ISettingsManager
         {
             if (File.Exists(_variableManager.QuickActionsFile))
             {
-                Log.Debug("[SETTINGS] Configuration file found, loading");
+                _logger.LogDebug("[SETTINGS] Configuration file found, loading");
 
                 var quickActionsConfigurationJson = File.ReadAllText(_variableManager.QuickActionsFile);
                 var quickActionConfiguration = JsonConvert.DeserializeObject<ObservableCollection<IQuickAction>>(quickActionsConfigurationJson);
                 if (quickActionConfiguration == null)
                 {
-                    Log.Warning("[SETTINGS] Configuration file cannot be parsed");
+                    _logger.LogWarning("[SETTINGS] Configuration file cannot be parsed");
                     configuredQuickActions = [];
                 }
                 else
                 {
-                    Log.Information("[SETTINGS] Quick actions configuration loaded");
+                    _logger.LogInformation("[SETTINGS] Quick actions configuration loaded");
                     configuredQuickActions = quickActionConfiguration;
                 }
             }
             else
             {
-                Log.Debug("[SETTINGS] Commands configuration not found");
+                _logger.LogDebug("[SETTINGS] Commands configuration not found");
             }
         }
         catch (Exception ex)
         {
-            Log.Fatal("[SETTINGS] Exception loading quick actions configuration: {ex}", ex);
+            _logger.LogCritical("[SETTINGS] Exception loading quick actions configuration: {ex}", ex);
             throw;
         }
 
@@ -136,7 +138,7 @@ public class SettingsManager : ISettingsManager
 
     private ObservableCollection<ConfiguredEntity> GetConfiguredCommands()
     {
-        Log.Debug("[SETTINGS] Loading commands configuration");
+        _logger.LogDebug("[SETTINGS] Loading commands configuration");
 
         var configuredCommands = new ObservableCollection<ConfiguredEntity>();
 
@@ -144,29 +146,29 @@ public class SettingsManager : ISettingsManager
         {
             if (File.Exists(_variableManager.CommandsFile))
             {
-                Log.Debug("[SETTINGS] Configuration file found, loading");
+                _logger.LogDebug("[SETTINGS] Configuration file found, loading");
 
                 var commandsConfigurationJson = File.ReadAllText(_variableManager.CommandsFile);
                 var commandsConfiguration = JsonConvert.DeserializeObject<ObservableCollection<ConfiguredEntity>>(commandsConfigurationJson);
                 if (commandsConfiguration == null)
                 {
-                    Log.Warning("[SETTINGS] Configuration file cannot be parsed");
+                    _logger.LogWarning("[SETTINGS] Configuration file cannot be parsed");
                     configuredCommands = [];
                 }
                 else
                 {
-                    Log.Information("[SETTINGS] Commands configuration loaded");
+                    _logger.LogInformation("[SETTINGS] Commands configuration loaded");
                     configuredCommands = commandsConfiguration;
                 }
             }
             else
             {
-                Log.Debug("[SETTINGS] Commands configuration not found");
+                _logger.LogDebug("[SETTINGS] Commands configuration not found");
             }
         }
         catch (Exception ex)
         {
-            Log.Fatal("[SETTINGS] Exception loading commands configuration: {ex}", ex);
+            _logger.LogCritical("[SETTINGS] Exception loading commands configuration: {ex}", ex);
             throw;
         }
 
@@ -175,7 +177,7 @@ public class SettingsManager : ISettingsManager
 
     private ObservableCollection<ConfiguredEntity> GetConfiguredSensors()
     {
-        Log.Debug("[SETTINGS] Loading sensor configuration");
+        _logger.LogDebug("[SETTINGS] Loading sensor configuration");
 
         var configuredCommands = new ObservableCollection<ConfiguredEntity>();
 
@@ -183,29 +185,29 @@ public class SettingsManager : ISettingsManager
         {
             if (File.Exists(_variableManager.SensorsFile))
             {
-                Log.Debug("[SETTINGS] Configuration file found, loading");
+                _logger.LogDebug("[SETTINGS] Configuration file found, loading");
 
                 var sensorsConfigurationJson = File.ReadAllText(_variableManager.SensorsFile);
                 var sensorConfiguration = JsonConvert.DeserializeObject<ObservableCollection<ConfiguredEntity>>(sensorsConfigurationJson);
                 if (sensorConfiguration == null)
                 {
-                    Log.Warning("[SETTINGS] Configuration file cannot be parsed");
+                    _logger.LogWarning("[SETTINGS] Configuration file cannot be parsed");
                     configuredCommands = [];
                 }
                 else
                 {
-                    Log.Information("[SETTINGS] Sensors configuration loaded");
+                    _logger.LogInformation("[SETTINGS] Sensors configuration loaded");
                     configuredCommands = sensorConfiguration;
                 }
             }
             else
             {
-                Log.Debug("[SETTINGS] Sensors configuration not found");
+                _logger.LogDebug("[SETTINGS] Sensors configuration not found");
             }
         }
         catch (Exception ex)
         {
-            Log.Fatal("[SETTINGS] Exception loading sensor configuration: {ex}", ex);
+            _logger.LogCritical("[SETTINGS] Exception loading sensor configuration: {ex}", ex);
             throw;
         }
 
@@ -214,15 +216,15 @@ public class SettingsManager : ISettingsManager
 
     private Settings GetSettings()
     {
-        Log.Debug("[SETTINGS] Loading settings");
+        _logger.LogDebug("[SETTINGS] Loading settings");
 
         try
         {
-            return new Settings(_variableManager);
+            return new Settings(_logger, _variableManager);
         }
         catch (Exception ex)
         {
-            Log.Fatal("[SETTINGS] Exception loading application settings: {ex}", ex);
+            _logger.LogCritical("[SETTINGS] Exception loading application settings: {ex}", ex);
             throw;
         }
     }
@@ -236,18 +238,18 @@ public class SettingsManager : ISettingsManager
 
     private bool StoreConfiguredQuickActions()
     {
-        Log.Debug("[SETTINGS] Storing configured quick actions");
+        _logger.LogDebug("[SETTINGS] Storing configured quick actions");
 
         try
         {
             var configuredQuickActionsJson = JsonConvert.SerializeObject(ConfiguredQuickActions, Formatting.Indented);
             File.WriteAllText(_variableManager.QuickActionsFile, configuredQuickActionsJson);
 
-            Log.Information("[SETTINGS] Quick actions configuration stored");
+            _logger.LogInformation("[SETTINGS] Quick actions configuration stored");
         }
         catch (Exception ex)
         {
-            Log.Fatal("[SETTINGS] Exception storing quick actions configuration: {ex}", ex);
+            _logger.LogCritical("[SETTINGS] Exception storing quick actions configuration: {ex}", ex);
             return false;
         }
 
@@ -256,18 +258,18 @@ public class SettingsManager : ISettingsManager
 
     private bool StoreConfiguredCommands()
     {
-        Log.Debug("[SETTINGS] Storing configured commands");
+        _logger.LogDebug("[SETTINGS] Storing configured commands");
 
         try
         {
             var configuredCommandsJson = JsonConvert.SerializeObject(ConfiguredCommands, Formatting.Indented);
             File.WriteAllText(_variableManager.CommandsFile, configuredCommandsJson);
 
-            Log.Information("[SETTINGS] Commands configuration stored");
+            _logger.LogInformation("[SETTINGS] Commands configuration stored");
         }
         catch (Exception ex)
         {
-            Log.Fatal("[SETTINGS] Exception storing commands configuration: {ex}", ex);
+            _logger.LogCritical("[SETTINGS] Exception storing commands configuration: {ex}", ex);
             return false;
         }
 
@@ -276,18 +278,18 @@ public class SettingsManager : ISettingsManager
 
     private bool StoreConfiguredSensors()
     {
-        Log.Debug("[SETTINGS] Storing configured sensors");
+        _logger.LogDebug("[SETTINGS] Storing configured sensors");
 
         try
         {
             var configuredSensorsJson = JsonConvert.SerializeObject(ConfiguredSensors, Formatting.Indented);
             File.WriteAllText(_variableManager.SensorsFile, configuredSensorsJson);
 
-            Log.Information("[SETTINGS] Sensor configuration stored");
+            _logger.LogInformation("[SETTINGS] Sensor configuration stored");
         }
         catch (Exception ex)
         {
-            Log.Fatal("[SETTINGS] Exception storing sensor configuration: {ex}", ex);
+            _logger.LogCritical("[SETTINGS] Exception storing sensor configuration: {ex}", ex);
             return false;
         }
 
@@ -296,17 +298,17 @@ public class SettingsManager : ISettingsManager
 
     public bool StoreSettings()
     {
-        Log.Debug("[SETTINGS] Storing settings");
+        _logger.LogDebug("[SETTINGS] Storing settings");
 
         try
         {
             Settings.Store(_variableManager);
 
-            Log.Information("[SETTINGS] Application settings stored");
+            _logger.LogInformation("[SETTINGS] Application settings stored");
         }
         catch (Exception ex)
         {
-            Log.Fatal("[SETTINGS] Exception storing application settings: {ex}", ex);
+            _logger.LogCritical("[SETTINGS] Exception storing application settings: {ex}", ex);
             return false;
         }
 
@@ -339,7 +341,7 @@ public class SettingsManager : ISettingsManager
         }
         catch (Exception ex)
         {
-            Log.Fatal(ex, "[SETTINGS] Error retrieving extended logging setting: {ex}", ex);
+            _logger.LogCritical(ex, "[SETTINGS] Error retrieving extended logging setting: {ex}", ex);
             return false;
         }
     }
@@ -352,7 +354,7 @@ public class SettingsManager : ISettingsManager
         }
         catch (Exception ex)
         {
-            Log.Fatal(ex, "[SETTINGS] Error storing extended logging setting: {ex}", ex);
+            _logger.LogCritical(ex, "[SETTINGS] Error storing extended logging setting: {ex}", ex);
         }
     }
 
@@ -369,7 +371,7 @@ public class SettingsManager : ISettingsManager
         }
         catch (Exception ex)
         {
-            Log.Fatal(ex, "[SETTINGS] Error retrieving DPI-warning-shown setting: {ex}", ex);
+            _logger.LogCritical(ex, "[SETTINGS] Error retrieving DPI-warning-shown setting: {ex}", ex);
             return false;
         }
     }
@@ -382,7 +384,7 @@ public class SettingsManager : ISettingsManager
         }
         catch (Exception ex)
         {
-            Log.Fatal(ex, "[SETTINGS] Error storing DPI-warning-shown setting: {ex}", ex);
+            _logger.LogCritical(ex, "[SETTINGS] Error storing DPI-warning-shown setting: {ex}", ex);
         }
     }
 
@@ -415,7 +417,7 @@ public class SettingsManager : ISettingsManager
                         var (storedOk, _) = await Task.Run(async () => await Variables.RpcClient.SetServiceMqttSettingsAsync(config).WaitAsync(Variables.RpcConnectionTimeout));
                         if (!storedOk)
                         {
-                            Log.Error("[SETTINGS] Sending MQTT settings to service failed");
+                            _logger.LogError("[SETTINGS] Sending MQTT settings to service failed");
                             return false;
                         }*/
 
@@ -424,7 +426,7 @@ public class SettingsManager : ISettingsManager
         }
         catch (Exception ex)
         {
-            Log.Fatal(ex, "[SETTINGS] Error sending MQTT settings to service: {err}", ex.Message);
+            _logger.LogCritical(ex, "[SETTINGS] Error sending MQTT settings to service: {err}", ex.Message);
             return false;
         }
     }
@@ -437,14 +439,14 @@ public class SettingsManager : ISettingsManager
             serialNumber = Registry.GetValue(_variableManager.RootRegKey, "DeviceSerialNumber", string.Empty) as string;
             if (string.IsNullOrEmpty(serialNumber))
             {
-                Log.Debug("[SETTINGS] Generating new device serial number");
+                _logger.LogDebug("[SETTINGS] Generating new device serial number");
                 serialNumber = Guid.NewGuid().ToString();
                 SetDeviceSerialNumber(serialNumber);
             }
         }
         catch (Exception ex)
         {
-            Log.Fatal(ex, "[SETTINGS] Error retrieving DPI-warning-shown setting: {err}", ex.Message);
+            _logger.LogCritical(ex, "[SETTINGS] Error retrieving DPI-warning-shown setting: {err}", ex.Message);
         }
 
         return serialNumber ?? string.Empty;
@@ -458,7 +460,7 @@ public class SettingsManager : ISettingsManager
         }
         catch (Exception ex)
         {
-            Log.Fatal(ex, "[SETTINGS] Error storing device serial number setting: {ex}", ex);
+            _logger.LogCritical(ex, "[SETTINGS] Error storing device serial number setting: {ex}", ex);
         }
     }
 
@@ -474,7 +476,7 @@ public class SettingsManager : ISettingsManager
         }
         catch (Exception ex)
         {
-            Log.Fatal(ex, "[SETTINGS] Error retrieving 'hide donate button from the main window' setting: {err}", ex.Message);
+            _logger.LogCritical(ex, "[SETTINGS] Error retrieving 'hide donate button from the main window' setting: {err}", ex.Message);
             return false;
         }
     }
@@ -487,7 +489,7 @@ public class SettingsManager : ISettingsManager
         }
         catch (Exception ex)
         {
-            Log.Fatal(ex, "[SETTINGS] Error storing 'hide donate button from the main window' setting: {err}", ex.Message);
+            _logger.LogCritical(ex, "[SETTINGS] Error storing 'hide donate button from the main window' setting: {err}", ex.Message);
         }
     }
 }

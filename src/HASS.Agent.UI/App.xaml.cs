@@ -8,13 +8,10 @@ using HASS.Agent.UI.Activation;
 using HASS.Agent.UI.ViewModels;
 using HASS.Agent.UI.Views.Pages;
 using HASS.Agent.Base.Models;
-using HASS.Agent.Base.Contracts.Managers;
 using HASS.Agent.Base.Managers;
-using Serilog;
 using Serilog.Events;
 using System.Reflection;
 using System.Diagnostics;
-using HASS.Agent.Base.Contracts;
 using System.Threading.Tasks;
 using MQTTnet;
 using HASS.Agent.Base.Sensors.SingleValue;
@@ -25,7 +22,6 @@ using System.Linq;
 using Microsoft.UI.Xaml.Controls;
 using System.Xml.Linq;
 using System.Xml;
-using HASS.Agent.Base.Models.Entity;
 using Windows.Storage;
 using WinUI3Localizer;
 using System.IO;
@@ -37,8 +33,11 @@ using HASS.Agent.UI.ViewModels.Settings;
 using H.NotifyIcon.Core;
 using H.NotifyIcon;
 using HASS.Agent.UI.Contracts;
-using HASS.Agent.Base.Contracts.Managers.HomeAssistant;
 using HASS.Agent.Base.Managers.HomeAssistant;
+using HASS.Agent.Contracts.Managers;
+using HASS.Agent.Contracts.Helpers;
+using Microsoft.Extensions.Logging;
+using Serilog;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -49,7 +48,12 @@ namespace HASS.Agent.UI;
 /// </summary>
 public partial class App : Application
 {
-    public IHost Host { get; private set; }
+    private readonly Microsoft.Extensions.Logging.ILogger _logger;
+
+    public IHost Host
+    {
+        get; private set;
+    }
 
     public static T GetService<T>() where T : class
     {
@@ -80,7 +84,9 @@ public partial class App : Application
     public App()
     {
         Host = ConfigureServices();
-        SetupLogger();
+        //SetupLogger();
+
+        _logger = GetService<ILogger<App>>();
 
         InitializeComponent();
     }
@@ -97,7 +103,7 @@ public partial class App : Application
         try
         {
             var variableManager = GetService<IVariableManager>();
-            Log.Information("[MAIN] HASS.Agent version: {version}", variableManager.ClientVersion);
+            _logger.LogInformation("[MAIN] HASS.Agent version: {version}", variableManager.ClientVersion);
 
             InitializeComponent();
 
@@ -152,11 +158,11 @@ public partial class App : Application
                     await mqtt.PublishAsync(testMsg);
                 });
 
-                Log.Debug("[MAIN] initialization completed");
+                _logger.LogDebug("[MAIN] initialization completed");
             });
 
 
-            Log.Debug("[MAIN] attempting to display main window");
+            _logger.LogDebug("[MAIN] attempting to display main window");
         }
         catch (Exception ex)
         {
@@ -180,30 +186,30 @@ public partial class App : Application
             })
             .Build();
     }
-    private void SetupLogger()
+/*    private void SetupLogger()
     {
         var launchArguments = Environment.GetCommandLineArgs();
         var logManager = GetService<ILogManager>();
         var logger = logManager.GetLogger(launchArguments);
-        Log.Logger = logger;
+        //_logger.LogLogger = logger;
 
-        Log.Information("----------------------------------------------------------------");
-        Log.Information("[MAIN] HASS.Agent started");
+        _logger.LogInformation("----------------------------------------------------------------");
+        _logger.LogInformation("[MAIN] HASS.Agent started");
 
 #if DEBUG
         logManager.ExtendedLoggingEnabled = true;
-        Log.Information("[MAIN] DEBUG BUILD - TESTING PURPOSES ONLY");
+        _logger.LogInformation("[MAIN] DEBUG BUILD - TESTING PURPOSES ONLY");
 #endif
 
         if (logManager.ExtendedLoggingEnabled)
         {
             logManager.LoggingLevelSwitch.MinimumLevel = LogEventLevel.Debug;
-            Log.Debug("[MAIN] Extended logging enabled");
-            Log.Debug("[MAIN] Started with arguments: {a}", launchArguments);
+            _logger.LogDebug("[MAIN] Extended logging enabled");
+            _logger.LogDebug("[MAIN] Started with arguments: {a}", launchArguments);
 
             AppDomain.CurrentDomain.FirstChanceException += logManager.OnFirstChanceExceptionHandler;
         }
-    }
+    }*/
 
     private PageService GetPageService()
     {
@@ -239,6 +245,29 @@ public partial class App : Application
         var host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder().UseContentRoot(AppContext.BaseDirectory).
             ConfigureServices((context, services) =>
             {
+                services.AddSerilog((sp, loggerConfiguration) =>
+                {
+                    var arguments = Environment.GetCommandLineArgs();
+                    var logTag = arguments.Length > 1
+                        ? $"{StringHelper.RemoveNonAlphanumericCharacters(arguments.First(x => !string.IsNullOrEmpty(x)))}_"
+                        : string.Empty;
+
+                    var elevatedTag = false ? "[E]" : ""; //TODO(Amadeo): implement IElevatedManager or something
+
+                    var variableManager = sp.GetRequiredService<IVariableManager>();
+                    var logName = $"[{DateTime.Now:yyyy-MM-dd}]{elevatedTag} {variableManager.ApplicationName}_{logTag}.log";
+
+                    loggerConfiguration.MinimumLevel.Information() //TODO(Amadeo): implement debug level logging check
+                        .WriteTo.Async(a =>
+                            a.File(Path.Combine(variableManager.LogPath, logName),
+                                rollingInterval: RollingInterval.Day,
+                                fileSizeLimitBytes: 10000000,
+                                retainedFileCountLimit: 10,
+                                rollOnFileSizeLimit: true,
+                                buffered: true,
+                                flushToDiskInterval: TimeSpan.FromMilliseconds(150)));
+                });
+
                 services.AddSingleton<IGuidManager, GuidManager>();
 
                 services.AddSingleton(new ApplicationInfo()
@@ -250,7 +279,7 @@ public partial class App : Application
                 });
 
                 services.AddSingleton<IVariableManager, VariableManager>();
-                services.AddSingleton<ILogManager, LogManager>();
+                //services.AddSingleton<ILogManager, LogManager>();
 
                 services.AddSingleton<IGuidManager, GuidManager>();
                 services.AddSingleton<ISettingsManager, SettingsManager>();

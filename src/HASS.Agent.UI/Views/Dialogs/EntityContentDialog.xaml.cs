@@ -1,6 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using HASS.Agent.Base.Models;
-using HASS.Agent.Base.Models.Entity;
 using HASS.Agent.UI.Models;
 using HASS.Agent.UI.ViewModels;
 using HASS.Agent.UI.Views.Pages.SensorConfigs;

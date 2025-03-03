@@ -6,17 +6,17 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using HASS.Agent.Base.Contracts.Managers;
+using HASS.Agent.Contracts.Managers;
 using HASS.Agent.UI.Contracts.Managers;
 using HASS.Agent.UI.Helpers;
 using HASS.Agent.UI.Models.Notifications;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Windows.AppLifecycle;
 using Microsoft.Windows.AppNotifications;
 using Microsoft.Windows.AppNotifications.Builder;
 using MQTTnet;
 using Newtonsoft.Json;
-using Serilog;
 
 namespace HASS.Agent.UI.Managers;
 public class NotificationManager : INotificationManager, IMqttMessageHandler
@@ -34,6 +34,8 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
 
     public const string NotificationLaunchArgument = "----AppNotificationActivated:";
 
+    private readonly ILogger _logger;
+
     private readonly ISettingsManager _settingsManager;
     private readonly IMqttManager _mqttManager;
     private readonly IHomeAssistantApiManager _homeAssistantApiManager;
@@ -44,8 +46,10 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
 
     public bool Ready { get; private set; }
 
-    public NotificationManager(ISettingsManager settingsManager, IMqttManager mqttManager, IHomeAssistantApiManager homeAssistantApiManager)
+    public NotificationManager(ILogger<NotificationManager> logger, ISettingsManager settingsManager, IMqttManager mqttManager, IHomeAssistantApiManager homeAssistantApiManager)
     {
+        _logger = logger;
+
         _settingsManager = settingsManager;
         _mqttManager = mqttManager;
         _homeAssistantApiManager = homeAssistantApiManager;
@@ -57,23 +61,23 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
         {
             if (!_settingsManager.Settings.Notification.Enabled)
             {
-                Log.Information("[NOTIFICATIONS] Disabled");
+                _logger.LogInformation("[NOTIFICATIONS] Disabled");
                 return;
             }
 
             if (!_settingsManager.Settings.Application.LocalApiEnabled && !_settingsManager.Settings.Mqtt.Enabled)
             {
-                Log.Warning("[NOTIFICATIONS] Both local API and MQTT are disabled, unable to receive notifications");
+                _logger.LogWarning("[NOTIFICATIONS] Both local API and MQTT are disabled, unable to receive notifications");
                 return;
             }
 
             if (_settingsManager.Settings.Mqtt.Enabled)
                 _mqttManager.RegisterMessageHandler($"hass.agent/notifications/{_settingsManager.Settings.Application.DeviceName}", this);
             else
-                Log.Warning("[NOTIFICATIONS] MQTT is disabled, not all aspects of actions might work as expected");
+                _logger.LogWarning("[NOTIFICATIONS] MQTT is disabled, not all aspects of actions might work as expected");
 
             if (_notificationManager.Setting != AppNotificationSetting.Enabled)
-                Log.Warning("[NOTIFICATIONS] Showing notifications might fail, reason: {r}", _notificationManager.Setting.ToString());
+                _logger.LogWarning("[NOTIFICATIONS] Showing notifications might fail, reason: {r}", _notificationManager.Setting.ToString());
 
 
             _notificationManager.NotificationInvoked += NotificationManager_NotificationInvoked;
@@ -81,11 +85,11 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
             _notificationManager.Register();
             Ready = true;
 
-            Log.Information("[NOTIFICATIONS] Ready");
+            _logger.LogInformation("[NOTIFICATIONS] Ready");
         }
         catch (Exception ex)
         {
-            Log.Fatal(ex, "[NOTIFICATIONS] Error while initializing: {err}", ex.Message);
+            _logger.LogCritical(ex, "[NOTIFICATIONS] Error while initializing: {err}", ex.Message);
         }
     }
 
@@ -117,7 +121,7 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
         }
         catch (Exception ex)
         {
-            Log.Fatal(ex, "[NOTIFICATIONS] Unable to process notification action: {err}", ex.Message);
+            _logger.LogCritical(ex, "[NOTIFICATIONS] Unable to process notification action: {err}", ex.Message);
         }
     }
 
@@ -218,7 +222,7 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
             {
                 toastBuilder.SetScenario(AppNotificationScenario.Urgent);
                 if (notification.Data.Sticky)
-                    Log.Warning("[NOTIFICATIONS] Notification importance overrides sticky", notification.Title);
+                    _logger.LogWarning("[NOTIFICATIONS] Notification importance overrides sticky", notification.Title);
             }
 
             if (!string.IsNullOrWhiteSpace(notification.Data.IconUrl))
@@ -232,11 +236,11 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
             _notificationManager.Show(toast);
 
             if (toast.Id == 0)
-                Log.Error("[NOTIFICATIONS] Notification '{err}' failed to show", notification.Title);
+                _logger.LogError("[NOTIFICATIONS] Notification '{err}' failed to show", notification.Title);
         }
         catch (Exception ex)
         {
-            Log.Fatal(ex, "[NOTIFICATIONS] Error while showing notification: {err}\r\n{json}", ex.Message, JsonConvert.SerializeObject(notification, Formatting.Indented));
+            _logger.LogCritical(ex, "[NOTIFICATIONS] Error while showing notification: {err}\r\n{json}", ex.Message, JsonConvert.SerializeObject(notification, Formatting.Indented));
         }
     }
 
@@ -284,7 +288,7 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
         }
         catch (Exception ex)
         {
-            Log.Error("[NOTIFICATIONS] Error handling MQTT notification: {msg}", ex.Message);
+            _logger.LogError("[NOTIFICATIONS] Error handling MQTT notification: {msg}", ex.Message);
         }
 
     }

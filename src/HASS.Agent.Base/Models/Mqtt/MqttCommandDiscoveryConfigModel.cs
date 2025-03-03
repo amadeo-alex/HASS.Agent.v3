@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HASS.Agent.Base.Contracts.Models.Mqtt;
+using HASS.Agent.Contracts.Models.Mqtt;
 using Newtonsoft.Json;
 
 namespace HASS.Agent.Base.Models.Mqtt;

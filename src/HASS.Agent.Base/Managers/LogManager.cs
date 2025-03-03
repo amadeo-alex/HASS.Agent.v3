@@ -6,7 +6,7 @@ using System.Net;
 using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading.Tasks;
-using HASS.Agent.Base.Contracts.Managers;
+using HASS.Agent.Contracts.Managers;
 using HASS.Agent.Base.Helpers;
 using Serilog;
 using Serilog.Core;

@@ -1,7 +1,7 @@
-﻿using HASS.Agent.Base.Contracts.Managers;
-using HASS.Agent.Base.Contracts.Models.Entity;
+﻿using HASS.Agent.Contracts.Managers;
+using HASS.Agent.Contracts.Models.Entity;
 using HASS.Agent.Base.Models;
-using HASS.Agent.Base.Models.Entity;
+using HASS.Agent.Contracts.Models.Entity;
 using HASS.Agent.Base.Sensors.SingleValue;
 using HASS.Agent.UI.Contracts.Managers;
 using HASS.Agent.UI.Models;

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HASS.Agent.Base.Contracts.Managers;
-using HASS.Agent.Base.Contracts.Managers.HomeAssistant;
+using HASS.Agent.Contracts.Managers;
+using HASS.Agent.Contracts.Managers.HomeAssistant;
 
 namespace HASS.Agent.Base.Managers.HomeAssistant;
 public class HomeAssistantEvent : IHomeAssistantEvent

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using HASS.Agent.Base.Contracts.Models.Entity;
+using HASS.Agent.Contracts.Models.Entity;
 using HASS.Agent.Base.Models;
 
 namespace HASS.Agent.Base.Helpers;

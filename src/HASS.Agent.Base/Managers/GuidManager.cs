@@ -3,13 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HASS.Agent.Base.Contracts.Managers;
-using Serilog;
+using HASS.Agent.Contracts.Managers;
+using Microsoft.Extensions.Logging;
 
 namespace HASS.Agent.Base.Managers;
 public class GuidManager : IGuidManager
 {
+    private readonly ILogger _logger;
+
     private readonly List<string> _usedGuids = [];
+
+    public GuidManager(ILogger<GuidManager> logger)
+    {
+         _logger = logger;
+    }
 
     public void MarkAsUsed(Guid guid)
     {
@@ -20,7 +27,7 @@ public class GuidManager : IGuidManager
         if (string.IsNullOrWhiteSpace(guid))
             return;
 
-        Log.Debug("[GUID] {guid} marked as used", guid);
+        _logger.LogDebug("[GUID] {guid} marked as used", guid);
         _usedGuids.Add(guid);
     }
     public void MarkAsUnused(Guid guid)
@@ -32,7 +39,7 @@ public class GuidManager : IGuidManager
         if (string.IsNullOrWhiteSpace(guid))
             return;
 
-        Log.Debug("[GUID] {guid} marked as unused", guid);
+        _logger.LogDebug("[GUID] {guid} marked as unused", guid);
         _usedGuids.Remove(guid);
     }
 

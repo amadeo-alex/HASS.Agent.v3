@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using HASS.Agent.Base.Contracts.Managers;
+using HASS.Agent.Contracts.Managers;
 using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Sensors.SingleValue;
 using HASS.Agent.UI.Contracts.ViewModels;
@@ -16,6 +16,7 @@ using HASS.Agent.UI.Views.Pages;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using HASS.Agent.Contracts.Enums;
 
 namespace HASS.Agent.UI.ViewModels;
 public partial class DebugPageViewModel : ViewModelBase, INavigationAware
@@ -31,7 +32,7 @@ public partial class DebugPageViewModel : ViewModelBase, INavigationAware
     public RelayCommand ButtonCommand4 { get; set; }
     public RelayCommand ButtonCommand5 { get; set; }
 	public RelayCommand ButtonCommand6 { get; set; }
-	public Base.Enums.MqttStatus MqttStatus => _mqttManager.Status;
+	public MqttStatus MqttStatus => _mqttManager.Status;
 
     public List<SomeItem> SomeItems = new List<SomeItem>()
     {

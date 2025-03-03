@@ -4,17 +4,18 @@
     <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	<WindowsSdkPackageVersion>10.0.19041.41</WindowsSdkPackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Amadeo.HADotNet.Core" Version="0.2.1" />
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
-    <PackageReference Include="MQTTnet" Version="4.3.6.1152" />
-    <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="4.3.6.1152" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.2" />
+    <PackageReference Include="MQTTnet" Version="4.3.7.1207" />
+    <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="4.3.7.1207" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Serilog" Version="4.0.0" />
-    <PackageReference Include="Serilog.Sinks.Async" Version="2.0.0" />
+    <PackageReference Include="Serilog" Version="4.2.0" />
+    <PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
   </ItemGroup>
 
@@ -24,6 +25,14 @@
 
   <ItemGroup>
     <None Include="D:\Programowanie\Visual CS\Projects\HASS.Agent.v3\src\HASS.Agent.Base\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HASS.Agent.Contracts\HASS.Agent.Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\Entity\" />
   </ItemGroup>
 
 </Project>

@@ -5,20 +5,21 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HASS.Agent.Base.Contracts.Managers;
-using HASS.Agent.Base.Contracts.Models.Entity;
-using HASS.Agent.Base.Enums;
+using HASS.Agent.Contracts.Managers;
+using HASS.Agent.Contracts.Models.Entity;
 using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Models.Mqtt;
-using HASS.Agent.Base.Models.Settings;
-using MQTTnet;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Serilog;
+using MQTTnet;
+using HASS.Agent.Contracts.Enums;
+using Microsoft.Extensions.Logging;
 
 namespace HASS.Agent.Base.Managers;
 public class CommandsManager : ICommandsManager, IMqttMessageHandler
 {
+    private readonly ILogger _logger;
+
     private readonly ISettingsManager _settingsManager;
     private readonly IEntityTypeRegistry _entityTypeRegistry;
     private readonly IMqttManager _mqttManager;
@@ -41,8 +42,10 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
 
     public ObservableCollection<AbstractDiscoverable> Commands { get; set; } = [];
 
-    public CommandsManager(ISettingsManager settingsManager, IEntityTypeRegistry entityTypeRegistry, IMqttManager mqttManager)
+    public CommandsManager(ILogger<CommandsManager> logger, ISettingsManager settingsManager, IEntityTypeRegistry entityTypeRegistry, IMqttManager mqttManager)
     {
+        _logger = logger;
+
         _settingsManager = settingsManager;
         _entityTypeRegistry = entityTypeRegistry;
         _mqttManager = mqttManager;
@@ -144,7 +147,7 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
         }
         catch (Exception e)
         {
-            Log.Fatal("[COMMANDMGR] [{name}] Error publishing discovery: {err}", command, e.Message);
+            _logger.LogCritical("[COMMANDMGR] [{name}] Error publishing discovery: {err}", command, e.Message);
         }
     }
 
@@ -208,7 +211,7 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
         }
         catch (Exception e)
         {
-            Log.Fatal("[COMMANDMGR] [{name}] Error publishing state: {err}", command, e.Message);
+            _logger.LogCritical("[COMMANDMGR] [{name}] Error publishing state: {err}", command, e.Message);
         }
     }
 
@@ -255,7 +258,7 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
             }
             catch (Exception e)
             {
-                Log.Fatal(e, "[COMMANDMGR] Error while processing: {err}", e.Message);
+                _logger.LogCritical(e, "[COMMANDMGR] Error while processing: {err}", e.Message);
             }
         }
     }

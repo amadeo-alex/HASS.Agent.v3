@@ -6,20 +6,22 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using HASS.Agent.Base.Contracts.Managers;
-using HASS.Agent.Base.Contracts.Models.Entity;
-using HASS.Agent.Base.Enums;
+using HASS.Agent.Contracts.Managers;
+using HASS.Agent.Contracts.Models.Entity;
 using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Models.Mqtt;
 using MQTTnet;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Serilog;
+using HASS.Agent.Contracts.Enums;
+using Microsoft.Extensions.Logging;
 
 namespace HASS.Agent.Base.Managers;
 
 public class SensorManager : ISensorManager
 {
+    private readonly ILogger _logger;
+
 	private readonly ISettingsManager _settingsManager;
 	private readonly IEntityTypeRegistry _entityTypeRegistry;
 	private readonly IMqttManager _mqttManager;
@@ -42,8 +44,10 @@ public class SensorManager : ISensorManager
 
 	public ObservableCollection<AbstractDiscoverable> Sensors { get; set; } = [];
 
-	public SensorManager(ISettingsManager settingsManager, IEntityTypeRegistry entityTypeRegistry, IMqttManager mqttManager)
+	public SensorManager(ILogger<SensorManager> logger, ISettingsManager settingsManager, IEntityTypeRegistry entityTypeRegistry, IMqttManager mqttManager)
 	{
+        _logger = logger;
+
 		_settingsManager = settingsManager;
 		_entityTypeRegistry = entityTypeRegistry;
 		_mqttManager = mqttManager;
@@ -145,7 +149,7 @@ public class SensorManager : ISensorManager
 		}
 		catch (Exception e)
 		{
-			Log.Fatal("[SENSORMGR] [{name}] Error publishing discovery: {err}", sensor, e.Message);
+			_logger.LogCritical("[SENSORMGR] [{name}] Error publishing discovery: {err}", sensor, e.Message);
 		}
 	}
 
@@ -223,7 +227,7 @@ public class SensorManager : ISensorManager
 		}
 		catch (Exception e)
 		{
-			Log.Fatal("[SENSORMGR] [{name}] Error publishing state: {err}", sensor, e.Message);
+			_logger.LogCritical("[SENSORMGR] [{name}] Error publishing state: {err}", sensor, e.Message);
 		}
 	}
 
@@ -270,7 +274,7 @@ public class SensorManager : ISensorManager
 			}
 			catch (Exception e)
 			{
-				Log.Fatal(e, "[SENSORMGR] Error while processing: {err}", e.Message);
+				_logger.LogCritical(e, "[SENSORMGR] Error while processing: {err}", e.Message);
 			}
 		}
 	}

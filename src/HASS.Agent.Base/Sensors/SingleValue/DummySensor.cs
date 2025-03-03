@@ -5,12 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml;
-using HASS.Agent.Base.Contracts.Models.Entity;
-using HASS.Agent.Base.Contracts.Models.Mqtt;
+using HASS.Agent.Contracts.Models.Entity;
+using HASS.Agent.Contracts.Models.Mqtt;
 using HASS.Agent.Base.Helpers;
 using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Models.Mqtt;
-using HASS.Agent.Base.Contracts.Managers;
+using HASS.Agent.Contracts.Managers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HASS.Agent.Base.Sensors.SingleValue;

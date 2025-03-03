@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using HASS.Agent.Base.Contracts.Managers;
+using HASS.Agent.Contracts.Managers;
 using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Sensors.SingleValue;
 using HASS.Agent.UI.Contracts.Services;

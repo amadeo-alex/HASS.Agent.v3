@@ -7,7 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
-    xmlns:models="using:HASS.Agent.Base.Models.Entity"
+    xmlns:models="using:HASS.Agent.Contracts.Models.Entity"
     xmlns:l="using:WinUI3Localizer"
     xmlns:h="using:HASS.Agent.UI.Helpers"
     xmlns:ts="using:HASS.Agent.UI.Views.DataTemplateSelectors"

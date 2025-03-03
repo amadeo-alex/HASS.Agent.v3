@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using HASS.Agent.Base.Models.Entity;
+using HASS.Agent.Contracts.Models.Entity;
 using HASS.Agent.Base.Models;
 using HASS.Agent.UI.Models;
 using System;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WinUI3Localizer;
-using HASS.Agent.Base.Contracts.Managers;
+using HASS.Agent.Contracts.Managers;
 using HASS.Agent.UI.Contracts.Managers;
 using System.Diagnostics;
 

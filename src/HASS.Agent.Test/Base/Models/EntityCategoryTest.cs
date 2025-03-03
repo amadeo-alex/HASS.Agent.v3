@@ -1,4 +1,4 @@
-using HASS.Agent.Base.Models.Entity;
+using HASS.Agent.Contracts.Models.Entity;
 
 namespace HASS.Agent.Test.Base.Models;
 
