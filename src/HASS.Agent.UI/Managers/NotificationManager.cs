@@ -270,7 +270,7 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
     {
         try
         {
-            var notification = JsonConvert.DeserializeObject<Notification>(Encoding.UTF8.GetString(message.PayloadSegment));
+            var notification = JsonConvert.DeserializeObject<Notification>(Encoding.UTF8.GetString(message.Payload));
             if (notification == null)
                 return;
 

@@ -17,9 +17,7 @@ using HASS.Agent.Base.Models.Mqtt;
 using HASS.Agent.Helpers;
 using MQTTnet;
 using MQTTnet.Adapter;
-using MQTTnet.Client;
 using MQTTnet.Exceptions;
-using MQTTnet.Extensions.ManagedClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Windows.Globalization;
@@ -52,9 +50,9 @@ public partial class MqttManager : ObservableObject, IMqttManager
     private readonly ApplicationInfo _applicationInfo;
     private readonly IGuidManager _guidManager;
 
-    private readonly IManagedMqttClient _mqttClient = new MqttFactory().CreateManagedMqttClient();
-    private ManagedMqttClientOptions _mqttClientOptions;
-
+    private readonly IMqttClient _mqttClient = new MqttClientFactory().CreateMqttClient();
+    private MqttClientOptions _mqttClientOptions;
+    
     private bool _connectionErrorLogged = false;
 
     private ApplicationSettings _applicationSettingsSnapshot;
@@ -123,10 +121,10 @@ public partial class MqttManager : ObservableObject, IMqttManager
         }
 
         _mqttClient.ConnectedAsync += OnConnectedAsync;
-        _mqttClient.ConnectingFailedAsync += OnConnectingFailedAsync;
+        //_mqttClient.ConnectingFailedAsync += OnConnectingFailedAsync;
         _mqttClient.ApplicationMessageReceivedAsync += OnApplicationMessageReceivedAsync;
         _mqttClient.DisconnectedAsync += OnDisconnectedAsync;
-        _mqttClient.ApplicationMessageSkippedAsync += OnApplicationMessageSkippedAsync;
+        //_mqttClient.ApplicationMessageSkippedAsync += OnApplicationMessageSkippedAsync;
 
         _logger.LogDebug("[MQTT] Client initialized");
     }
@@ -166,12 +164,13 @@ public partial class MqttManager : ObservableObject, IMqttManager
             //_mqttClient = GetMqttClient();
             _mqttClientOptions = GetMqttClientOptions();
 
-            await _mqttClient.StartAsync(_mqttClientOptions);
+            //await _mqttClient.StartAsync(_mqttClientOptions);
+            await _mqttClient.ConnectAsync(_mqttClientOptions);
             InitialRegistration();
         }
         catch (MqttConnectingFailedException e)
         {
-            _logger.LogError("[MQTT] Unable to connect to broker: {msg}", e.Result.ToString());
+            _logger.LogError("[MQTT] Unable to connect to broker: {msg}", e.Message);
         }
         catch (MqttCommunicationException e)
         {
@@ -190,11 +189,11 @@ public partial class MqttManager : ObservableObject, IMqttManager
         Initialized = false;
 
         Status = MqttStatus.Disconnecting;
-        await _mqttClient.StopAsync();
-        _logger.LogDebug("[MQTT] Attempting to stop the client - finished A");
-        await _mqttClient.InternalClient.DisconnectAsync();
+        await _mqttClient.DisconnectAsync();
+        //_logger.LogDebug("[MQTT] Attempting to stop the client - finished A");
+        //await _mqttClient.InternalClient.DisconnectAsync();
 
-        _logger.LogDebug("[MQTT] Attempting to stop the client - finished B");
+        _logger.LogDebug("[MQTT] Attempting to stop the client - finished");
         Status = MqttStatus.Disconnected;
 
         return;
@@ -253,7 +252,8 @@ public partial class MqttManager : ObservableObject, IMqttManager
                     .WithRetainFlag(_mqttSettingsSnapshot.UseRetainFlag)
                     .Build();
 
-                await _mqttClient.EnqueueAsync(availabilityMessage);
+                //await _mqttClient.EnqueueAsync(availabilityMessage);
+                await _mqttClient.PublishAsync(availabilityMessage);
 
                 //TODO: integration message
 
@@ -283,15 +283,15 @@ public partial class MqttManager : ObservableObject, IMqttManager
         _logger.LogInformation("[MQTT] Disconnected");
     }
 
-    private async Task OnApplicationMessageSkippedAsync(ApplicationMessageSkippedEventArgs args)
+/*    private async Task OnApplicationMessageSkippedAsync(ApplicationMessageSkippedEventArgs args)
     {
         _logger.LogInformation("[MQTT] Message skipped/dropped");
-    }
+    }*/
 
     private async Task OnApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs arg)
     {
         var applicationMessage = arg.ApplicationMessage;
-        if (applicationMessage.PayloadSegment.Count == 0)
+        if (applicationMessage.Payload.Length == 0)
         {
             _logger.LogInformation("[MQTT] Received empty payload on {topic}", applicationMessage.Topic);
             return;
@@ -302,7 +302,9 @@ public partial class MqttManager : ObservableObject, IMqttManager
             foreach (var (registeredTopic, handler) in _mqttMessageHandlers)
             {
                 if (CheckTopicMatch(applicationMessage.Topic, registeredTopic))
+                {
                     await handler.HandleMqttMessage(applicationMessage);
+                }
             }
         }
         catch (Exception ex)
@@ -316,7 +318,7 @@ public partial class MqttManager : ObservableObject, IMqttManager
         {
             if (applicationMessage.Topic == $"hass.agent/notifications/{DeviceConfigModel.Name}")
             {
-                var payload = Encoding.UTF8.GetString(applicationMessage.PayloadSegment).ToLower();
+                var payload = Encoding.UTF8.GetString(applicationMessage.Payload).ToLower();
                 if (payload == null)
                     return;
 
@@ -329,7 +331,7 @@ public partial class MqttManager : ObservableObject, IMqttManager
 
             if (applicationMessage.Topic == $"hass.agent/media_player/{DeviceConfigModel.Name}/cmd")
             {
-                var payload = Encoding.UTF8.GetString(applicationMessage.PayloadSegment).ToLower();
+                var payload = Encoding.UTF8.GetString(applicationMessage.Payload).ToLower();
                 if (payload == null)
                     return;
 
@@ -383,46 +385,47 @@ public partial class MqttManager : ObservableObject, IMqttManager
         return;
     }
 
-    private async Task OnConnectingFailedAsync(ConnectingFailedEventArgs arg)
-    {
-        Status = MqttStatus.Error;
-        _logger.LogInformation("[MQTT] Connecting failed");
-
-        if (_connectionErrorLogged)
+    //TODO(Amadeo): handle connection failure
+    /*    private async Task OnConnectingFailedAsync(ConnectingFailedEventArgs arg) 
         {
-            return;
-        }
+            Status = MqttStatus.Error;
+            _logger.LogInformation("[MQTT] Connecting failed");
 
-        _connectionErrorLogged = true;
+            if (_connectionErrorLogged)
+            {
+                return;
+            }
 
-        var exceptionMessage = arg.Exception.ToString();
-        if (exceptionMessage.Contains("SocketException"))
-        {
-            _logger.LogError("[MQTT] Error while connecting: {err}", arg.Exception.Message);
-        }
-        else if (exceptionMessage.Contains("MqttCommunicationTimedOutException"))
-        {
-            _logger.LogError("[MQTT] Error while connecting: {err}", "Connection timed out");
-        }
-        else if (exceptionMessage.Contains("NotAuthorized"))
-        {
-            _logger.LogError("[MQTT] Error while connecting: {err}", "Not authorized, check your credentials.");
-        }
-        else
-        {
-            _logger.LogCritical(arg.Exception, "[MQTT] Error while connecting: {err}", arg.Exception.Message);
-        }
+            _connectionErrorLogged = true;
 
-        //TODO(Amadeo): event/observable and notify user
-    }
+            var exceptionMessage = arg.Exception.ToString();
+            if (exceptionMessage.Contains("SocketException"))
+            {
+                _logger.LogError("[MQTT] Error while connecting: {err}", arg.Exception.Message);
+            }
+            else if (exceptionMessage.Contains("MqttCommunicationTimedOutException"))
+            {
+                _logger.LogError("[MQTT] Error while connecting: {err}", "Connection timed out");
+            }
+            else if (exceptionMessage.Contains("NotAuthorized"))
+            {
+                _logger.LogError("[MQTT] Error while connecting: {err}", "Not authorized, check your credentials.");
+            }
+            else
+            {
+                _logger.LogCritical(arg.Exception, "[MQTT] Error while connecting: {err}", arg.Exception.Message);
+            }
 
-    private ManagedMqttClientOptions GetMqttClientOptions()
+            //TODO(Amadeo): event/observable and notify user
+        }*/
+
+    private MqttClientOptions GetMqttClientOptions()
     {
         if (string.IsNullOrWhiteSpace(_mqttSettingsSnapshot.Address))
         {
             _logger.LogWarning("[MQTT] Required configuration missing");
 
-            return new ManagedMqttClientOptionsBuilder().Build();
+            return new MqttClientOptionsBuilder().Build();
         }
 
         // id can be random, but we'll store it for consistency (unless user-defined)
@@ -506,11 +509,8 @@ public partial class MqttManager : ObservableObject, IMqttManager
         }
 
         clientOptionsBuilder.WithTlsOptions(clientTlsOptions);
-        clientOptionsBuilder.Build();
-
-        return new ManagedMqttClientOptionsBuilder()
-            .WithAutoReconnectDelay(TimeSpan.FromSeconds(5))
-            .WithClientOptions(clientOptionsBuilder).Build();
+        
+        return clientOptionsBuilder.Build();
     }
 
     public async Task AnnounceDeviceConfigModelAsync()
@@ -532,7 +532,7 @@ public partial class MqttManager : ObservableObject, IMqttManager
             return;
         }
 
-        await _mqttClient.EnqueueAsync(message);
+        await _mqttClient.PublishAsync(message);
 
         return;
     }

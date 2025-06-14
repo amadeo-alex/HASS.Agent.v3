@@ -274,22 +274,30 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
         foreach (var commandDiscoverable in Commands)
         {
             if (!commandDiscoverable.Active)
+            {
                 continue;
+            }
 
             var command = (AbstractCommand)commandDiscoverable;
-            if(command.GetAutoDiscoveryConfig() is not MqttCommandDiscoveryConfigModel commandConfig)
+            if (command.GetAutoDiscoveryConfig() is not MqttCommandDiscoveryConfigModel commandConfig)
+            {
                 return;
+            }
 
             if (commandConfig.ActionTopic == message.Topic || commandConfig.CommandTopic == message.Topic)
             {
-                var payload = message.PayloadSegment.Count > 0
-                    ? Encoding.UTF8.GetString(message.PayloadSegment)
+                var payload = message.Payload.Length > 0
+                    ? Encoding.UTF8.GetString(message.Payload)
                     : string.Empty;
 
                 if (!string.IsNullOrWhiteSpace(payload))
+                {
                     await command.TurnOn(payload);
+                }
                 else
+                {
                     await command.TurnOn();
+                }
             }
         }
     }
