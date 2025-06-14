@@ -95,7 +95,7 @@ public partial class MqttManager : ObservableObject, IMqttManager
 		ConfigureMqttClient();
 		_mqttClientOptions = GetMqttClientOptions();
 
-		_logger.LogInformation("[MQTT] Manager initialized");
+        _logger.LogInformation("[MQTT] Manager initialized");
 	}
 
 	private MqttDeviceDiscoveryConfigModel GetDeviceConfigModel()
@@ -119,6 +119,7 @@ public partial class MqttManager : ObservableObject, IMqttManager
 		if (!_mqttSettingsSnapshot.Enabled)
 		{
 			_logger.LogInformation("[MQTT] Initialization stopped, disabled through settings");
+            return;
 		}
 
 		_mqttClient.ConnectedAsync += OnConnectedAsync;
@@ -147,12 +148,17 @@ public partial class MqttManager : ObservableObject, IMqttManager
 
 	public async Task StartClientAsync()
 	{
-		_logger.LogDebug("[MQTT] Attempting to start the client");
+        TakeSettingsSnapshot();
 
-		try
+        _logger.LogDebug("[MQTT] Attempting to start the client");
+        if (!_mqttSettingsSnapshot.Enabled)
+        {
+            _logger.LogError("[MQTT] Start has been aborted, MQTT is disabled");
+            return;
+        }
+
+        try
 		{
-			TakeSettingsSnapshot();
-
 			DeviceConfigModel = GetDeviceConfigModel();
 
 			//_mqttClient = GetMqttClient();

@@ -185,15 +185,13 @@ public partial class App : Application
 
                 _logger.LogDebug("[MAIN] initialization completed");
             });
-
-
-            _logger.LogDebug("[MAIN] attempting to display main window");
         }
         catch (Exception ex)
         {
             Debugger.Break(); //TODO(Amadeo): do something more intelligent
         }
 
+        _logger.LogDebug("[MAIN] attempting to display main window");
         //App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationSamplePayload".GetLocalized(), AppContext.BaseDirectory));
         await GetService<IActivationService>().ActivateAsync(args);
     }
@@ -203,7 +201,7 @@ public partial class App : Application
         var stringsFolderPath = Path.Combine(AppContext.BaseDirectory, "Strings");
         var stringsFolder = await StorageFolder.GetFolderFromPathAsync(stringsFolderPath);
 
-        ILocalizer localizer = await new LocalizerBuilder()
+        var localizer = await new LocalizerBuilder()
             .AddStringResourcesFolderForLanguageDictionaries(stringsFolderPath)
             .SetOptions(options =>
             {
