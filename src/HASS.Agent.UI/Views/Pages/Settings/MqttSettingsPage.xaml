@@ -90,6 +90,11 @@
 									Click="ChangePortButton_Click"/>
 					</controls:SettingsCard>
 
+					<controls:SettingsCard l:Uids.Uid="Page_MqttSettings_WebSocketCard">
+						<ToggleSwitch l:Uids.Uid="Page_MqttSettings_WebSocketCard_Switch"
+										  IsOn="{Binding UseWebSocket, Mode=TwoWay}"/>
+					</controls:SettingsCard>
+
 					<controls:SettingsCard l:Uids.Uid="Page_MqttSettings_DiscoveryPrefixCard">
 						<controls:SettingsCard.Description>
 							<StackPanel Orientation="Horizontal" Spacing="{StaticResource SettingsCardSpacing}">

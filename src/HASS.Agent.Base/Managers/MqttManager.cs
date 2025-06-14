@@ -436,12 +436,20 @@ public partial class MqttManager : ObservableObject, IMqttManager
 
         var clientOptionsBuilder = new MqttClientOptionsBuilder()
             .WithClientId(_mqttSettingsSnapshot.ClientId)
-            .WithTcpServer(_mqttSettingsSnapshot.Address, _mqttSettingsSnapshot.Port)
             .WithCleanSession()
             .WithWillTopic($"{_mqttSettingsSnapshot.DiscoveryPrefix}/sensor/{DeviceConfigModel.Name}/availability")
             .WithWillPayload(PayloadOffline)
             .WithWillRetain(_mqttSettingsSnapshot.UseRetainFlag)
             .WithKeepAlivePeriod(TimeSpan.FromSeconds(15));
+
+        if (_mqttSettingsSnapshot.UseWebSocket)
+        {
+            clientOptionsBuilder.WithWebSocketServer(o => o.WithUri("127.0.0.1:8080"));
+        }
+        else
+        {
+            clientOptionsBuilder.WithTcpServer(_mqttSettingsSnapshot.Address, _mqttSettingsSnapshot.Port);
+        }
 
         if (!string.IsNullOrEmpty(_mqttSettingsSnapshot.Username))
         {

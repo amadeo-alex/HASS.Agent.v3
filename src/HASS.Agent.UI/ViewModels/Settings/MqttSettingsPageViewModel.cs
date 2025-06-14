@@ -44,7 +44,13 @@ public partial class MqttSettingsPageViewModel : ViewModelBase, INavigationAware
 		set => _mqttSettings.Port = value;
 	}
 
-	public bool UseTls
+    public bool UseWebSocket
+    {
+        get => _mqttSettings.UseWebSocket;
+        set => _mqttSettings.UseWebSocket = value;
+    }
+
+    public bool UseTls
 	{
 		get => _mqttSettings.UseTls;
 		set => _mqttSettings.UseTls = value;

@@ -15,6 +15,8 @@ public partial class MqttSettings : ObservableObject
 	[ObservableProperty]
 	private int _port = 1883;
 	[ObservableProperty]
+	private bool _useWebSocket = false;
+	[ObservableProperty]
 	private string _discoveryPrefix = "homeassistant";
 	[ObservableProperty]
 	private string _clientId = string.Empty;
