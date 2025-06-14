@@ -38,6 +38,7 @@ using HASS.Agent.Contracts.Managers;
 using HASS.Agent.Contracts.Helpers;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Core;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -49,6 +50,8 @@ namespace HASS.Agent.UI;
 public partial class App : Application
 {
     private readonly Microsoft.Extensions.Logging.ILogger _logger;
+
+    public bool DEBUG = false;
 
     public IHost Host
     {
@@ -75,6 +78,7 @@ public partial class App : Application
     {
         get; set;
     }
+
     public static WindowEx MainWindow { get; } = new MainWindow();
 
     /// <summary>
@@ -83,8 +87,11 @@ public partial class App : Application
     /// </summary>
     public App()
     {
+#if DEBUG
+        DEBUG = true; //TODO(Amadeo): find better way to do this?
+#endif
+
         Host = ConfigureServices();
-        //SetupLogger();
 
         _logger = GetService<ILogger<App>>();
 
@@ -102,6 +109,25 @@ public partial class App : Application
 
         try
         {
+            var launchArguments = Environment.GetCommandLineArgs();
+            var settingsManager = GetService<ISettingsManager>();
+
+            if (DEBUG)
+            {
+                _logger.LogInformation("[MAIN] DEBUG BUILD - TESTING PURPOSES ONLY");
+                settingsManager.Settings.Application.ExtendedLogging = true;
+            }
+
+            if (settingsManager.Settings.Application.ExtendedLogging)
+            {
+                GetService<LoggingLevelSwitch>().MinimumLevel = LogEventLevel.Debug;
+                _logger.LogDebug("[MAIN] Extended logging enabled");
+                _logger.LogDebug("[MAIN] Started with arguments: {a}", launchArguments);
+
+                var exceptionManager = GetService<IExceptionManager>();
+                AppDomain.CurrentDomain.FirstChanceException += exceptionManager.OnFirstChanceExceptionHandler;
+            }
+
             var variableManager = GetService<IVariableManager>();
             _logger.LogInformation("[MAIN] HASS.Agent version: {version}", variableManager.ClientVersion);
 
@@ -109,7 +135,6 @@ public partial class App : Application
 
             var initializationTask = Task.Run(async () =>
             {
-                var settingsManager = GetService<ISettingsManager>();
                 var guidManager = GetService<IGuidManager>();
                 guidManager.MarkAsUsed(settingsManager.Settings.Mqtt.ClientId);
 
@@ -166,7 +191,7 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
-            Debugger.Break();
+            Debugger.Break(); //TODO(Amadeo): do something more intelligent
         }
 
         //App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationSamplePayload".GetLocalized(), AppContext.BaseDirectory));
@@ -186,30 +211,6 @@ public partial class App : Application
             })
             .Build();
     }
-/*    private void SetupLogger()
-    {
-        var launchArguments = Environment.GetCommandLineArgs();
-        var logManager = GetService<ILogManager>();
-        var logger = logManager.GetLogger(launchArguments);
-        //_logger.LogLogger = logger;
-
-        _logger.LogInformation("----------------------------------------------------------------");
-        _logger.LogInformation("[MAIN] HASS.Agent started");
-
-#if DEBUG
-        logManager.ExtendedLoggingEnabled = true;
-        _logger.LogInformation("[MAIN] DEBUG BUILD - TESTING PURPOSES ONLY");
-#endif
-
-        if (logManager.ExtendedLoggingEnabled)
-        {
-            logManager.LoggingLevelSwitch.MinimumLevel = LogEventLevel.Debug;
-            _logger.LogDebug("[MAIN] Extended logging enabled");
-            _logger.LogDebug("[MAIN] Started with arguments: {a}", launchArguments);
-
-            AppDomain.CurrentDomain.FirstChanceException += logManager.OnFirstChanceExceptionHandler;
-        }
-    }*/
 
     private PageService GetPageService()
     {
@@ -245,6 +246,14 @@ public partial class App : Application
         var host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder().UseContentRoot(AppContext.BaseDirectory).
             ConfigureServices((context, services) =>
             {
+                services.AddSingleton(sp =>
+                {
+                    return new LoggingLevelSwitch
+                    {
+                        MinimumLevel = DEBUG ? LogEventLevel.Debug : LogEventLevel.Information
+                    };
+                });
+
                 services.AddSerilog((sp, loggerConfiguration) =>
                 {
                     var arguments = Environment.GetCommandLineArgs();
@@ -252,12 +261,13 @@ public partial class App : Application
                         ? $"{StringHelper.RemoveNonAlphanumericCharacters(arguments.First(x => !string.IsNullOrEmpty(x)))}_"
                         : string.Empty;
 
-                    var elevatedTag = false ? "[E]" : ""; //TODO(Amadeo): implement IElevatedManager or something
+                    var elevationManager = sp.GetRequiredService<IElevationManager>();
+                    var elevatedTag = elevationManager.RunningElevated ? "[E]" : "";
 
                     var variableManager = sp.GetRequiredService<IVariableManager>();
                     var logName = $"[{DateTime.Now:yyyy-MM-dd}]{elevatedTag} {variableManager.ApplicationName}_{logTag}.log";
 
-                    loggerConfiguration.MinimumLevel.Information() //TODO(Amadeo): implement debug level logging check
+                    loggerConfiguration.MinimumLevel.ControlledBy(sp.GetRequiredService<LoggingLevelSwitch>())
                         .WriteTo.Async(a =>
                             a.File(Path.Combine(variableManager.LogPath, logName),
                                 rollingInterval: RollingInterval.Day,
@@ -267,6 +277,8 @@ public partial class App : Application
                                 buffered: true,
                                 flushToDiskInterval: TimeSpan.FromMilliseconds(150)));
                 });
+
+                services.AddSingleton<IExceptionManager, ExceptionManager>();
 
                 services.AddSingleton<IGuidManager, GuidManager>();
 
@@ -278,8 +290,9 @@ public partial class App : Application
                     Executable = Process.GetCurrentProcess().MainModule?.ModuleName ?? throw new Exception("cannot obtain application executable"),
                 });
 
+                services.AddSingleton<IElevationManager, ElevationManager>();
+
                 services.AddSingleton<IVariableManager, VariableManager>();
-                //services.AddSingleton<ILogManager, LogManager>();
 
                 services.AddSingleton<IGuidManager, GuidManager>();
                 services.AddSingleton<ISettingsManager, SettingsManager>();

@@ -15,8 +15,11 @@ public partial class ApplicationSettings : ObservableObject
     [GeneratedRegex(@"[^a-zA-Z0-9_-]")]
     private static partial Regex SanitizeRegex();
 
-    [ObservableProperty]
-    public OnboardingStatus onboardingStatus = OnboardingStatus.NaverDone;
+	[ObservableProperty]
+	public bool extendedLogging = false;
+
+	[ObservableProperty]
+    private OnboardingStatus onboardingStatus = OnboardingStatus.NaverDone;
     [ObservableProperty]
     private bool sanitizeName = true;
     [Obsolete("Configuration variable, please use DeviceName")]

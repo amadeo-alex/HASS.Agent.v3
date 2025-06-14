@@ -15,4 +15,12 @@
     <PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EditorConfigFiles Remove="D:\Programowanie\Visual CS\Projects\HASS.Agent.v3\src\HASS.Agent.Contracts\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="D:\Programowanie\Visual CS\Projects\HASS.Agent.v3\src\HASS.Agent.Contracts\.editorconfig" />
+  </ItemGroup>
+
 </Project>
