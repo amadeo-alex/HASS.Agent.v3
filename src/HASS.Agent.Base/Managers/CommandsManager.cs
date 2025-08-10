@@ -135,10 +135,14 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
             {
                 var payload = command.GetAutoDiscoveryConfig();
                 if (payload == null)
+                {
                     return;
+                }
 
                 if (command.IgnoreAvailability)
+                {
                     payload.AvailabilityTopic = string.Empty;
+                }
 
                 messageBuilder.WithPayload(JsonConvert.SerializeObject(payload, _jsonSerializerSettings));
             }
@@ -156,11 +160,15 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
         try
         {
             if (respectChecks && command.LastUpdated.AddSeconds(command.UpdateIntervalSeconds) > DateTime.Now)
+            {
                 return;
+            }
 
             var state = await command.GetState();
             if (state == null)
+            {
                 return;
+            }
 
             var attributes = await command.GetAttributes();
 
@@ -173,16 +181,22 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
             }
 
             if (command.GetAutoDiscoveryConfig() is not MqttCommandDiscoveryConfigModel autodiscoveryConfig)
+            {
                 return;
+            }
 
             var message = new MqttApplicationMessageBuilder()
                 .WithTopic(autodiscoveryConfig.StateTopic)
                 .WithRetainFlag(_settingsManager.Settings.Mqtt.UseRetainFlag);
 
             if (clear)
+            {
                 message.WithPayload(Array.Empty<byte>());
+            }
             else
+            {
                 message.WithPayload(state);
+            }
 
             await _mqttManager.PublishAsync(message.Build());
 
@@ -193,16 +207,22 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
                     .WithRetainFlag(_settingsManager.Settings.Mqtt.UseRetainFlag);
 
                 if (clear)
+                {
                     attributesMessage.WithPayload(Array.Empty<byte>());
+                }
                 else
+                {
                     attributesMessage.WithPayload(attributes);
+                }
 
                 await _mqttManager.PublishAsync(attributesMessage.Build());
             }
 
 
             if (!respectChecks || clear)
+            {
                 return;
+            }
 
             command.PreviousPublishedState = state;
             command.PreviousPublishedAttributes = attributes;
@@ -220,7 +240,9 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
         if (force || !_discoveryPublished)
         {
             foreach (var command in Commands)
+            {
                 await PublishCommandAutoDiscoveryConfigAsync(command);
+            }
 
             _discoveryPublished = true;
         }
@@ -230,14 +252,18 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
         foreach (var command in Commands)
         {
             if (command.Active)
+            {
                 await PublishCommandStateAsync(command);
+            }
         }
     }
 
     public async Task UnpublishCommandsDiscoveryAsync()
     {
         foreach (var command in Commands)
+        {
             await PublishCommandAutoDiscoveryConfigAsync(command, clear: true);
+        }
     }
 
     public async Task Process()
@@ -251,7 +277,9 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
             {
                 await Task.Delay(TimeSpan.FromMilliseconds(750)); //TODO(Amadeo): add application config for this
                 if (Pause || _mqttManager.Status != MqttStatus.Connected)
+                {
                     continue;
+                }
 
                 await PublishCommandsDiscoveryAsync();
                 await PublishCommandsStateAsync();
@@ -266,7 +294,9 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
     public void ResetAllCommandsChecks()
     {
         foreach (var command in Commands)
+        {
             command.ResetChecks();
+        }
     }
 
     public async Task HandleMqttMessage(MqttApplicationMessage message)

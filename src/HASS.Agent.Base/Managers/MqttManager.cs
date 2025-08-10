@@ -447,7 +447,8 @@ public partial class MqttManager : ObservableObject, IMqttManager
 
         if (_mqttSettingsSnapshot.UseWebSocket)
         {
-            clientOptionsBuilder.WithWebSocketServer(o => o.WithUri("127.0.0.1:8080"));
+            clientOptionsBuilder.WithWebSocketServer(o => o.WithUri($"{_mqttSettingsSnapshot.Address}:{_mqttSettingsSnapshot.Port}"));
+            _logger.LogInformation("[MQTT] Using WebSocket for the connection");
         }
         else
         {

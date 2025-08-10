@@ -191,6 +191,8 @@ public partial class App : Application
             Debugger.Break(); //TODO(Amadeo): do something more intelligent
         }
 
+        GetService<IThemeSelectorService>(); //Note(Amadeo): required for the property changed registration, more clever way?
+
         _logger.LogDebug("[MAIN] attempting to display main window");
         //App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationSamplePayload".GetLocalized(), AppContext.BaseDirectory));
         await GetService<IActivationService>().ActivateAsync(args);
