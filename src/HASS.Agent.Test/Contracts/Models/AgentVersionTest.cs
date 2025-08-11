@@ -128,4 +128,27 @@ public class AgentVersionTest
         Assert.AreEqual(37, version.Additional.Minor);
         Assert.AreEqual(-1, version.Additional.Build);
     }
+
+    [TestMethod]
+    public void TestComparison()
+    {
+        var newer = new AgentVersion("5.2.3");
+        var older = new AgentVersion("2.8.9");
+        var older2 = new AgentVersion("2.8.9");
+        Assert.AreEqual(VersionComparison.Newer, older.CompareTo(newer));
+        Assert.AreEqual(VersionComparison.Older, newer.CompareTo(older));
+        Assert.AreEqual(VersionComparison.Equal, older.CompareTo(older2));
+    }
+
+    [TestMethod]
+    public void TestComparisonBeta()
+    {
+        var newer = new AgentVersion("5.2.3");
+        var newerBeta = new AgentVersion("5.2.3-beta3.1.3");
+        var older = new AgentVersion("2.8.9");
+        var olderBeta = new AgentVersion("2.8.9-beta1.0");
+        Assert.AreEqual(VersionComparison.Newer, newer.CompareTo(newerBeta));
+        Assert.AreEqual(VersionComparison.Newer, older.CompareTo(olderBeta));
+        Assert.AreEqual(VersionComparison.Older, newer.CompareTo(olderBeta));
+    }
 }

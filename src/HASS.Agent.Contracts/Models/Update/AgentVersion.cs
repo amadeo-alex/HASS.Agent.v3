@@ -23,6 +23,16 @@ public partial class AgentVersion
 	public bool IsNightly { get => Tag == NightlyTag; }
 	public string Tag { get; set; } = string.Empty;
 
+	public AgentVersion()
+	{
+		
+	}
+
+	public AgentVersion(string versionString)
+	{
+		Parse(versionString);
+	}
+
 	public bool Parse(string versionString)
 	{
 		if (VersionRegex().Matches(versionString).Count != 1)
@@ -43,5 +53,17 @@ public partial class AgentVersion
 		}
 
 		return true;
+	}
+
+	public VersionComparison CompareTo(AgentVersion otherVersion)
+	{
+		var baseComparison = (VersionComparison)Base.CompareTo(otherVersion.Base);
+		if(baseComparison != VersionComparison.Equal)
+		{
+			return baseComparison;
+		}
+
+		var additionalComparison = (VersionComparison)Additional.CompareTo(otherVersion.Additional);
+		return additionalComparison;
 	}
 }

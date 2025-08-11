@@ -14,5 +14,11 @@ public class ReleaseInformation
 	public string ReleaseNotes { get; set; } = string.Empty;
 	public string InstallerUrl { get; set; } = string.Empty;
 	public bool IsNewer { get; set; }
-	public Release? GithubRelease { get; set; }
+	public Release GithubRelease { get; set; }
+
+	public ReleaseInformation(AgentVersion currentVersion, Release release)
+	{
+		
+		GithubRelease = release;
+	}
 }

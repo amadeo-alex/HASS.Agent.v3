@@ -43,10 +43,7 @@ internal class UpdateManager : IUpdateManager
         // 1.0.1-beta1
         // 1.0.1-nightly1
 
-        return new ReleaseInformation
-        {
-
-        };
+        return null;
     }
 
     private async void PeriodicUpdateCheck()
