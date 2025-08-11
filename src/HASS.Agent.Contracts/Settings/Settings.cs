@@ -7,6 +7,7 @@ using HASS.Agent.Contracts.Managers;
 using HASS.Agent.Contracts.Models;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
+using HASS.Agent.Contracts.Settings;
 
 namespace HASS.Agent.Contracts.Models.Settings;
 public class Settings : ISettings

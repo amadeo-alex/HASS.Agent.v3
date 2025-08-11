@@ -7,6 +7,7 @@ using HASS.Agent.Base.Models;
 using HASS.Agent.Contracts.Managers;
 using HASS.Agent.Contracts.Models;
 using HASS.Agent.Contracts.Models.Settings;
+using HASS.Agent.Contracts.Settings;
 
 namespace HASS.Agent.Contracts.Models;
 public interface ISettings

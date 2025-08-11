@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 namespace HASS.Agent.Contracts.Models.Settings;
 public class UpdateSettings
 {
-    public bool CheckForUpdates { get; set; } = true;
+    public bool PeriodicUpdateCheckEnabled { get; set; } = true;
     public string LastUpdateNotificationShown { get; set; } = string.Empty;
     public bool EnableExecuteUpdateInstaller { get; set; } = true;
     public bool ShowBetaUpdates { get; set; }
+	public int PeriodicUpdateIntervalMinutes { get; set; } = 30;
 }

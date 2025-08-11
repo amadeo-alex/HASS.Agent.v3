@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HASS.Agent.Contracts.Models.Settings;
+namespace HASS.Agent.Contracts.Settings;
 public class WebViewSettings
 {
     public string BrowserName { get; set; } = string.Empty;
