@@ -38,10 +38,6 @@ public class VariableManager : IVariableManager
 
     public VariableManager(ApplicationInfo applicationInfo)
     {
-        ClientVersion = applicationInfo.Version;
-        IsClientBeta = ClientVersion.Contains('b');
-        ApplicationName = applicationInfo.Name;
-
         StartupPath = Path.GetDirectoryName(applicationInfo.ExecutablePath) ?? throw new Exception("cannot get executable path directory name");
         CachePath = Path.Combine(StartupPath, "cache");
         ImageCachePath = Path.Combine(CachePath, "images");

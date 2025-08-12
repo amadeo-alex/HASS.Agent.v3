@@ -151,4 +151,12 @@ public class AgentVersionTest
         Assert.AreEqual(VersionComparison.Newer, older.CompareTo(olderBeta));
         Assert.AreEqual(VersionComparison.Older, newer.CompareTo(olderBeta));
     }
+
+    [TestMethod]
+    public void TestToString()
+    {
+        var versionString = "5.2.3-beta3.1.3";
+        var version = new AgentVersion(versionString);
+        Assert.AreEqual(versionString, version.ToString());
+    }
 }

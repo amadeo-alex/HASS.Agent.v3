@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HASS.Agent.Base.Models;
 using HASS.Agent.Contracts.Managers;
 using HASS.Agent.Contracts.Models.Update;
 using Microsoft.Extensions.Logging;
 using Octokit;
 
 namespace HASS.Agent.Base.Managers;
-internal class UpdateManager : IUpdateManager
+public class UpdateManager : IUpdateManager
 {
     private readonly ILogger _logger;
     private readonly ISettingsManager _settingsManager;
@@ -32,18 +33,14 @@ internal class UpdateManager : IUpdateManager
         return Task.CompletedTask;
     }
 
-    public Task<ReleaseInformation> CheckForUpdateAsync() => throw new NotImplementedException();
+    public Task<ReleaseInformation> CheckForUpdateAsync() => GetLatestRelease();
 
     private async Task<ReleaseInformation> GetLatestRelease()
     {
         var ghClient = new GitHubClient(new ProductHeaderValue("HASS.Agent"));
         var latestRelease = await ghClient.Repository.Release.GetLatest("hass-agent", "HASS.Agent"); //TODO(Amadeo): change to proper repo
-    
-        // 1.0.1
-        // 1.0.1-beta1
-        // 1.0.1-nightly1
 
-        return null;
+        return new ReleaseInformation(latestRelease);
     }
 
     private async void PeriodicUpdateCheck()

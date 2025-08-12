@@ -11,7 +11,7 @@ public partial class AgentVersion
 	public const string BetaTag = "beta";
 	public const string NightlyTag = "nightly";
 
-	private const string _versionRegex = "^\\d+\\.\\d+\\.?\\d?(-(.+)(\\d+\\.\\d+\\.?\\d?))?$";
+	private const string _versionRegex = "^\\d+\\.\\d+\\.?\\d?\\.?\\d?(-(.+)(\\d+\\.\\d+\\.?\\d?))?$";
 
 	[GeneratedRegex(_versionRegex)]
 	private static partial Regex VersionRegex();
@@ -65,5 +65,10 @@ public partial class AgentVersion
 
 		var additionalComparison = (VersionComparison)Additional.CompareTo(otherVersion.Additional);
 		return additionalComparison;
+	}
+
+	public override string ToString()
+	{
+		return $"{Base}-{Tag}{Additional}";
 	}
 }

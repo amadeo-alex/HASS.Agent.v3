@@ -39,6 +39,7 @@ using HASS.Agent.Contracts.Helpers;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Core;
+using HASS.Agent.Contracts.Models.Update;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -282,12 +283,18 @@ public partial class App : Application
 
                 services.AddSingleton<IGuidManager, GuidManager>();
 
-                services.AddSingleton(new ApplicationInfo()
+                services.AddSingleton(sp =>
                 {
-                    Name = Assembly.GetExecutingAssembly().GetName().Name ?? "HASS.Agent",
-                    Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? throw new Exception("cannot obtain application version"),
-                    ExecutablePath = AppDomain.CurrentDomain.BaseDirectory,
-                    Executable = Process.GetCurrentProcess().MainModule?.ModuleName ?? throw new Exception("cannot obtain application executable"),
+                    var informationalVersion = Assembly.GetExecutingAssembly()?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? throw new Exception("cannot obtain application version");
+                    var versionString = informationalVersion.Contains('+') ? informationalVersion.Split('+')[0] : informationalVersion;
+
+                    return new ApplicationInfo()
+                    {
+                        Name = Assembly.GetExecutingAssembly().GetName().Name ?? "HASS.Agent",
+                        Version = new AgentVersion(versionString),
+                        ExecutablePath = AppDomain.CurrentDomain.BaseDirectory,
+                        Executable = Process.GetCurrentProcess().MainModule?.ModuleName ?? throw new Exception("cannot obtain application executable"),
+                    };
                 });
 
                 services.AddSingleton<IElevationManager, ElevationManager>();

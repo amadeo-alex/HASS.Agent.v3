@@ -38,12 +38,16 @@ public class EntityTypeRegistry : IEntityTypeRegistry
     public void RegisterSensorType(Type sensorType, string categoryString, bool clientCompatible, bool satelliteCompatible)
     {
         if (!sensorType.IsAssignableTo(typeof(IDiscoverable)))
+        {
             throw new ArgumentException($"{sensorType} is not derived from {nameof(IDiscoverable)}");
+        }
 
         var typeName = sensorType.Name;
 
         if (SensorTypes.ContainsKey(typeName))
+        {
             throw new ArgumentException($"sensor {sensorType} already registered");
+        }
 
         SensorsCategories.Add(categoryString, sensorType);
 
@@ -58,12 +62,16 @@ public class EntityTypeRegistry : IEntityTypeRegistry
     public void RegisterCommandType(Type commandType, string categoryString, bool clientCompatible, bool satelliteCompatible)
     {
         if (!commandType.IsAssignableTo(typeof(IDiscoverable)))
+        {
             throw new ArgumentException($"{commandType} is not derived from {nameof(IDiscoverable)}");
+        }
 
         var typeName = commandType.Name;
 
         if (CommandTypes.ContainsKey(typeName))
+        {
             throw new ArgumentException($"command {commandType} already registered");
+        }
 
         CommandsCategories.Add(categoryString, commandType);
 
@@ -91,7 +99,9 @@ public class EntityTypeRegistry : IEntityTypeRegistry
     public IDiscoverable CreateSensorInstance(ConfiguredEntity configuredEntity)
     {
         if (!SensorTypes.TryGetValue(configuredEntity.Type, out var registeredEntity))
+        {
             throw new ArgumentException($"sensor type {configuredEntity.Type} is not registered");
+        }
 
         return CreateDiscoverableInstance(registeredEntity.EntityType, configuredEntity);
     }
@@ -99,7 +109,9 @@ public class EntityTypeRegistry : IEntityTypeRegistry
     public IDiscoverable CreateCommandInstance(ConfiguredEntity configuredEntity)
     {
         if (!CommandTypes.TryGetValue(configuredEntity.Type, out var registeredEntity))
+        {
             throw new ArgumentException($"command type {configuredEntity.Type} is not registered");
+        }
 
         return CreateDiscoverableInstance(registeredEntity.EntityType, configuredEntity);
     }
