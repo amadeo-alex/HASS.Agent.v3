@@ -16,7 +16,6 @@ public class FileStorageManager : IFileStorageManager
     public FileStorageManager(ILogger<FileStorageManager> logger, ISettingsManager settingsManager)
     {
         _logger = logger;
-
         _settingsManager = settingsManager;       
     }
 

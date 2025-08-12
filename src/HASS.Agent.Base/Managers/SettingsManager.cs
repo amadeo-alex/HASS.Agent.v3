@@ -44,13 +44,19 @@ public class SettingsManager : ISettingsManager
         ConfiguredQuickActions = GetConfiguredQuickActions();
 
         foreach (var configuredSensor in ConfiguredSensors)
+        {
             _guidManager.MarkAsUsed(configuredSensor.UniqueId);
+        }
 
         foreach (var configuredCommand in ConfiguredCommands)
+        {
             _guidManager.MarkAsUsed(configuredCommand.UniqueId);
+        }
 
         foreach (var configuredQuickAction in ConfiguredQuickActions)
+        {
             _guidManager.MarkAsUsed(configuredQuickAction.UniqueId);
+        }
 
         ConfiguredSensors.CollectionChanged += Configured_CollectionChanged;
         ConfiguredCommands.CollectionChanged += Configured_CollectionChanged;
@@ -63,7 +69,9 @@ public class SettingsManager : ISettingsManager
         {
             case NotifyCollectionChangedAction.Add:
                 if (e.NewItems == null)
+                {
                     return;
+                }
 
                 foreach (var configured in e.NewItems)
                 {
@@ -80,7 +88,9 @@ public class SettingsManager : ISettingsManager
 
             case NotifyCollectionChangedAction.Remove:
                 if (e.OldItems == null)
+                {
                     return;
+                }
 
                 foreach (var configured in e.OldItems)
                 {
@@ -321,7 +331,9 @@ public class SettingsManager : ISettingsManager
         if (existingCommand != null)
         {
             if (existingCommand.Type != command.Type)
+            {
                 throw new ArgumentException($"command with ID {existingCommand.UniqueId} of different type ({existingCommand.Type}) than {command.Type} already exists");
+            }
 
             ConfiguredSensors.Remove(existingCommand);
         }
@@ -335,7 +347,9 @@ public class SettingsManager : ISettingsManager
         {
             var setting = Registry.GetValue(_variableManager.RootRegKey, "ExtendedLogging", "0") as string;
             if (string.IsNullOrEmpty(setting))
+            {
                 return false;
+            }
 
             return setting == "1";
         }
@@ -365,7 +379,9 @@ public class SettingsManager : ISettingsManager
         {
             var setting = Registry.GetValue(_variableManager.RootRegKey, "DpiWarningShown", "0") as string;
             if (string.IsNullOrEmpty(setting))
+            {
                 return false;
+            }
 
             return setting == "1";
         }
@@ -470,7 +486,9 @@ public class SettingsManager : ISettingsManager
         {
             var setting = Registry.GetValue(_variableManager.RootRegKey, "HideDonateButton", "0") as string;
             if (string.IsNullOrEmpty(setting))
+            {
                 return false;
+            }
 
             return setting == "1";
         }

@@ -10,5 +10,5 @@ namespace HASS.Agent.Contracts.Managers;
 public interface IUpdateManager
 {
 	Task InitializeAsync();
-	Task<ReleaseInformation> CheckForUpdateAsync();
+	Task<ReleaseInformation> GetLatestReleaseAsync();
 }

@@ -12,4 +12,5 @@ public class UpdateSettings
     public bool EnableExecuteUpdateInstaller { get; set; } = true;
     public bool ShowBetaUpdates { get; set; }
 	public int PeriodicUpdateIntervalMinutes { get; set; } = 30;
+	public List<string> IgnoredVersions { get; set; } = [];
 }

@@ -15,6 +15,8 @@ public class UpdateManager : IUpdateManager
     private readonly ILogger _logger;
     private readonly ISettingsManager _settingsManager;
 
+    public event EventHandler<UpdateAvailableEventArgs>? UpdateAvailableEventHandler; //TODO(Amadeo): proper async approach?
+
     public UpdateManager(ILogger<UpdateManager> logger, ISettingsManager settingsManager)
     {
         _logger = logger;
@@ -33,9 +35,7 @@ public class UpdateManager : IUpdateManager
         return Task.CompletedTask;
     }
 
-    public Task<ReleaseInformation> CheckForUpdateAsync() => GetLatestRelease();
-
-    private async Task<ReleaseInformation> GetLatestRelease()
+    public async Task<ReleaseInformation> GetLatestReleaseAsync()
     {
         var ghClient = new GitHubClient(new ProductHeaderValue("HASS.Agent"));
         var latestRelease = await ghClient.Repository.Release.GetLatest("hass-agent", "HASS.Agent"); //TODO(Amadeo): change to proper repo
@@ -43,17 +43,41 @@ public class UpdateManager : IUpdateManager
         return new ReleaseInformation(latestRelease);
     }
 
-    private async void PeriodicUpdateCheck()
+    private async Task<bool> CheckForUpdateAsync()
+    {
+        var latestRelease = await GetLatestReleaseAsync();
+        if (latestRelease.Version.Tag != AgentVersion.BetaTag || !string.IsNullOrWhiteSpace(latestRelease.Version.Tag))
+        {
+            return false;
+        }
+
+        if (_settingsManager.Settings.Update.IgnoredVersions.Contains(latestRelease.Version.ToString()))
+        {
+            return false;
+        }
+
+        if (latestRelease.Version.IsBeta && !_settingsManager.Settings.Update.ShowBetaUpdates)
+        {
+            return false;
+        }
+
+        UpdateAvailableEventHandler?.Invoke(this, new UpdateAvailableEventArgs
+        {
+            Release = latestRelease
+        });
+
+        return true;
+    }
+
+
+
+    private async void PeriodicUpdateCheckAsync()
     {
         //Note(Amadeo): initial update check?
-
         while (true) //TODO(Amadeo): cancellation token?
         {
             await Task.Delay(TimeSpan.FromMinutes(_settingsManager.Settings.Update.PeriodicUpdateIntervalMinutes));
-        
-            var latestRelease = GetLatestRelease();
+            await CheckForUpdateAsync();
         }
-
-
     }
 }

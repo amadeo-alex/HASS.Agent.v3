@@ -25,7 +25,9 @@ public class GuidManager : IGuidManager
     public void MarkAsUsed(string guid)
     {
         if (string.IsNullOrWhiteSpace(guid))
+        {
             return;
+        }
 
         _logger.LogDebug("[GUID] {guid} marked as used", guid);
         _usedGuids.Add(guid);
@@ -37,7 +39,9 @@ public class GuidManager : IGuidManager
     public void MarkAsUnused(string guid)
     {
         if (string.IsNullOrWhiteSpace(guid))
+        {
             return;
+        }
 
         _logger.LogDebug("[GUID] {guid} marked as unused", guid);
         _usedGuids.Remove(guid);
@@ -47,7 +51,9 @@ public class GuidManager : IGuidManager
     {
         var guid = Guid.NewGuid();
         while (_usedGuids.Contains(guid.ToString()))
+        {
             guid = Guid.NewGuid();
+        }
 
         _usedGuids.Add(guid.ToString());
         return guid;
@@ -56,7 +62,9 @@ public class GuidManager : IGuidManager
     {
         var guid = GenerateGuid().ToString()[..8];
         while (_usedGuids.Contains(guid))
+        {
             guid = GenerateGuid().ToString()[..8];
+        }
 
         _usedGuids.Add(guid);
         return guid;

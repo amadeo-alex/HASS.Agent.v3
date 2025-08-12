@@ -56,7 +56,9 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
         _settingsManager.ConfiguredCommands.CollectionChanged -= ConfiguredCommands_CollectionChanged;
 
         foreach (var configuredCommand in _settingsManager.ConfiguredCommands)
+        {
             await AddCommand(configuredCommand);
+        }
 
         _settingsManager.ConfiguredCommands.CollectionChanged += ConfiguredCommands_CollectionChanged; ;
     }
@@ -67,7 +69,9 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
         command.ConfigureAutoDiscoveryConfig(_settingsManager.Settings.Mqtt.DiscoveryPrefix, _mqttManager.DeviceConfigModel);
 
         if (command.GetAutoDiscoveryConfig() is not MqttCommandDiscoveryConfigModel commandConfig)
+        {
             return;
+        }
 
         _mqttManager.RegisterMessageHandler(commandConfig.ActionTopic, this);
         _mqttManager.RegisterMessageHandler(commandConfig.CommandTopic, this);
@@ -83,7 +87,9 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
         await PublishCommandAutoDiscoveryConfigAsync(command, clear: true);
 
         if (command.GetAutoDiscoveryConfig() is not MqttCommandDiscoveryConfigModel commandConfig)
+        {
             return;
+        }
 
         _mqttManager.UnregisterMessageHandler(commandConfig.CommandTopic);
         _mqttManager.UnregisterMessageHandler(commandConfig.ActionTopic);
@@ -97,21 +103,30 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
         {
             case NotifyCollectionChangedAction.Add:
                 if (e.NewItems == null)
+                {
                     return;
+                }
 
                 foreach (ConfiguredEntity configuredCommand in e.NewItems)
+                {
                     _ = AddCommand(configuredCommand);
+                }
+
                 break;
 
             case NotifyCollectionChangedAction.Remove:
                 if (e.OldItems == null)
+                {
                     return;
+                }
 
                 foreach (ConfiguredEntity configuredCommand in e.OldItems)
                 {
                     var command = Commands.Where(s => s.UniqueId == configuredCommand.UniqueId.ToString()).FirstOrDefault();
                     if (command != null)
+                    {
                         _ = RemoveCommand(command);
+                    }
                 }
                 break;
         }
