@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using HASS.Agent.UI.Contracts;
 using HASS.Agent.UI.Helpers;
 using HASS.Agent.UI.ViewModels;
 using HASS.Agent.UI.ViewModels.Settings;
@@ -26,77 +27,80 @@ namespace HASS.Agent.UI.Views.Pages.Settings;
 /// <summary>
 /// An empty page that can be used on its own or navigated to within a Frame.
 /// </summary>
-public sealed partial class MqttSettingsPage : Page
+public sealed partial class MqttSettingsPage : Page, IManagedPage
 {
-    private readonly MqttSettingsPageViewModel _viewModel;
+    private MqttSettingsPageViewModel ViewModel { get => (MqttSettingsPageViewModel)DataContext;}
 
     public MqttSettingsPage()
     {
-        _viewModel = App.GetService<MqttSettingsPageViewModel>();
         this.InitializeComponent();
-        DataContext = _viewModel;
     }
 
-    private async void ChangeAddressButton_Click(object sender, RoutedEventArgs e)
+	public void OnDataContextChange()
+	{
+
+	}
+
+	private async void ChangeAddressButton_Click(object sender, RoutedEventArgs e)
     {
-        var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_AddressDialog_Title", "Page_MqttSettings_AddressDialog_Query", _viewModel.Address);
+        var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_AddressDialog_Title", "Page_MqttSettings_AddressDialog_Query", ViewModel.Address);
         if (!string.IsNullOrEmpty(newValue))
         {
-			_viewModel.Address = newValue;
+			ViewModel.Address = newValue;
 		}
     }
 
     private async void ChangePortButton_Click(object sender, RoutedEventArgs e)
     {
-        var newValue = await GetNewSettingValueAsync<int>("Page_MqttSettings_PortDialog_Title", "Page_MqttSettings_PortDialog_Query", Convert.ToString(_viewModel.Port), true);
+        var newValue = await GetNewSettingValueAsync<int>("Page_MqttSettings_PortDialog_Title", "Page_MqttSettings_PortDialog_Query", Convert.ToString(ViewModel.Port), true);
         if (newValue != default)
         {
-			_viewModel.Port = newValue;
+			ViewModel.Port = newValue;
 		}
     }
 
     private async void ChangeUsernameButton_Click(object sender, RoutedEventArgs e)
     {
-        var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_UsernameDialog_Title", "Page_MqttSettings_UsernameDialog_Query", _viewModel.Username);
+        var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_UsernameDialog_Title", "Page_MqttSettings_UsernameDialog_Query", ViewModel.Username);
         if (!string.IsNullOrEmpty(newValue))
         {
-			_viewModel.Username = newValue;
+			ViewModel.Username = newValue;
 		}
     }
 
     private async void ChangePasswordButton_Click(object sender, RoutedEventArgs e)
     {
-        var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_PasswordDialog_Title", "Page_MqttSettings_PasswordDialog_Query", _viewModel.Password);
+        var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_PasswordDialog_Title", "Page_MqttSettings_PasswordDialog_Query", ViewModel.Password);
         if (!string.IsNullOrEmpty(newValue))
         {
-			_viewModel.Password = newValue;
+			ViewModel.Password = newValue;
 		}
     }
 
     private async void ChangeDiscoveryPrefixButton_Click(object sender, RoutedEventArgs e)
     {
-        var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_DiscoveryPrefixDialog_Title", "Page_MqttSettings_DiscoveryPrefixDialog_Query", _viewModel.DiscoveryPrefix);
+        var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_DiscoveryPrefixDialog_Title", "Page_MqttSettings_DiscoveryPrefixDialog_Query", ViewModel.DiscoveryPrefix);
         if (!string.IsNullOrEmpty(newValue))
         {
-			_viewModel.DiscoveryPrefix = newValue;
+			ViewModel.DiscoveryPrefix = newValue;
 		}
     }
 
     private async void ChangeClientIdButton_Click(object sender, RoutedEventArgs e)
     {
-        var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_ClientIdDialog_Title", "Page_MqttSettings_ClientIdDialog_Query", _viewModel.ClientId);
+        var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_ClientIdDialog_Title", "Page_MqttSettings_ClientIdDialog_Query", ViewModel.ClientId);
         if (!string.IsNullOrEmpty(newValue))
         {
-            _viewModel.ClientId = newValue;
+			ViewModel.ClientId = newValue;
 		}
     }
 
     private async void ChangeGracePeriodButton_Click(object sender, RoutedEventArgs e)
     {
-        var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_GracePeriodDialog_Title", "Page_MqttSettings_GracePeriodDialog_Query", Convert.ToString(_viewModel.GracePeriodSeconds), true);
+        var newValue = await GetNewSettingValueAsync<string>("Page_MqttSettings_GracePeriodDialog_Title", "Page_MqttSettings_GracePeriodDialog_Query", Convert.ToString(ViewModel.GracePeriodSeconds), true);
         if (!string.IsNullOrEmpty(newValue))
         {
-			_viewModel.ClientId = newValue;
+			ViewModel.ClientId = newValue;
 		}
     }
 
@@ -112,7 +116,7 @@ public sealed partial class MqttSettingsPage : Page
         var certificateFile = await openPicker.PickSingleFileAsync();
         if (certificateFile != null)
         {
-            _viewModel.ClientCertificatePath = certificateFile.Path;
+			ViewModel.ClientCertificatePath = certificateFile.Path;
 		}
     }
 
@@ -128,7 +132,7 @@ public sealed partial class MqttSettingsPage : Page
         var certificateFile = await openPicker.PickSingleFileAsync();
         if (certificateFile != null)
         {
-            _viewModel.RootCertificatePath = certificateFile.Path;
+			ViewModel.RootCertificatePath = certificateFile.Path;
 		}
     }
 
@@ -152,6 +156,6 @@ public sealed partial class MqttSettingsPage : Page
 
 	private async void RestartButton_Click(object sender, RoutedEventArgs e)
 	{
-		await _viewModel.RestartClientAsync();
+		await ViewModel.RestartClientAsync();
 	}
 }

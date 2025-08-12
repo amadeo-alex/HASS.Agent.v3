@@ -9,4 +9,5 @@ namespace HASS.Agent.UI.Helpers;
 public static class FrameExtensions
 {
     public static object? GetPageViewModel(this Frame frame) => frame?.Content?.GetType().GetProperty("DataContext")?.GetValue(frame.Content, null);
+	public static void SetPageViewModel(this Frame frame, object viewModel) => frame?.Content?.GetType().GetProperty("DataContext")?.SetValue(frame.Content, viewModel);
 }

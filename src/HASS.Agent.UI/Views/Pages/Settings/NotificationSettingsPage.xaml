@@ -6,9 +6,24 @@
     xmlns:local="using:HASS.Agent.UI.Views.Pages.Settings"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+	xmlns:ui="using:CommunityToolkit.WinUI"
+	xmlns:l="using:WinUI3Localizer"
+	xmlns:vm="using:HASS.Agent.UI.ViewModels.Settings"
+	xmlns:vc="using:HASS.Agent.UI.ValueConverters"
     mc:Ignorable="d">
 
-    <Grid>
-		<TextBlock Text="notifications settings"/>
-    </Grid>
+	<Page.Resources>
+		<vc:LocalizerResourceConverter x:Key="LocalizerResourceConverter" />
+	</Page.Resources>
+
+	<Grid Margin="16">
+		<StackPanel Spacing="4">
+			<controls:SettingsCard l:Uids.Uid="Page_NotificationSettings_EnabledCard">
+				<ToggleSwitch l:Uids.Uid="Page_NotificationSettings_EnabledCard_Switch"
+							  IsOn="{Binding SettingsManager.Settings.Notification.Enabled, Mode=TwoWay}"/>
+			</controls:SettingsCard>
+		</StackPanel>
+
+	</Grid>
 </Page>

@@ -30,7 +30,7 @@ public class UpdateManager : IUpdateManager
             return Task.CompletedTask;
         }
 
-        _ = Task.Run(PeriodicUpdateCheck);
+        _ = Task.Run(PeriodicUpdateCheckAsync);
 
         return Task.CompletedTask;
     }
@@ -71,7 +71,7 @@ public class UpdateManager : IUpdateManager
 
 
 
-    private async void PeriodicUpdateCheckAsync()
+    private async Task PeriodicUpdateCheckAsync()
     {
         //Note(Amadeo): initial update check?
         while (true) //TODO(Amadeo): cancellation token?

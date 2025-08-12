@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace HASS.Agent.UI.Contracts.ViewModels;
 public interface INavigationAware
 {
-    void OnNavigatedTo(object parameter);
+    void OnNavigatedTo();
 
     void OnNavigatedFrom();
 }

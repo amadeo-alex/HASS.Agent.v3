@@ -183,7 +183,7 @@ public partial class SensorsPageViewModel : ViewModelBase, IInfoBadgeAware, INav
     {
         _sensorManager.Sensors.CollectionChanged -= Sensors_CollectionChanged;
     }
-    public void OnNavigatedTo(object parameter)
+    public void OnNavigatedTo()
     {
         _sensorManager.Sensors.CollectionChanged += Sensors_CollectionChanged;
     }

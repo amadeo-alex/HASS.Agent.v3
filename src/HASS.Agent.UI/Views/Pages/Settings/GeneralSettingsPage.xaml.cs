@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using HASS.Agent.UI.Contracts;
 using HASS.Agent.UI.Helpers;
 using HASS.Agent.UI.ViewModels;
 using HASS.Agent.UI.ViewModels.Settings;
@@ -24,35 +25,38 @@ namespace HASS.Agent.UI.Views.Pages.Settings;
 /// <summary>
 /// An empty page that can be used on its own or navigated to within a Frame.
 /// </summary>
-public sealed partial class GeneralSettingsPage : Page
+public sealed partial class GeneralSettingsPage : Page, IManagedPage
 {
-    private readonly GeneralSettingsPageViewModel _viewModel;
-    public GeneralSettingsPage()
-    {
-        _viewModel = App.GetService<GeneralSettingsPageViewModel>();
-        this.InitializeComponent();
-        DataContext = _viewModel;
-    }
+	private GeneralSettingsPageViewModel ViewModel { get => (GeneralSettingsPageViewModel)DataContext; }
+	public GeneralSettingsPage()
+	{
+		this.InitializeComponent();
+	}
 
-    private async void ChangeNameButton_Click(object sender, RoutedEventArgs e)
-    {
-        var dialog = new InputContentDialog
-        {
-            XamlRoot = XamlRoot,
-            Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-            Title = LocalizerHelper.GetLocalizedString("Page_GeneralSettings_NameDialog_Title"),
-            PrimaryButtonText = LocalizerHelper.GetLocalizedString("General_Save"),
-            CloseButtonText = LocalizerHelper.GetLocalizedString("General_Cancel"),
-            DefaultButton = ContentDialogButton.Primary,
-            Content = new InputDialogContent("Page_GeneralSettings_NameDialog_Query", _viewModel.SettingsManager.Settings.Application.ConfiguredDeviceName)
-        };
+	public void OnDataContextChange()
+	{
 
-        var result = await dialog.ShowAsync();
-        if (result == ContentDialogResult.Primary)
-        {
-            var newDeviceName = dialog.GetInputContent<string>();
-            if (newDeviceName != null)
-                _viewModel.SettingsManager.Settings.Application.ConfiguredDeviceName = newDeviceName;
-        }
-    }
+	}
+
+	private async void ChangeNameButton_Click(object sender, RoutedEventArgs e)
+	{
+		var dialog = new InputContentDialog
+		{
+			XamlRoot = XamlRoot,
+			Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+			Title = LocalizerHelper.GetLocalizedString("Page_GeneralSettings_NameDialog_Title"),
+			PrimaryButtonText = LocalizerHelper.GetLocalizedString("General_Save"),
+			CloseButtonText = LocalizerHelper.GetLocalizedString("General_Cancel"),
+			DefaultButton = ContentDialogButton.Primary,
+			Content = new InputDialogContent("Page_GeneralSettings_NameDialog_Query", ViewModel.SettingsManager.Settings.Application.ConfiguredDeviceName)
+		};
+
+		var result = await dialog.ShowAsync();
+		if (result == ContentDialogResult.Primary)
+		{
+			var newDeviceName = dialog.GetInputContent<string>();
+			if (newDeviceName != null)
+				ViewModel.SettingsManager.Settings.Application.ConfiguredDeviceName = newDeviceName;
+		}
+	}
 }

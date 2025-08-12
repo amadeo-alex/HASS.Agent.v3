@@ -54,13 +54,17 @@ public partial class SettingsRootPageViewModel : ViewModelBase, INavigationAware
     {
         var selectedItem = NavigationViewService.GetSelectedItem(e.SourcePageType);
         if (selectedItem != null)
+        {
             Selected = selectedItem;
+        }
     }
 
-    public void OnNavigatedTo(object parameter)
+    public void OnNavigatedTo()
     {
         NavigationService.Navigated += NavigationService_Navigated;
-    }
+
+		NavigationService.NavigateTo("settingsGeneral");
+	}
     public void OnNavigatedFrom()
     {
         NavigationService.Navigated -= NavigationService_Navigated;

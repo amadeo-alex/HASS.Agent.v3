@@ -98,7 +98,7 @@ public partial class DebugPageViewModel : ViewModelBase, INavigationAware
         }
     }
 
-	public void OnNavigatedTo(object parameter)
+	public void OnNavigatedTo()
 	{
 		_mqttManager.PropertyChanged += OnMqttPropertyChanged;
 	}

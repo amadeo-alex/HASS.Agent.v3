@@ -408,4 +408,13 @@
   <data name="Page_MqttSettings_WebSocketCard_Switch.OnContent" xml:space="preserve">
     <value>On</value>
   </data>
+  <data name="Page_NotificationSettings_EnabledCard.Header" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="Page_NotificationSettings_EnabledCard_Switch.OnContent" xml:space="preserve">
+    <value>On</value>
+  </data>
+  <data name="Page_NotificationSettings_EnabledCard_Switch.OffContent" xml:space="preserve">
+    <value>Off</value>
+  </data>
 </root>

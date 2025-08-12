@@ -189,7 +189,7 @@ public partial class MqttSettingsPageViewModel : ViewModelBase, INavigationAware
 		RestartRequired = false;
 	}
 
-	public void OnNavigatedTo(object parameter)
+	public void OnNavigatedTo()
 	{
 		_mqttManager.PropertyChanged += OnMqttPropertyChanged;
 		_mqttSettings.PropertyChanged += OnMqttPropertyChanged;

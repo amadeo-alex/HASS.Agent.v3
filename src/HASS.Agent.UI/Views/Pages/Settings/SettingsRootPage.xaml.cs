@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
+using HASS.Agent.UI.Contracts;
 using HASS.Agent.UI.ViewModels;
+using HASS.Agent.UI.ViewModels.Settings;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -11,6 +8,11 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 
@@ -21,24 +23,18 @@ namespace HASS.Agent.UI.Views.Pages.Settings;
 /// <summary>
 /// An empty page that can be used on its own or navigated to within a Frame.
 /// </summary>
-public sealed partial class SettingsRootPage : Page
+public sealed partial class SettingsRootPage : Page, IManagedPage
 {
-    private readonly SettingsRootPageViewModel _viewModel;
+    private SettingsRootPageViewModel ViewModel { get => (SettingsRootPageViewModel)DataContext; }
 
-    public SettingsRootPage()
+	public SettingsRootPage()
     {
-        _viewModel = App.GetService<SettingsRootPageViewModel>();
         this.InitializeComponent();
-        DataContext = _viewModel;
-
-        _viewModel.NavigationService.Frame = SettingsNavigationFrame;
-        _viewModel.NavigationViewService.Initialize(SettingsNavigationViewControl);
     }
 
-    protected override void OnNavigatedTo(NavigationEventArgs e)
-    {
-        base.OnNavigatedTo(e);
-
-        _viewModel.NavigationService.NavigateTo("settingsGeneral");
-    }
+	public void OnDataContextChange()
+	{
+		ViewModel.NavigationService.Frame = SettingsNavigationFrame;
+		ViewModel.NavigationViewService.Initialize(SettingsNavigationViewControl);
+	}
 }
