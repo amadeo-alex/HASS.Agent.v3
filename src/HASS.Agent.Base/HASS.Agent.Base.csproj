@@ -23,10 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="D:\Programowanie\Visual CS\Projects\HASS.Agent.v3\src\HASS.Agent.Base\.editorconfig" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\HASS.Agent.Contracts\HASS.Agent.Contracts.csproj" />
   </ItemGroup>
 
