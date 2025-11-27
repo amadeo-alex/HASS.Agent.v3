@@ -20,7 +20,6 @@ using MQTTnet.Adapter;
 using MQTTnet.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Windows.Globalization;
 using HASS.Agent.Contracts.Models;
 using HASS.Agent.Contracts.Models.Settings;
 using HASS.Agent.Contracts.Enums;
