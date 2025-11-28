@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<Platforms>AnyCPU;x64;x86</Platforms>
+		<Platforms>x64;x86</Platforms>
 		<TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
 		<EnableWindowsTargeting>true</EnableWindowsTargeting>
 	</PropertyGroup>
