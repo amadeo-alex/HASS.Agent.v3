@@ -1,7 +1,14 @@
+using System.Net;
+using System.Text;
 using HASS.Agent.Contracts.Managers;
+using HASS.Agent.Contracts.Models.Notifications;
 using Microsoft.Extensions.Logging;
+using Microsoft.Windows.AppLifecycle;
 using Microsoft.Windows.AppNotifications;
-    
+using Microsoft.Windows.AppNotifications.Builder;
+using MQTTnet;
+using Newtonsoft.Json;
+
 namespace HASS.Agent.Base.Windows.Managers;
 
 public class NotificationManager : INotificationManager, IMqttMessageHandler
@@ -91,9 +98,11 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
             var clickAction = GetValueFromEventArgs(args, ClickActionPrefix);
 
             if (!string.IsNullOrWhiteSpace(uri))
-                BrowserHelper.OpenUrl(uri);
+                //BrowserHelper.OpenUrl(uri);
+                throw new NotImplementedException();
             else if (!string.IsNullOrWhiteSpace(clickAction))
-                BrowserHelper.OpenUrl(clickAction);
+                //BrowserHelper.OpenUrl(clickAction);
+                throw new NotImplementedException();
 
             await _homeAssistantApiManager.FireEventAsync(HomeAssistantNotificationEvent, new
             {
@@ -200,8 +209,8 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
             {
                 toastBuilder.SetScenario(AppNotificationScenario.Reminder);
                 if (notification.Data.Actions.Count == 0)
-                    toastBuilder.AddButton(new AppNotificationButton(LocalizerHelper.GetLocalizedString("General_Dismiss"))); //Note(Amadeo): required for reminder scenario
-            }
+                    toastBuilder.AddButton(new AppNotificationButton("Dismiss FIXME")); //Note(Amadeo): required for reminder scenario
+            }                           //TODO(Amadeo): fix hardcoded string
 
             if (AppNotificationBuilder.IsUrgentScenarioSupported() && notification.Data.Importance == NotificationData.ImportanceHigh)
             {
@@ -242,9 +251,9 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
         _notificationActionHandlers.Remove(handlerId);
     }
 
-    public async Task HandleAppActivation(AppActivationArguments activationArguments)
+    public async Task HandleAppActivation(object activationData)
     {
-        var appNotificationArgs = activationArguments.Data as AppNotificationActivatedEventArgs;
+        var appNotificationArgs = activationData as AppNotificationActivatedEventArgs;
         if (appNotificationArgs == null || appNotificationArgs.Argument == null)
             return;
 

@@ -7,9 +7,9 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using HASS.Agent.Contracts.Managers;
+using HASS.Agent.Contracts.Models.Notifications;
 using HASS.Agent.UI.Contracts.Managers;
 using HASS.Agent.UI.Helpers;
-using HASS.Agent.UI.Models.Notifications;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Windows.AppLifecycle;
@@ -257,9 +257,9 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
         _notificationActionHandlers.Remove(handlerId);
     }
 
-    public async Task HandleAppActivation(AppActivationArguments activationArguments)
+    public async Task HandleAppActivation(object activationData)
     {
-        var appNotificationArgs = activationArguments.Data as AppNotificationActivatedEventArgs;
+        var appNotificationArgs = activationData as AppNotificationActivatedEventArgs;
         if (appNotificationArgs == null || appNotificationArgs.Argument == null)
             return;
 

@@ -1,6 +1,6 @@
 using HASS.Agent.Base.Helpers;
 using HASS.Agent.Base.Managers;
-using HASS.Agent.Contracts.Helpers;
+using HASS.Agent.Base.Windows.Managers;
 using HASS.Agent.Contracts.Managers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -53,7 +53,7 @@ public class HASSAgentBase
                 services.AddSingleton<IExceptionManager, ExceptionManager>();
 
                 services.AddSingleton<IGuidManager, GuidManager>();
-
+                
 #if WINDOWS
                 services.AddSingleton<IElevationManager, HASS.Agent.Base.Windows.Managers.ElevationManager>();
 #else
@@ -71,9 +71,11 @@ public class HASSAgentBase
                 services.AddSingleton<ISensorManager, SensorManager>();
                 services.AddSingleton<ICommandsManager, CommandsManager>();
 
+#if WINDOWS
                 services.AddSingleton<INotificationManager, NotificationManager>();
+#endif
 
-                services.AddSingleton<IHomeAssistantApiManager, HomeAssistantApiManager>();
+                //sservices.AddSingleton<IHomeAssistantApiManager, HomeAssistantApiManager>();
 
                 externalServicesInitializer(context, services);
                 //to be initialized externally:

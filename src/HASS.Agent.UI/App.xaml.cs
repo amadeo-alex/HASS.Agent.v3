@@ -35,11 +35,11 @@ using H.NotifyIcon;
 using HASS.Agent.UI.Contracts;
 using HASS.Agent.Base.Managers.HomeAssistant;
 using HASS.Agent.Contracts.Managers;
-using HASS.Agent.Contracts.Helpers;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Core;
 using HASS.Agent.Contracts.Models.Update;
+using HASS.Agent.Base.Helpers;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
