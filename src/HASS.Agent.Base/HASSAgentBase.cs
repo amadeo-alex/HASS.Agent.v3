@@ -1,12 +1,17 @@
 using HASS.Agent.Base.Helpers;
 using HASS.Agent.Base.Managers;
-using HASS.Agent.Base.Windows.Managers;
 using HASS.Agent.Contracts.Managers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
+#if WINDOWS
+using HASS.Agent.Base.Windows.Managers;
+#else
+using HASS.Agent.Base.Linux.Managers;
+#endif
+
 
 namespace HASS.Agent.Base;
 
@@ -14,11 +19,11 @@ public class HASSAgentBase
 {
     public bool Debug { get; private set; } = false;
 
-    public void Initialize(LogEventLevel logEventLevel, Action<HostBuilderContext, IServiceCollection> externalServicesInitializer)
+    public IHost Initialize(LogEventLevel logEventLevel, Action<HostBuilderContext, IServiceCollection> externalServicesInitializer)
     {
         Debug = logEventLevel < LogEventLevel.Information;
 
-        Host.CreateDefaultBuilder().UseContentRoot(AppContext.BaseDirectory)
+        var host = Host.CreateDefaultBuilder().UseContentRoot(AppContext.BaseDirectory)
             .ConfigureServices((context, services) =>
             {
                 services.AddSingleton(_ => new LoggingLevelSwitch
@@ -78,8 +83,11 @@ public class HASSAgentBase
                 //sservices.AddSingleton<IHomeAssistantApiManager, HomeAssistantApiManager>();
 
                 externalServicesInitializer(context, services);
+                
                 //to be initialized externally:
                 // ApplicationInfo
             }).Build();
+
+        return host;
     }
 }

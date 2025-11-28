@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
+		<OutputType>exe</OutputType>
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
@@ -7,6 +8,17 @@
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     </PropertyGroup>
 
+	<PropertyGroup Condition="'$(OS)' == 'WINDOWS_NT'">
+		<TargetFrameworks>net8.0-windows10.0.19041.0</TargetFrameworks>
+
+		<WindowsSdkPackageVersion>10.0.19041.41</WindowsSdkPackageVersion>
+		<CsWinRTWindowsMetadata>10.0.19041.41</CsWinRTWindowsMetadata>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(OS)' == 'UNIX'">
+		<TargetFrameworks>net8.0</TargetFrameworks>
+	</PropertyGroup>
+	
     <ItemGroup>
         <Folder Include="Controls\" />
         <Folder Include="Models\" />
@@ -29,5 +41,9 @@
 
     <ItemGroup>
       <EditorConfigFiles Remove=".editorconfig" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\HASS.Agent.Base\HASS.Agent.Base.csproj" />
     </ItemGroup>
 </Project>

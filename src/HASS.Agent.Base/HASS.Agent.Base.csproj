@@ -1,12 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net8.0;net8.0-windows10.0.19041.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(OS)' == 'WINDOWS_NT'">
+		<TargetFrameworks>net8.0-windows10.0.19041.0</TargetFrameworks>
 
 		<WindowsSdkPackageVersion>10.0.19041.41</WindowsSdkPackageVersion>
 		<CsWinRTWindowsMetadata>10.0.19041.41</CsWinRTWindowsMetadata>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(OS)' == 'UNIX'">
+		<TargetFrameworks>net8.0</TargetFrameworks>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -15,7 +22,6 @@
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.0" />
-		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" Condition="'$(TargetFramework)'=='net8.0-windows10.0.19041.0'"/>
 		<PackageReference Include="MQTTnet" Version="5.0.1.1416" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="Serilog" Version="4.3.0" />
@@ -32,11 +38,11 @@
 		<ProjectReference Include="..\HASS.Agent.Contracts\HASS.Agent.Contracts.csproj" />
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(OS)' == 'WINDOWS_NT'">
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net8.0-windows10.0.19041.0' ">
 		<ProjectReference Include="..\HASS.Agent.Base.Windows\HASS.Agent.Base.Windows.csproj" />
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(OS)' == 'UNIX'">
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
 		<ProjectReference Include="..\HASS.Agent.Base.Linux\HASS.Agent.Base.Linux.csproj" />
 	</ItemGroup>
 
