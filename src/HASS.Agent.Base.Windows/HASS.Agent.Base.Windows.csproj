@@ -1,40 +1,41 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
-		<TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <EnableWindowsTargeting>true</EnableWindowsTargeting>
-
-
-		<UseWinUI>true</UseWinUI>
-		<EnableMsixTooling>true</EnableMsixTooling>
-		<WindowsPackageType>None</WindowsPackageType>
-		<AppxPackage>false</AppxPackage>
+	<PropertyGroup>
+		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<AssemblyName>HASS.Agent</AssemblyName>
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
-		<WindowsSdkPackageVersion>10.0.19041.41</WindowsSdkPackageVersion>
-    </PropertyGroup>
+		<Platforms>AnyCPU;x64;x86</Platforms>
+		<TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+		<EnableWindowsTargeting>true</EnableWindowsTargeting>
+	</PropertyGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\HASS.Agent.Contracts\HASS.Agent.Contracts.csproj" />
-    </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\HASS.Agent.Contracts\HASS.Agent.Contracts.csproj" />
+	</ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.0" />
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250606001" />
-        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4188" />
-        <PackageReference Include="MQTTnet" Version="5.0.1.1416" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="Serilog" Version="4.3.0" />
-        <PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
-        <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-        <Manifest Include="$(ApplicationManifest)" />
-    </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.0" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251106002" />
+		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7175" />
+		<PackageReference Include="MQTTnet" Version="5.0.1.1416" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+		<PackageReference Include="Serilog" Version="4.3.0" />
+		<PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
+		<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+		<Manifest Include="$(ApplicationManifest)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Remove="C:\Users\Amadeo\.nuget\packages\microsoft.windowsappsdk\1.7.250606001\buildTransitive\..\include\MddBootstrapAutoInitializer.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Remove="C:\Users\Amadeo\.nuget\packages\microsoft.windowsappsdk\1.7.250606001\buildTransitive\..\include\WindowsAppSDK-VersionInfo.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Remove="C:\Users\Amadeo\.nuget\packages\microsoft.windowsappsdk\1.7.250606001\buildTransitive\..\include\MddBootstrapAutoInitializer.cs" />
+	</ItemGroup>
 </Project>

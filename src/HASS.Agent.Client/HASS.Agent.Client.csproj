@@ -1,18 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
 		<OutputType>exe</OutputType>
-        <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
-        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-        <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+		<Platforms>AnyCPU;x64;x86</Platforms>
     </PropertyGroup>
 
 	<PropertyGroup Condition="'$(OS)' == 'WINDOWS_NT'">
 		<TargetFrameworks>net8.0-windows10.0.19041.0</TargetFrameworks>
-
-		<WindowsSdkPackageVersion>10.0.19041.41</WindowsSdkPackageVersion>
-		<CsWinRTWindowsMetadata>10.0.19041.41</CsWinRTWindowsMetadata>
+		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(OS)' == 'UNIX'">
@@ -26,17 +22,17 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.2.5" />
-        <PackageReference Include="Avalonia.Desktop" Version="11.2.5" />
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.5" />
-        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.5" />
+        <PackageReference Include="Avalonia" Version="11.3.9" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.3.9" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.9" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.9" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Include="Avalonia.Diagnostics" Version="11.2.5">
+        <PackageReference Include="Avalonia.Diagnostics" Version="11.3.9">
             <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-        <PackageReference Include="FluentAvaloniaUI" Version="2.4.0" />
+        <PackageReference Include="FluentAvaloniaUI" Version="2.4.1" />
     </ItemGroup>
 
     <ItemGroup>

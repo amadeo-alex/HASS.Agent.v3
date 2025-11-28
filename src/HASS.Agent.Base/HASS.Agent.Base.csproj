@@ -3,13 +3,11 @@
 	<PropertyGroup>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<Platforms>AnyCPU;x64;x86</Platforms>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(OS)' == 'WINDOWS_NT'">
 		<TargetFrameworks>net8.0-windows10.0.19041.0</TargetFrameworks>
-
-		<WindowsSdkPackageVersion>10.0.19041.41</WindowsSdkPackageVersion>
-		<CsWinRTWindowsMetadata>10.0.19041.41</CsWinRTWindowsMetadata>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(OS)' == 'UNIX'">
@@ -23,7 +21,7 @@
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.0" />
 		<PackageReference Include="MQTTnet" Version="5.0.1.1416" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="Serilog" Version="4.3.0" />
 		<PackageReference Include="Serilog.Extensions.Hosting" Version="10.0.0" />
 		<PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />

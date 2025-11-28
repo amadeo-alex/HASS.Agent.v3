@@ -6,6 +6,10 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
+using HASS.Agent.Base.Managers.HomeAssistant;
+using Microsoft.Windows.AppNotifications;
+
+
 #if WINDOWS
 using HASS.Agent.Base.Windows.Managers;
 #else
@@ -17,13 +21,17 @@ namespace HASS.Agent.Base;
 
 public class HASSAgentBase
 {
+    private IHost? _host;
+
     public bool Debug { get; private set; } = false;
 
     public IHost Initialize(LogEventLevel logEventLevel, Action<HostBuilderContext, IServiceCollection> externalServicesInitializer)
     {
+        var chujpida = AppNotificationManager.Default;
+
         Debug = logEventLevel < LogEventLevel.Information;
 
-        var host = Host.CreateDefaultBuilder().UseContentRoot(AppContext.BaseDirectory)
+        _host = Host.CreateDefaultBuilder().UseContentRoot(AppContext.BaseDirectory)
             .ConfigureServices((context, services) =>
             {
                 services.AddSingleton(_ => new LoggingLevelSwitch
@@ -76,18 +84,45 @@ public class HASSAgentBase
                 services.AddSingleton<ISensorManager, SensorManager>();
                 services.AddSingleton<ICommandsManager, CommandsManager>();
 
+                services.AddSingleton<IHomeAssistantApiManager, HomeAssistantApiManager>();
+
 #if WINDOWS
-                services.AddSingleton<INotificationManager, NotificationManager>();
+                services.AddSingleton<INotificationManager, HASS.Agent.Base.Windows.Managers.NotificationManager>();
+                //var chujpida = AppNotificationManager.Default;
+#else
+                services.AddSingleton<INotificationManager, HASS.Agent.Base.Linux.Managers.NotificationManager>();
 #endif
 
-                //sservices.AddSingleton<IHomeAssistantApiManager, HomeAssistantApiManager>();
-
                 externalServicesInitializer(context, services);
-                
+
+                services.AddSingleton(sp => sp);
                 //to be initialized externally:
                 // ApplicationInfo
             }).Build();
 
-        return host;
+        return _host;
+    }
+
+    public T GetService<T>() where T : class
+    {
+        if(_host == null)
+        {
+            throw new InvalidOperationException("HASS.Agent Base is not initialized!");
+        }
+
+        return _host.Services.GetService(typeof(T)) is not T service
+            ? throw new ArgumentException($"{typeof(T)} needs to be registered in ConfigureServices within App.xaml.cs.")
+            : service;
+    }
+
+    public object GetService(Type type)
+    {
+        if (_host == null)
+        {
+            throw new InvalidOperationException("HASS.Agent Base is not initialized!");
+        }
+
+        var service = _host.Services.GetService(type);
+        return service ?? throw new ArgumentException($"{type} needs to be registered in ConfigureServices within App.xaml.cs.");
     }
 }
