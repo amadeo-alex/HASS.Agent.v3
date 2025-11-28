@@ -27,8 +27,6 @@ public class HASSAgentBase
 
     public IHost Initialize(LogEventLevel logEventLevel, Action<HostBuilderContext, IServiceCollection> externalServicesInitializer)
     {
-        var chujpida = AppNotificationManager.Default;
-
         Debug = logEventLevel < LogEventLevel.Information;
 
         _host = Host.CreateDefaultBuilder().UseContentRoot(AppContext.BaseDirectory)
@@ -88,7 +86,6 @@ public class HASSAgentBase
 
 #if WINDOWS
                 services.AddSingleton<INotificationManager, HASS.Agent.Base.Windows.Managers.NotificationManager>();
-                //var chujpida = AppNotificationManager.Default;
 #else
                 services.AddSingleton<INotificationManager, HASS.Agent.Base.Linux.Managers.NotificationManager>();
 #endif
