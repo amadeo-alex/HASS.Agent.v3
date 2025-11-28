@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HASS.Agent.Contracts.Managers;
-using HASS.Agent.UI.Models.Notifications;
-using Microsoft.Windows.AppLifecycle;
-using MQTTnet;
+﻿using HASS.Agent.Contracts.Models.Notifications;
 
-namespace HASS.Agent.UI.Contracts.Managers;
+namespace HASS.Agent.Contracts.Managers;
 
 public interface INotificationActionHandler
 {
@@ -22,5 +14,5 @@ public interface INotificationManager
     Task ShowNotification(Notification notification);
     void RegisterNotificationActionHandler(string handlerId, INotificationActionHandler handler);
     void UnregisterNotificationActionHandler(string handlerId);
-    Task HandleAppActivation(AppActivationArguments activationArguments);
+    Task HandleAppActivation(object activationArgumentsData);
 }

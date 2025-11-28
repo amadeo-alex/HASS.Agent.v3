@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HASS.Agent.UI.Models.Notifications;
+namespace HASS.Agent.Contracts.Models.Notifications;
 public class Notification
 {
     public string Message { get; set; } = string.Empty;

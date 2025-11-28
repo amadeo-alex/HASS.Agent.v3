@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace HASS.Agent.UI.Models.Notifications;
+namespace HASS.Agent.Contracts.Models.Notifications;
 public class NotificationData
 {
     public const string NoAction = "noAction";

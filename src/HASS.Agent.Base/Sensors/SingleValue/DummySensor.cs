@@ -24,8 +24,8 @@ public class DummySensor : AbstractSingleValueSensor
     public const string MinValueKey = "min";
     public const string MaxValueKey = "max";
     public const string MaxRetriesKey = "maxRetries";
-        
-    public override string DefaultEntityIdName { get; } = "dummySensor";
+
+    public override string DefaultEntityIdName => "dummySensor";
 
     private MqttSensorDiscoveryConfigModel? _discoveryConfigModel;
 
@@ -47,7 +47,7 @@ public class DummySensor : AbstractSingleValueSensor
             StateTopic = $"{discoveryPrefix}/{Domain}/{deviceConfigModel.Name}/{EntityIdName}/state",
             AvailabilityTopic = $"{discoveryPrefix}/hass.agent/{deviceConfigModel.Name}/availability"
         };
-
+        
         return _discoveryConfigModel;
     }
 
@@ -75,7 +75,7 @@ public class DummySensor : AbstractSingleValueSensor
     {
         var configuredSensor = new ConfiguredEntity()
         {
-            Type = typeof(DummySensor).Name,
+            Type = nameof(DummySensor),
             EntityIdName = EntityIdName,
             Name = Name,
             UpdateIntervalSeconds = UpdateIntervalSeconds,
