@@ -7,7 +7,7 @@ using HASS.Agent.Contracts.Managers;
 using HASS.Agent.Contracts.Models.Notifications;
 
 namespace HASS.Agent.Base.Linux.Managers;
-internal class NotificationManager : INotificationManager
+public class NotificationManager : INotificationManager
 {
     public bool Ready => true;
 

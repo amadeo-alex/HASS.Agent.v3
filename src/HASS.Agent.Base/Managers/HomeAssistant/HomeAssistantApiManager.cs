@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using HADotNet.Core;
 using HADotNet.Core.Clients;
 using HASS.Agent.Contracts.Managers;
+using HASS.Agent.Contracts.Models.Settings;
 using Microsoft.Extensions.Logging;
 
 namespace HASS.Agent.Base.Managers.HomeAssistant;
@@ -32,10 +33,12 @@ public class HomeAssistantApiManager : IHomeAssistantApiManager
 
         try
         {
-            var uri = new Uri(_settingsManager.Settings.HomeAssistant.HassUri);
+            var homeAssistantSettings = _settingsManager.GetSettings<HomeAssistantSettings>();
+            
+            var uri = new Uri(homeAssistantSettings.HassUri);
             var httpClientHandler = new HttpClientHandler();
 
-            if (_settingsManager.Settings.HomeAssistant.HassAutoClientCertificate)
+            if (homeAssistantSettings.HassAutoClientCertificate)
             {
                 httpClientHandler.ClientCertificateOptions = ClientCertificateOption.Automatic;
             }
@@ -43,16 +46,16 @@ public class HomeAssistantApiManager : IHomeAssistantApiManager
             {
                 //TODO(Amadeo): certificate loading error handling
                 httpClientHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
-                httpClientHandler.ClientCertificates.Add(new X509Certificate2(_settingsManager.Settings.HomeAssistant.HassClientCertificate));
+                httpClientHandler.ClientCertificates.Add(new X509Certificate2(homeAssistantSettings.HassClientCertificate));
             }
 
-            if (_settingsManager.Settings.HomeAssistant.HassAllowUntrustedCertificates)
+            if (homeAssistantSettings.HassAllowUntrustedCertificates)
             {
                 httpClientHandler.CheckCertificateRevocationList = false;
                 httpClientHandler.ServerCertificateCustomValidationCallback += (_, _, _, _) => true;
             }
 
-            ClientFactory.Initialize(uri, _settingsManager.Settings.HomeAssistant.HassToken, httpClientHandler);
+            ClientFactory.Initialize(uri, homeAssistantSettings.HassToken, httpClientHandler);
 
             _serviceClient = ClientFactory.GetClient<ServiceClient>();
             _eventClient = ClientFactory.GetClient<EventClient>();

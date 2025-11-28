@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HASS.Agent.Base.Models;
 using HASS.Agent.Contracts.Managers;
+using HASS.Agent.Contracts.Models.Settings;
 using HASS.Agent.Contracts.Models.Update;
 using Microsoft.Extensions.Logging;
 using Octokit;
@@ -24,7 +25,7 @@ public class UpdateManager : IUpdateManager
     }
     public Task InitializeAsync()
     {
-        if (!_settingsManager.Settings.Update.PeriodicUpdateCheckEnabled)
+        if (!_settingsManager.GetSettings<UpdateSettings>().PeriodicUpdateCheckEnabled)
         {
             _logger.LogInformation("[Update] Periodic update check have been disabled");
             return Task.CompletedTask;
@@ -51,12 +52,12 @@ public class UpdateManager : IUpdateManager
             return false;
         }
 
-        if (_settingsManager.Settings.Update.IgnoredVersions.Contains(latestRelease.Version.ToString()))
+        if (_settingsManager.GetSettings<UpdateSettings>().IgnoredVersions.Contains(latestRelease.Version.ToString()))
         {
             return false;
         }
 
-        if (latestRelease.Version.IsBeta && !_settingsManager.Settings.Update.ShowBetaUpdates)
+        if (latestRelease.Version.IsBeta && !_settingsManager.GetSettings<UpdateSettings>().ShowBetaUpdates)
         {
             return false;
         }
@@ -76,7 +77,7 @@ public class UpdateManager : IUpdateManager
         //Note(Amadeo): initial update check?
         while (true) //TODO(Amadeo): cancellation token?
         {
-            await Task.Delay(TimeSpan.FromMinutes(_settingsManager.Settings.Update.PeriodicUpdateIntervalMinutes));
+            await Task.Delay(TimeSpan.FromMinutes(_settingsManager.GetSettings<UpdateSettings>().PeriodicUpdateIntervalMinutes));
             await CheckForUpdateAsync();
         }
     }

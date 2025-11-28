@@ -15,11 +15,12 @@ using HASS.Agent.Base.Sensors.SingleValue;
 using HASS.Agent.Client.ViewModels;
 using HASS.Agent.Client.Views;
 using HASS.Agent.Contracts.Managers;
+using HASS.Agent.Contracts.Models;
+using HASS.Agent.Contracts.Models.Settings;
 using HASS.Agent.Contracts.Models.Update;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Windows.AppNotifications;
 using MQTTnet;
 using Serilog.Core;
 using Serilog.Events;
@@ -28,44 +29,38 @@ namespace HASS.Agent.Client;
 
 public partial class App : Application
 {
-    private readonly HASSAgentBase _applicationBase;
+    private readonly HassAgentBase _applicationBase;
     private readonly ILogger _logger;
 
 
     public App()
     {
-        try
+        _applicationBase = new HassAgentBase();
+
+        _applicationBase.Initialize(LogEventLevel.Debug, (context, services) =>
         {
-            _applicationBase = new HASSAgentBase();
-
-            _applicationBase.Initialize(LogEventLevel.Debug, (context, services) =>
+            services.AddSingleton(sp =>
             {
-                services.AddSingleton(sp =>
+                var informationalVersion =
+                    Assembly.GetExecutingAssembly()?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ??
+                    throw new Exception("cannot obtain application version");
+                var versionString = informationalVersion.Contains('+') ? informationalVersion.Split('+')[0] : informationalVersion;
+
+                return new ApplicationInfo()
                 {
-                    var informationalVersion = Assembly.GetExecutingAssembly()?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? throw new Exception("cannot obtain application version");
-                    var versionString = informationalVersion.Contains('+') ? informationalVersion.Split('+')[0] : informationalVersion;
-
-                    return new ApplicationInfo()
-                    {
-                        Name = Assembly.GetExecutingAssembly().GetName().Name ?? "HASS.Agent",
-                        Version = new AgentVersion(versionString),
-                        ExecutablePath = AppDomain.CurrentDomain.BaseDirectory,
-                        Executable = Process.GetCurrentProcess().MainModule?.ModuleName ?? throw new Exception("cannot obtain application executable"),
-                    };
-                });
-
-                //TODO(Amadeo): add theme changing logic
-                //services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
-
+                    Name = Assembly.GetExecutingAssembly().GetName().Name ?? "HASS.Agent",
+                    Version = new AgentVersion(versionString),
+                    ExecutablePath = AppDomain.CurrentDomain.BaseDirectory,
+                    Executable = Process.GetCurrentProcess().MainModule?.ModuleName ?? throw new Exception("cannot obtain application executable"),
+                };
             });
 
-            _logger = _applicationBase.GetService<ILogger<App>>();
-            _logger.LogDebug("Application class constructed");
-        }
-        catch
-        {
-            Debugger.Launch();
-        }
+            //TODO(Amadeo): add theme changing logic
+            //services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
+        });
+
+        _logger = _applicationBase.GetService<ILogger<App>>();
+        _logger.LogDebug("Application class constructed");
     }
 
     public override void Initialize()
@@ -77,90 +72,83 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            try
+            var launchArguments = Environment.GetCommandLineArgs();
+            var settingsManager = _applicationBase.GetService<ISettingsManager>();
+
+            if (_applicationBase.Debug)
             {
-                var launchArguments = Environment.GetCommandLineArgs();
-                var settingsManager = _applicationBase.GetService<ISettingsManager>();
+                _logger.LogInformation("[MAIN] DEBUG BUILD - TESTING PURPOSES ONLY");
+                //settingsManager.Settings.Application.ExtendedLogging = true; //TODO(Amadeo) fix this and saving of settings in general
+            }
 
-                if (_applicationBase.Debug)
+            if (settingsManager.GetSettings<ApplicationSettings>().ExtendedLogging)
+            {
+                _applicationBase.GetService<LoggingLevelSwitch>().MinimumLevel = LogEventLevel.Debug;
+                _logger.LogDebug("[MAIN] Extended logging enabled");
+                _logger.LogDebug("[MAIN] Started with arguments: {a}", launchArguments);
+
+                var exceptionManager = _applicationBase.GetService<IExceptionManager>();
+                AppDomain.CurrentDomain.FirstChanceException += exceptionManager.OnFirstChanceExceptionHandler;
+            }
+
+            var variableManager = _applicationBase.GetService<IVariableManager>();
+            _logger.LogInformation("[MAIN] HASS.Agent version: {version}", variableManager.ClientVersion);
+
+
+            var initializationTask = Task.Run(async () =>
+            {
+                var guidManager = _applicationBase.GetService<IGuidManager>();
+                guidManager.MarkAsUsed(settingsManager.GetSettings<MqttSettings>().ClientId);
+
+                if (settingsManager.ConfiguredSensors.Count == 0)
                 {
-                    _logger.LogInformation("[MAIN] DEBUG BUILD - TESTING PURPOSES ONLY");
-                    settingsManager.Settings.Application.ExtendedLogging = true;
-                }
-
-                if (settingsManager.Settings.Application.ExtendedLogging)
-                {
-                    _applicationBase.GetService<LoggingLevelSwitch>().MinimumLevel = LogEventLevel.Debug;
-                    _logger.LogDebug("[MAIN] Extended logging enabled");
-                    _logger.LogDebug("[MAIN] Started with arguments: {a}", launchArguments);
-
-                    var exceptionManager = _applicationBase.GetService<IExceptionManager>();
-                    AppDomain.CurrentDomain.FirstChanceException += exceptionManager.OnFirstChanceExceptionHandler;
-                }
-
-                var variableManager = _applicationBase.GetService<IVariableManager>();
-                _logger.LogInformation("[MAIN] HASS.Agent version: {version}", variableManager.ClientVersion);
-
-
-                var initializationTask = Task.Run(async () =>
-                {
-                    var guidManager = _applicationBase.GetService<IGuidManager>();
-                    guidManager.MarkAsUsed(settingsManager.Settings.Mqtt.ClientId);
-
-                    if (settingsManager.ConfiguredSensors.Count == 0)
+                    var ce = new ConfiguredEntity()
                     {
-                        var ce = new ConfiguredEntity()
-                        {
-                            Type = typeof(DummySensor).Name,
-                            EntityIdName = "DummySensor1",
-                            Name = "Dummy Sensor 1",
-                            UpdateIntervalSeconds = 5,
-                            UniqueId = Guid.NewGuid(),
-                            Active = true,
-                        };
-                        settingsManager.ConfiguredSensors.Add(ce);
+                        Type = nameof(DummySensor),
+                        EntityIdName = "DummySensor1",
+                        Name = "Dummy Sensor 1",
+                        UpdateIntervalSeconds = 5,
+                        UniqueId = Guid.NewGuid(),
+                        Active = true,
+                    };
+                    settingsManager.ConfiguredSensors.Add(ce);
+                }
+
+                var mqtt = _applicationBase.GetService<IMqttManager>();
+                await mqtt.StartClientAsync();
+
+                var haapi = _applicationBase.GetService<IHomeAssistantApiManager>();
+                await haapi.InitializeAsync();
+
+                var sensorManager = _applicationBase.GetService<ISensorManager>();
+                await sensorManager.InitializeAsync();
+                _ = Task.Run(sensorManager.Process);
+
+                var commandsManager = _applicationBase.GetService<ICommandsManager>();
+                await commandsManager.InitializeAsync();
+                _ = Task.Run(commandsManager.Process);
+
+                var notificationManager = _applicationBase.GetService<INotificationManager>();
+                notificationManager.Initialize();
+
+                await Task.Run(async () =>
+                {
+                    while (!mqtt.Ready)
+                    {
+                        await Task.Delay(1000);
                     }
 
-                    var mqtt = _applicationBase.GetService<IMqttManager>();
-                    await mqtt.StartClientAsync();
+                    var testMsg = new MqttApplicationMessageBuilder()
+                        .WithTopic("sumtest/sumimportantmsg")
+                        .WithPayload("much importando")
+                        .WithRetainFlag(false)
+                        .Build();
 
-                    var haapi = _applicationBase.GetService<IHomeAssistantApiManager>();
-                    await haapi.InitializeAsync();
-
-                    var sensorManager = _applicationBase.GetService<ISensorManager>();
-                    await sensorManager.InitializeAsync();
-                    _ = Task.Run(sensorManager.Process);
-
-                    var commandsManager = _applicationBase.GetService<ICommandsManager>();
-                    await commandsManager.InitializeAsync();
-                    _ = Task.Run(commandsManager.Process);
-
-                    var notificationManager = _applicationBase.GetService<INotificationManager>();
-                    notificationManager.Initialize();
-
-                    await Task.Run(async () =>
-                    {
-                        while (!mqtt.Ready)
-                        {
-                            await Task.Delay(1000);
-                        }
-
-                        var testMsg = new MqttApplicationMessageBuilder()
-                            .WithTopic("sumtest/sumimportantmsg")
-                            .WithPayload("much importando")
-                            .WithRetainFlag(false)
-                            .Build();
-
-                        await mqtt.PublishAsync(testMsg);
-                    });
-
-                    _logger.LogDebug("[MAIN] initialization completed");
+                    await mqtt.PublishAsync(testMsg);
                 });
-            }
-            catch (Exception ex)
-            {
-                Debugger.Break(); //TODO(Amadeo): do something more intelligent
-            }
+
+                _logger.LogDebug("[MAIN] initialization completed");
+            });
 
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins

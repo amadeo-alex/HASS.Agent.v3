@@ -7,11 +7,11 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(OS)' == 'WINDOWS_NT'">
-		<TargetFrameworks>net8.0-windows10.0.19041.0</TargetFrameworks>
+		<TargetFrameworks>net9.0-windows10.0.19041.0</TargetFrameworks>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(OS)' == 'UNIX'">
-		<TargetFrameworks>net8.0</TargetFrameworks>
+		<TargetFrameworks>net9.0</TargetFrameworks>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -36,11 +36,11 @@
 		<ProjectReference Include="..\HASS.Agent.Contracts\HASS.Agent.Contracts.csproj" />
 	</ItemGroup>
 
-	<ItemGroup Condition=" '$(TargetFramework)' == 'net8.0-windows10.0.19041.0' ">
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net9.0-windows10.0.19041.0' ">
 		<ProjectReference Include="..\HASS.Agent.Base.Windows\HASS.Agent.Base.Windows.csproj" />
 	</ItemGroup>
 
-	<ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
 		<ProjectReference Include="..\HASS.Agent.Base.Linux\HASS.Agent.Base.Linux.csproj" />
 	</ItemGroup>
 
@@ -48,4 +48,9 @@
 		<Folder Include="Models\Entity\" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<None Update="appsettings.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 </Project>

@@ -7,7 +7,6 @@ using Serilog;
 using Serilog.Core;
 using Serilog.Events;
 using HASS.Agent.Base.Managers.HomeAssistant;
-using Microsoft.Windows.AppNotifications;
 
 
 #if WINDOWS
@@ -19,7 +18,7 @@ using HASS.Agent.Base.Linux.Managers;
 
 namespace HASS.Agent.Base;
 
-public class HASSAgentBase
+public class HassAgentBase
 {
     private IHost? _host;
 

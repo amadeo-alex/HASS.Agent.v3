@@ -13,12 +13,12 @@ using HASS.Agent.Contracts.Models.Entity;
 namespace HASS.Agent.Contracts.Managers;
 public interface ISettingsManager
 {
-    ISettings Settings { get; }
-
     ObservableCollection<ConfiguredEntity> ConfiguredSensors { get; }
     ObservableCollection<ConfiguredEntity> ConfiguredCommands { get; }
     ObservableCollection<IQuickAction> ConfiguredQuickActions { get; } //TODO(Amadeo): rethink
 
+    public T GetSettings<T>() where T : new();
+    
     bool StoreConfiguredEntities();
     bool StoreSettings();
     bool GetExtendedLoggingSetting();

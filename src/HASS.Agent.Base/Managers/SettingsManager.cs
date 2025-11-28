@@ -10,6 +10,7 @@ using HASS.Agent.Contracts.Managers;
 using HASS.Agent.Contracts.Models;
 using HASS.Agent.Contracts.Models.Entity;
 using HASS.Agent.Contracts.Models.Settings;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using Newtonsoft.Json;
@@ -20,8 +21,9 @@ public class SettingsManager : ISettingsManager
     private readonly ILogger _logger;
     private readonly IVariableManager _variableManager;
     private readonly IGuidManager _guidManager;
-
-    public ISettings Settings { get; }
+    
+    private readonly IConfiguration _configuration;
+    
     public ObservableCollection<ConfiguredEntity> ConfiguredSensors { get; private set; }
     public ObservableCollection<ConfiguredEntity> ConfiguredCommands { get; private set; }
     public ObservableCollection<IQuickAction> ConfiguredQuickActions { get; private set; }
@@ -34,11 +36,17 @@ public class SettingsManager : ISettingsManager
 
         if (!Directory.Exists(_variableManager.ConfigPath))
         {
-            _logger.LogDebug("[SETTINGS] Creating initial config directory: {path}", _variableManager.ConfigPath);
+            _logger.LogDebug("[SETTINGS] Creating initial user config directory: {path}", _variableManager.ConfigPath);
             Directory.CreateDirectory(_variableManager.ConfigPath);
         }
 
-        Settings = GetSettings();
+        _configuration = new ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)                                   
+            .AddJsonFile("appsettings.json")
+            .AddJsonFile("config/userappsettings.json", optional: true)
+            .Build();
+        
+        //Settings = GetSettings();
         ConfiguredSensors = GetConfiguredSensors();
         ConfiguredCommands = GetConfiguredCommands();
         ConfiguredQuickActions = GetConfiguredQuickActions();
@@ -63,6 +71,12 @@ public class SettingsManager : ISettingsManager
         ConfiguredQuickActions.CollectionChanged += Configured_CollectionChanged;
     }
 
+    public T GetSettings<T>() where T : new()
+    {
+        var sectionName = typeof(T).Name;
+        return _configuration.GetSection(sectionName).Get<T>() ?? throw new InvalidOperationException($"no such settings exist: '{sectionName}'");
+    }
+    
     private void Configured_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         switch (e.Action)
@@ -312,7 +326,7 @@ public class SettingsManager : ISettingsManager
 
         try
         {
-            Settings.Store(_variableManager);
+            //Settings.Store(_variableManager);
 
             _logger.LogInformation("[SETTINGS] Application settings stored");
         }

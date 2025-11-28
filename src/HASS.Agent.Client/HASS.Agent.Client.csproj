@@ -7,12 +7,12 @@
     </PropertyGroup>
 
 	<PropertyGroup Condition="'$(OS)' == 'WINDOWS_NT'">
-		<TargetFrameworks>net8.0-windows10.0.19041.0</TargetFrameworks>
+		<TargetFrameworks>net9.0-windows10.0.19041.0</TargetFrameworks>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(OS)' == 'UNIX'">
-		<TargetFrameworks>net8.0</TargetFrameworks>
+		<TargetFrameworks>net9.0</TargetFrameworks>
 	</PropertyGroup>
 	
     <ItemGroup>

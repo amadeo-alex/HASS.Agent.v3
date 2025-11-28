@@ -14,6 +14,8 @@ using MQTTnet;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using HASS.Agent.Contracts.Enums;
+using HASS.Agent.Contracts.Models;
+using HASS.Agent.Contracts.Models.Settings;
 using Microsoft.Extensions.Logging;
 
 namespace HASS.Agent.Base.Managers;
@@ -68,7 +70,7 @@ public class SensorManager : ISensorManager
 	private async Task AddSensor(ConfiguredEntity configuredSensor)
 	{
 		var sensor = (AbstractDiscoverable)_entityTypeRegistry.CreateSensorInstance(configuredSensor);
-		sensor.ConfigureAutoDiscoveryConfig(_settingsManager.Settings.Mqtt.DiscoveryPrefix, _mqttManager.DeviceConfigModel);
+		sensor.ConfigureAutoDiscoveryConfig(_settingsManager.GetSettings<MqttSettings>().DiscoveryPrefix, _mqttManager.DeviceConfigModel);
 		await PublishSensorAutoDiscoveryConfigAsync(sensor);
 		Sensors.Add(sensor);
 	}
@@ -134,11 +136,11 @@ public class SensorManager : ISensorManager
 	{
 		try
 		{
-			var topic = $"{_settingsManager.Settings.Mqtt.DiscoveryPrefix}/{sensor.Domain}/{_settingsManager.Settings.Application.DeviceName}/{sensor.EntityIdName}/config";
+			var topic = $"{_settingsManager.GetSettings<MqttSettings>().DiscoveryPrefix}/{sensor.Domain}/{_settingsManager.GetSettings<ApplicationSettings>().DeviceName}/{sensor.EntityIdName}/config";
 
 			var messageBuilder = new MqttApplicationMessageBuilder()
 				.WithTopic(topic)
-				.WithRetainFlag(_settingsManager.Settings.Mqtt.UseRetainFlag);
+				.WithRetainFlag(_settingsManager.GetSettings<MqttSettings>().UseRetainFlag);
 
 			if (clear)
 			{
@@ -218,7 +220,7 @@ public class SensorManager : ISensorManager
 
             var message = new MqttApplicationMessageBuilder()
 				.WithTopic(autodiscoveryConfig.StateTopic)
-				.WithRetainFlag(_settingsManager.Settings.Mqtt.UseRetainFlag);
+				.WithRetainFlag(_settingsManager.GetSettings<MqttSettings>().UseRetainFlag);
 
             if (clear)
             {
@@ -235,7 +237,7 @@ public class SensorManager : ISensorManager
 			{
 				var attributesMessage = new MqttApplicationMessageBuilder()
 					.WithTopic(autodiscoveryConfig.JsonAttributesTopic)
-					.WithRetainFlag(_settingsManager.Settings.Mqtt.UseRetainFlag);
+					.WithRetainFlag(_settingsManager.GetSettings<MqttSettings>().UseRetainFlag);
 
 				if (clear)
                 {

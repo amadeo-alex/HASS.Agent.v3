@@ -82,9 +82,8 @@ public partial class MqttManager : ObservableObject, IMqttManager
         _applicationInfo = applicationInfo;
         _guidManager = guidManager;
 
-        _mqttSettingsSnapshot = settingsManager.Settings.Mqtt.JsonClone<MqttSettings>();
-        _applicationSettingsSnapshot = settingsManager.Settings.Application.JsonClone<ApplicationSettings>();
-
+        //_mqttSettingsSnapshot = settingsManager.Settings.Mqtt.JsonClone<MqttSettings>();
+        TakeSettingsSnapshot();
 
         // default initialization
         DeviceConfigModel = GetDeviceConfigModel();
@@ -130,12 +129,11 @@ public partial class MqttManager : ObservableObject, IMqttManager
 
     public void RegisterMessageHandler(string topic, IMqttMessageHandler handler)
     {
-        if (_mqttMessageHandlers.ContainsKey(topic))
+        if (!_mqttMessageHandlers.TryAdd(topic, handler))
         {
             throw new ArgumentException($"handler for {topic} already registered");
         }
 
-        _mqttMessageHandlers[topic] = handler;
         _mqttClient.SubscribeAsync(topic);
     }
 
@@ -213,8 +211,8 @@ public partial class MqttManager : ObservableObject, IMqttManager
 
     private void TakeSettingsSnapshot()
     {
-        _mqttSettingsSnapshot = _settingsManager.Settings.Mqtt.JsonClone<MqttSettings>();
-        _applicationSettingsSnapshot = _settingsManager.Settings.Application.JsonClone<ApplicationSettings>();
+        _mqttSettingsSnapshot = _settingsManager.GetSettings<MqttSettings>();
+        _applicationSettingsSnapshot = _settingsManager.GetSettings<ApplicationSettings>();
     }
 
     private async void InitialRegistration()
