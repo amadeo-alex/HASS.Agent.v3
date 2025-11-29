@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HASS.Agent.Base.Models;
+using HASS.Agent.Base.Models.Entity;
 using HASS.Agent.Contracts.Managers;
 using HASS.Agent.Contracts.Models;
 using HASS.Agent.Contracts.Models.Entity;
@@ -16,14 +17,15 @@ using Microsoft.Win32;
 using Newtonsoft.Json;
 
 namespace HASS.Agent.Base.Managers;
+
 public class SettingsManager : ISettingsManager
 {
     private readonly ILogger _logger;
     private readonly IVariableManager _variableManager;
     private readonly IGuidManager _guidManager;
-    
+
     private readonly IConfiguration _configuration;
-    
+
     public ObservableCollection<ConfiguredEntity> ConfiguredSensors { get; private set; }
     public ObservableCollection<ConfiguredEntity> ConfiguredCommands { get; private set; }
     public ObservableCollection<IQuickAction> ConfiguredQuickActions { get; private set; }
@@ -41,15 +43,18 @@ public class SettingsManager : ISettingsManager
         }
 
         _configuration = new ConfigurationBuilder()
-            .SetBasePath(AppContext.BaseDirectory)                                   
+            .SetBasePath(_variableManager.StartupPath)
             .AddJsonFile("appsettings.json")
             .AddJsonFile("config/userappsettings.json", optional: true)
+            .AddJsonFile("config/sensors.json")
+            .AddJsonFile("config/commands.json")
+            .AddJsonFile("config/quickactions.json")
             .Build();
-        
+
         //Settings = GetSettings();
-        ConfiguredSensors = GetConfiguredSensors();
-        ConfiguredCommands = GetConfiguredCommands();
-        ConfiguredQuickActions = GetConfiguredQuickActions();
+        ConfiguredSensors = new ObservableCollection<ConfiguredEntity>(GetConfiguredSensors());
+        ConfiguredCommands = new ObservableCollection<ConfiguredEntity>(GetConfiguredCommands());
+        ConfiguredQuickActions = new ObservableCollection<IQuickAction>(GetConfiguredQuickActions());
 
         foreach (var configuredSensor in ConfiguredSensors)
         {
@@ -76,7 +81,7 @@ public class SettingsManager : ISettingsManager
         var sectionName = typeof(T).Name;
         return _configuration.GetSection(sectionName).Get<T>() ?? throw new InvalidOperationException($"no such settings exist: '{sectionName}'");
     }
-    
+
     private void Configured_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         switch (e.Action)
@@ -98,6 +103,7 @@ public class SettingsManager : ISettingsManager
                         _guidManager.MarkAsUsed(configuredQuickAction.UniqueId);
                     }
                 }
+
                 break;
 
             case NotifyCollectionChangedAction.Remove:
@@ -117,125 +123,63 @@ public class SettingsManager : ISettingsManager
                         _guidManager.MarkAsUnused(configuredQuickAction.UniqueId);
                     }
                 }
+
                 break;
         }
     }
 
-    private ObservableCollection<IQuickAction> GetConfiguredQuickActions()
+    private List<QuickAction> GetConfiguredQuickActions()
     {
         _logger.LogDebug("[SETTINGS] Loading quick action configuration");
 
-        var configuredQuickActions = new ObservableCollection<IQuickAction>();
+        var configuredQuickActions = _configuration.GetSection("QuickActions").Get<List<QuickAction>>() ?? [];
 
-        try
+        if (configuredQuickActions?.Count > 0)
         {
-            if (File.Exists(_variableManager.QuickActionsFile))
-            {
-                _logger.LogDebug("[SETTINGS] Configuration file found, loading");
-
-                var quickActionsConfigurationJson = File.ReadAllText(_variableManager.QuickActionsFile);
-                var quickActionConfiguration = JsonConvert.DeserializeObject<ObservableCollection<IQuickAction>>(quickActionsConfigurationJson);
-                if (quickActionConfiguration == null)
-                {
-                    _logger.LogWarning("[SETTINGS] Configuration file cannot be parsed");
-                    configuredQuickActions = [];
-                }
-                else
-                {
-                    _logger.LogInformation("[SETTINGS] Quick actions configuration loaded");
-                    configuredQuickActions = quickActionConfiguration;
-                }
-            }
-            else
-            {
-                _logger.LogDebug("[SETTINGS] Commands configuration not found");
-            }
+            _logger.LogInformation("[SETTINGS] Quick actions configuration loaded");
         }
-        catch (Exception ex)
+        else
         {
-            _logger.LogCritical("[SETTINGS] Exception loading quick actions configuration: {ex}", ex);
-            throw;
+            _logger.LogDebug("[SETTINGS] Quick actions configuration not found");
         }
 
         return configuredQuickActions;
     }
 
-    private ObservableCollection<ConfiguredEntity> GetConfiguredCommands()
+    private List<ConfiguredEntity> GetConfiguredCommands()
     {
         _logger.LogDebug("[SETTINGS] Loading commands configuration");
 
-        var configuredCommands = new ObservableCollection<ConfiguredEntity>();
+        var configuredCommands = _configuration.GetSection("Commands").Get<List<ConfiguredEntity>>() ?? [];
 
-        try
+        if (configuredCommands.Count > 0)
         {
-            if (File.Exists(_variableManager.CommandsFile))
-            {
-                _logger.LogDebug("[SETTINGS] Configuration file found, loading");
-
-                var commandsConfigurationJson = File.ReadAllText(_variableManager.CommandsFile);
-                var commandsConfiguration = JsonConvert.DeserializeObject<ObservableCollection<ConfiguredEntity>>(commandsConfigurationJson);
-                if (commandsConfiguration == null)
-                {
-                    _logger.LogWarning("[SETTINGS] Configuration file cannot be parsed");
-                    configuredCommands = [];
-                }
-                else
-                {
-                    _logger.LogInformation("[SETTINGS] Commands configuration loaded");
-                    configuredCommands = commandsConfiguration;
-                }
-            }
-            else
-            {
-                _logger.LogDebug("[SETTINGS] Commands configuration not found");
-            }
+            _logger.LogInformation("[SETTINGS] Commands configuration loaded");
         }
-        catch (Exception ex)
+        else
         {
-            _logger.LogCritical("[SETTINGS] Exception loading commands configuration: {ex}", ex);
-            throw;
+            _logger.LogDebug("[SETTINGS] Commands configuration not found");
         }
 
         return configuredCommands;
     }
 
-    private ObservableCollection<ConfiguredEntity> GetConfiguredSensors()
+    private List<ConfiguredEntity> GetConfiguredSensors()
     {
-        _logger.LogDebug("[SETTINGS] Loading sensor configuration");
+        _logger.LogDebug("[SETTINGS] Loading sensors configuration");
 
-        var configuredCommands = new ObservableCollection<ConfiguredEntity>();
+        var configuredSensors = _configuration.GetSection("Sensors").Get<List<ConfiguredEntity>>() ?? [];
 
-        try
+        if (configuredSensors.Count > 0)
         {
-            if (File.Exists(_variableManager.SensorsFile))
-            {
-                _logger.LogDebug("[SETTINGS] Configuration file found, loading");
-
-                var sensorsConfigurationJson = File.ReadAllText(_variableManager.SensorsFile);
-                var sensorConfiguration = JsonConvert.DeserializeObject<ObservableCollection<ConfiguredEntity>>(sensorsConfigurationJson);
-                if (sensorConfiguration == null)
-                {
-                    _logger.LogWarning("[SETTINGS] Configuration file cannot be parsed");
-                    configuredCommands = [];
-                }
-                else
-                {
-                    _logger.LogInformation("[SETTINGS] Sensors configuration loaded");
-                    configuredCommands = sensorConfiguration;
-                }
-            }
-            else
-            {
-                _logger.LogDebug("[SETTINGS] Sensors configuration not found");
-            }
+            _logger.LogInformation("[SETTINGS] Sensors configuration loaded");
         }
-        catch (Exception ex)
+        else
         {
-            _logger.LogCritical("[SETTINGS] Exception loading sensor configuration: {ex}", ex);
-            throw;
+            _logger.LogDebug("[SETTINGS] Sensors configuration not found");
         }
 
-        return configuredCommands;
+        return configuredSensors;
     }
 
     private Settings GetSettings()
@@ -256,8 +200,8 @@ public class SettingsManager : ISettingsManager
     public bool StoreConfiguredEntities()
     {
         return StoreConfiguredSensors()
-            && StoreConfiguredCommands()
-            && StoreConfiguredQuickActions();
+               && StoreConfiguredCommands()
+               && StoreConfiguredQuickActions();
     }
 
     private bool StoreConfiguredQuickActions()
@@ -266,8 +210,8 @@ public class SettingsManager : ISettingsManager
 
         try
         {
-            var configuredQuickActionsJson = JsonConvert.SerializeObject(ConfiguredQuickActions, Formatting.Indented);
-            File.WriteAllText(_variableManager.QuickActionsFile, configuredQuickActionsJson);
+            /*var configuredQuickActionsJson = JsonConvert.SerializeObject(ConfiguredQuickActions, Formatting.Indented);
+            File.WriteAllText(_variableManager.QuickActionsFile, configuredQuickActionsJson);*/
 
             _logger.LogInformation("[SETTINGS] Quick actions configuration stored");
         }
@@ -286,8 +230,8 @@ public class SettingsManager : ISettingsManager
 
         try
         {
-            var configuredCommandsJson = JsonConvert.SerializeObject(ConfiguredCommands, Formatting.Indented);
-            File.WriteAllText(_variableManager.CommandsFile, configuredCommandsJson);
+            /*var configuredCommandsJson = JsonConvert.SerializeObject(ConfiguredCommands, Formatting.Indented);
+            File.WriteAllText(_variableManager.CommandsFile, configuredCommandsJson);*/
 
             _logger.LogInformation("[SETTINGS] Commands configuration stored");
         }
@@ -306,8 +250,8 @@ public class SettingsManager : ISettingsManager
 
         try
         {
-            var configuredSensorsJson = JsonConvert.SerializeObject(ConfiguredSensors, Formatting.Indented);
-            File.WriteAllText(_variableManager.SensorsFile, configuredSensorsJson);
+            /*var configuredSensorsJson = JsonConvert.SerializeObject(ConfiguredSensors, Formatting.Indented);
+            File.WriteAllText(_variableManager.SensorsFile, configuredSensorsJson);*/
 
             _logger.LogInformation("[SETTINGS] Sensor configuration stored");
         }
@@ -346,7 +290,8 @@ public class SettingsManager : ISettingsManager
         {
             if (existingCommand.Type != command.Type)
             {
-                throw new ArgumentException($"command with ID {existingCommand.UniqueId} of different type ({existingCommand.Type}) than {command.Type} already exists");
+                throw new ArgumentException(
+                    $"command with ID {existingCommand.UniqueId} of different type ({existingCommand.Type}) than {command.Type} already exists");
             }
 
             ConfiguredSensors.Remove(existingCommand);

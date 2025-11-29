@@ -27,14 +27,14 @@ public class Settings : ISettings
     {
         _logger = log;
 
-        Application = GetSettings<ApplicationSettings>(variableManager.ApplicationSettingsFile, "Application");
+        /*Application = GetSettings<ApplicationSettings>(variableManager.ApplicationSettingsFile, "Application");
         HomeAssistant = GetSettings<HomeAssistantSettings>(variableManager.HomeAssistantSettingsFile, "HomeAssistant");
         Notification = GetSettings<NotificationSettings>(variableManager.NotificationSettingsFile, "Notification");
         Mqtt = GetSettings<MqttSettings>(variableManager.MqttSettingsSettingsFile, "MQTT");
         StorageCache = GetSettings<StorageCacheSettings>(variableManager.StorageCacheSettingsFile, "StorageCache");
         Tray = GetSettings<TraySettings>(variableManager.TraySettingsFile, "Tray");
         Update = GetSettings<UpdateSettings>(variableManager.UpdateSettingsFile, "Update");
-        WebView = GetSettings<WebViewSettings>(variableManager.WebViewSettingsFile, "WebView");
+        WebView = GetSettings<WebViewSettings>(variableManager.WebViewSettingsFile, "WebView");*/
     }
 
     private T GetSettings<T>(string configurationFilePath, string displayName) where T : new()
@@ -83,14 +83,14 @@ public class Settings : ISettings
     {
         var result = true;
 
-        result = result && StoreSettings(Application, variableManager.ApplicationSettingsFile, "Application");
+        /*result = result && StoreSettings(Application, variableManager.ApplicationSettingsFile, "Application");
         result = result && StoreSettings(HomeAssistant, variableManager.HomeAssistantSettingsFile, "HomeAssistant");
         result = result && StoreSettings(Notification, variableManager.NotificationSettingsFile, "Notification");
         result = result && StoreSettings(Mqtt, variableManager.MqttSettingsSettingsFile, "MQTT");
         result = result && StoreSettings(StorageCache, variableManager.StorageCacheSettingsFile, "StorageCache");
         result = result && StoreSettings(Tray, variableManager.TraySettingsFile, "Tray");
         result = result && StoreSettings(Update, variableManager.UpdateSettingsFile, "Update");
-        result = result && StoreSettings(WebView, variableManager.WebViewSettingsFile, "WebView");
+        result = result && StoreSettings(WebView, variableManager.WebViewSettingsFile, "WebView");*/
 
         return result;
     }

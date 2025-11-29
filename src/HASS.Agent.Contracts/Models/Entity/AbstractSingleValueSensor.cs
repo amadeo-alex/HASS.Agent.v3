@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml;
 using HASS.Agent.Contracts.Models;
-using HASS.Agent.Base.Models;
 using HASS.Agent.Contracts.Enums;
 
 namespace HASS.Agent.Contracts.Models.Entity;

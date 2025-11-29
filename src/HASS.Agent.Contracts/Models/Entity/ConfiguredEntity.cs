@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json;
 
-namespace HASS.Agent.Base.Models;
+namespace HASS.Agent.Contracts.Models.Entity;
 public class ConfiguredEntity : IEquatable<ConfiguredEntity> //TODO(Amadeo): interface?
 {
     public Dictionary<string, string> Properties { get; set; } = [];

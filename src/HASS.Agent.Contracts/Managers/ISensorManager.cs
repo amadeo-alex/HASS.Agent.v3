@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HASS.Agent.Contracts.Models.Entity;
-using HASS.Agent.Base.Models;
 
 namespace HASS.Agent.Contracts.Managers;
 public interface ISensorManager

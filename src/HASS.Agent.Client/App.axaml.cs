@@ -16,6 +16,7 @@ using HASS.Agent.Client.ViewModels;
 using HASS.Agent.Client.Views;
 using HASS.Agent.Contracts.Managers;
 using HASS.Agent.Contracts.Models;
+using HASS.Agent.Contracts.Models.Entity;
 using HASS.Agent.Contracts.Models.Settings;
 using HASS.Agent.Contracts.Models.Update;
 using Microsoft.Extensions.DependencyInjection;

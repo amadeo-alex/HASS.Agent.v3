@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using HASS.Agent.Base.Models;
 using HASS.Agent.Contracts.Enums;
 using HASS.Agent.Contracts.Models.Mqtt;
 

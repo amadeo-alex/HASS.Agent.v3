@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using HASS.Agent.Contracts.Enums;
 
 namespace HASS.Agent.Contracts.Models.Entity;
-public interface IQuickAction
+public interface IQuickAction //TODO(Amadeo): make this ConfiguredEntity?
 {
     public Guid UniqueId { get; set; }
     public HassDomain Domain { get; set; }

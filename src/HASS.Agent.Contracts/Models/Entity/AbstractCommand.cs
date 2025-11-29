@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml;
-using HASS.Agent.Base.Models;
 using HASS.Agent.Contracts.Enums;
 using Microsoft.Extensions.Logging;
 

@@ -24,17 +24,6 @@ public class VariableManager : IVariableManager
     public string WebViewCachePath { get; }
     public string LogPath { get; }
     public string ConfigPath { get; }
-    public string ApplicationSettingsFile { get; }
-    public string HomeAssistantSettingsFile { get; }
-    public string NotificationSettingsFile { get; }
-    public string MqttSettingsSettingsFile { get; }
-    public string StorageCacheSettingsFile { get; }
-    public string TraySettingsFile { get; }
-    public string UpdateSettingsFile { get; }
-    public string WebViewSettingsFile { get; }
-    public string QuickActionsFile { get; }
-    public string CommandsFile { get; }
-    public string SensorsFile { get; }
 
     public VariableManager(ApplicationInfo applicationInfo)
     {
@@ -46,7 +35,7 @@ public class VariableManager : IVariableManager
         LogPath = Path.Combine(StartupPath, "logs");
         ConfigPath = Path.Combine(StartupPath, "config");
 
-        ApplicationSettingsFile = Path.Combine(ConfigPath, "applicationSettings.json");
+        /*ApplicationSettingsFile = Path.Combine(ConfigPath, "applicationSettings.json");
         HomeAssistantSettingsFile = Path.Combine(ConfigPath, "homeAssistantSettings.json");
         NotificationSettingsFile = Path.Combine(ConfigPath, "notificationSettings.json");
         MqttSettingsSettingsFile = Path.Combine(ConfigPath, "mqttSettings.json");
@@ -57,6 +46,6 @@ public class VariableManager : IVariableManager
 
         QuickActionsFile = Path.Combine(ConfigPath, "quickactions.json");
         CommandsFile = Path.Combine(ConfigPath, "commands.json");
-        SensorsFile = Path.Combine(ConfigPath, "sensors.json");
+        SensorsFile = Path.Combine(ConfigPath, "sensors.json");*/
     }
 }
