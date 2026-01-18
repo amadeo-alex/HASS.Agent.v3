@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Reflection;
 using HASS.Agent.Base.Helpers;
 using HASS.Agent.Base.Managers;
 using HASS.Agent.Contracts.Managers;
@@ -7,6 +9,8 @@ using Serilog;
 using Serilog.Core;
 using Serilog.Events;
 using HASS.Agent.Base.Managers.HomeAssistant;
+using HASS.Agent.Base.Models;
+using HASS.Agent.Contracts.Models.Update;
 
 
 #if WINDOWS
@@ -20,17 +24,19 @@ namespace HASS.Agent.Base;
 
 public class HassAgentBase
 {
-    private IHost? _host;
+    public IHost? _host;
 
     public bool Debug { get; private set; } = false;
 
-    public IHost Initialize(LogEventLevel logEventLevel, Action<HostBuilderContext, IServiceCollection> externalServicesInitializer)
+    public IHost Initialize(LogEventLevel logEventLevel, Action<HostBuilderContext, IServiceCollection> externalServicesPreInitializer, Action<HostBuilderContext, IServiceCollection> externalServicesPostInitializer)
     {
         Debug = logEventLevel < LogEventLevel.Information;
 
         _host = Host.CreateDefaultBuilder().UseContentRoot(AppContext.BaseDirectory)
             .ConfigureServices((context, services) =>
             {
+                externalServicesPreInitializer(context, services);
+                
                 services.AddSingleton(_ => new LoggingLevelSwitch
                 {
                     MinimumLevel = logEventLevel
@@ -46,9 +52,11 @@ public class HassAgentBase
                     var elevationManager = sp.GetRequiredService<IElevationManager>();
                     var elevatedTag = elevationManager.RunningElevated ? "[E]" : "";
 
-                    var variableManager = sp.GetRequiredService<IVariableManager>();
-                    var logName = $"[{DateTime.Now:yyyy-MM-dd}]{elevatedTag} {variableManager.ApplicationName}_{logTag}.log";
+                    var applicationName = sp.GetRequiredService<ApplicationInfo>().Name;
+                    var logName = $"[{DateTime.Now:yyyy-MM-dd}]{elevatedTag} {applicationName}_{logTag}.log";
 
+                    var variableManager = sp.GetRequiredService<IVariableManager>();
+                    
                     loggerConfiguration.MinimumLevel.ControlledBy(sp.GetRequiredService<LoggingLevelSwitch>())
                         .WriteTo.Async(a =>
                             a.File(Path.Combine(variableManager.LogPath, logName),
@@ -63,7 +71,7 @@ public class HassAgentBase
                 services.AddSingleton<IExceptionManager, ExceptionManager>();
 
                 services.AddSingleton<IGuidManager, GuidManager>();
-                
+
 #if WINDOWS
                 services.AddSingleton<IElevationManager, HASS.Agent.Base.Windows.Managers.ElevationManager>();
 #else
@@ -89,11 +97,16 @@ public class HassAgentBase
                 services.AddSingleton<INotificationManager, HASS.Agent.Base.Linux.Managers.NotificationManager>();
 #endif
 
-                externalServicesInitializer(context, services);
+                externalServicesPostInitializer(context, services);
+
+                services.AddSingleton((sp) =>
+                {
+                    var settingsManager = sp.GetRequiredService<ISettingsManager>();
+                    return settingsManager.GetConfiguration();
+                });
+
 
                 services.AddSingleton(sp => sp);
-                //to be initialized externally:
-                // ApplicationInfo
             }).Build();
 
         return _host;
@@ -101,7 +114,7 @@ public class HassAgentBase
 
     public T GetService<T>() where T : class
     {
-        if(_host == null)
+        if (_host == null)
         {
             throw new InvalidOperationException("HASS.Agent Base is not initialized!");
         }

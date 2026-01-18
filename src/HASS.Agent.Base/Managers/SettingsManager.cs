@@ -24,13 +24,15 @@ public class SettingsManager : ISettingsManager
     private readonly IVariableManager _variableManager;
     private readonly IGuidManager _guidManager;
 
-    private readonly IConfiguration _configuration;
+    private readonly IConfigurationRoot _configurationRoot;
 
     public ObservableCollection<ConfiguredEntity> ConfiguredSensors { get; private set; }
     public ObservableCollection<ConfiguredEntity> ConfiguredCommands { get; private set; }
     public ObservableCollection<IQuickAction> ConfiguredQuickActions { get; private set; }
 
-    public SettingsManager(ILogger<SettingsManager> logger, IVariableManager variableManager, IGuidManager guidManager)
+    public IConfiguration Configuration => _configurationRoot;
+    
+    public SettingsManager(ILogger<SettingsManager> logger, ApplicationInfo applicationInfo, IVariableManager variableManager, IGuidManager guidManager)
     {
         _logger = logger;
         _variableManager = variableManager;
@@ -42,15 +44,15 @@ public class SettingsManager : ISettingsManager
             Directory.CreateDirectory(_variableManager.ConfigPath);
         }
 
-        _configuration = new ConfigurationBuilder()
-            .SetBasePath(_variableManager.StartupPath)
+        _configurationRoot = new ConfigurationBuilder()
+            .SetBasePath(applicationInfo.StartupPath)
             .AddJsonFile("appsettings.json")
             .AddJsonFile("config/userappsettings.json", optional: true)
             .AddJsonFile("config/sensors.json")
             .AddJsonFile("config/commands.json")
             .AddJsonFile("config/quickactions.json")
             .Build();
-
+        
         //Settings = GetSettings();
         ConfiguredSensors = new ObservableCollection<ConfiguredEntity>(GetConfiguredSensors());
         ConfiguredCommands = new ObservableCollection<ConfiguredEntity>(GetConfiguredCommands());
@@ -76,10 +78,15 @@ public class SettingsManager : ISettingsManager
         ConfiguredQuickActions.CollectionChanged += Configured_CollectionChanged;
     }
 
+    public IConfiguration GetConfiguration()
+    {
+        return _configurationRoot;
+    }
+
     public T GetSettings<T>() where T : new()
     {
         var sectionName = typeof(T).Name;
-        return _configuration.GetSection(sectionName).Get<T>() ?? throw new InvalidOperationException($"no such settings exist: '{sectionName}'");
+        return _configurationRoot.GetSection(sectionName).Get<T>() ?? throw new InvalidOperationException($"no such settings exist: '{sectionName}'");
     }
 
     private void Configured_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -132,9 +139,9 @@ public class SettingsManager : ISettingsManager
     {
         _logger.LogDebug("[SETTINGS] Loading quick action configuration");
 
-        var configuredQuickActions = _configuration.GetSection("QuickActions").Get<List<QuickAction>>() ?? [];
+        var configuredQuickActions = _configurationRoot.GetSection("QuickActions").Get<List<QuickAction>>() ?? [];
 
-        if (configuredQuickActions?.Count > 0)
+        if (configuredQuickActions.Count > 0)
         {
             _logger.LogInformation("[SETTINGS] Quick actions configuration loaded");
         }
@@ -150,7 +157,7 @@ public class SettingsManager : ISettingsManager
     {
         _logger.LogDebug("[SETTINGS] Loading commands configuration");
 
-        var configuredCommands = _configuration.GetSection("Commands").Get<List<ConfiguredEntity>>() ?? [];
+        var configuredCommands = _configurationRoot.GetSection("Commands").Get<List<ConfiguredEntity>>() ?? [];
 
         if (configuredCommands.Count > 0)
         {
@@ -168,7 +175,7 @@ public class SettingsManager : ISettingsManager
     {
         _logger.LogDebug("[SETTINGS] Loading sensors configuration");
 
-        var configuredSensors = _configuration.GetSection("Sensors").Get<List<ConfiguredEntity>>() ?? [];
+        var configuredSensors = _configurationRoot.GetSection("Sensors").Get<List<ConfiguredEntity>>() ?? [];
 
         if (configuredSensors.Count > 0)
         {

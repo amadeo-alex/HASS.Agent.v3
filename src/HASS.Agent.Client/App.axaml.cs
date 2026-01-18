@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -19,9 +20,11 @@ using HASS.Agent.Contracts.Models;
 using HASS.Agent.Contracts.Models.Entity;
 using HASS.Agent.Contracts.Models.Settings;
 using HASS.Agent.Contracts.Models.Update;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using MQTTnet;
 using Serilog.Core;
 using Serilog.Events;
@@ -38,27 +41,7 @@ public partial class App : Application
     {
         _applicationBase = new HassAgentBase();
 
-        _applicationBase.Initialize(LogEventLevel.Debug, (context, services) =>
-        {
-            services.AddSingleton(sp =>
-            {
-                var informationalVersion =
-                    Assembly.GetExecutingAssembly()?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ??
-                    throw new Exception("cannot obtain application version");
-                var versionString = informationalVersion.Contains('+') ? informationalVersion.Split('+')[0] : informationalVersion;
-
-                return new ApplicationInfo()
-                {
-                    Name = Assembly.GetExecutingAssembly().GetName().Name ?? "HASS.Agent",
-                    Version = new AgentVersion(versionString),
-                    ExecutablePath = AppDomain.CurrentDomain.BaseDirectory,
-                    Executable = Process.GetCurrentProcess().MainModule?.ModuleName ?? throw new Exception("cannot obtain application executable"),
-                };
-            });
-
-            //TODO(Amadeo): add theme changing logic
-            //services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
-        });
+        _applicationBase.Initialize(LogEventLevel.Debug, ExternalServicesPreInitializer, ExternalServicesPostInitializer);
 
         _logger = _applicationBase.GetService<ILogger<App>>();
         _logger.LogDebug("Application class constructed");
@@ -69,12 +52,45 @@ public partial class App : Application
         AvaloniaXamlLoader.Load(this);
     }
 
+    private void ExternalServicesPreInitializer(HostBuilderContext context, IServiceCollection services)
+    {
+        services.AddSingleton(sp =>
+        {
+            var informationalVersion =
+                Assembly.GetExecutingAssembly()?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ??
+                throw new Exception("cannot obtain application version");
+            var versionString = informationalVersion.Contains('+') ? informationalVersion.Split('+')[0] : informationalVersion;
+
+            return new ApplicationInfo()
+            {
+                Name = Assembly.GetExecutingAssembly().GetName().Name ?? "HASS.Agent",
+                Version = new AgentVersion(versionString),
+                ExecutablePath = AppDomain.CurrentDomain.BaseDirectory,
+                Executable = Process.GetCurrentProcess().MainModule?.ModuleName ?? throw new Exception("cannot obtain application executable"),
+                OsVersion = Environment.OSVersion.ToString(),
+                StartupPath = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory) ?? throw new Exception("cannot get executable path directory name"),
+            };
+        });
+
+        //TODO(Amadeo): add theme changing logic
+        //services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
+    }
+
+    private void ExternalServicesPostInitializer(HostBuilderContext context, IServiceCollection services)
+    {
+    }
+
     public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             var launchArguments = Environment.GetCommandLineArgs();
             var settingsManager = _applicationBase.GetService<ISettingsManager>();
+
+
+            var testZ = settingsManager.GetConfiguration();
+            var testY = _applicationBase._host.Services.GetService<IConfiguration>();
+            var testX = _applicationBase._host.Services.GetService<IOptions<MqttSettings>>().Value;
 
             if (_applicationBase.Debug)
             {
@@ -92,8 +108,8 @@ public partial class App : Application
                 AppDomain.CurrentDomain.FirstChanceException += exceptionManager.OnFirstChanceExceptionHandler;
             }
 
-            var variableManager = _applicationBase.GetService<IVariableManager>();
-            _logger.LogInformation("[MAIN] HASS.Agent version: {version}", variableManager.ClientVersion);
+            var applicationInfo = _applicationBase.GetService<ApplicationInfo>();
+            _logger.LogInformation("[MAIN] HASS.Agent version: '{version}' on '{os}'", applicationInfo.Version, applicationInfo.OsVersion);
 
 
             var initializationTask = Task.Run(async () =>

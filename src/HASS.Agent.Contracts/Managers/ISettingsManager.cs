@@ -8,26 +8,34 @@ using System.Text;
 using System.Threading.Tasks;
 using HASS.Agent.Contracts.Models;
 using HASS.Agent.Contracts.Models.Entity;
+using Microsoft.Extensions.Configuration;
 
 namespace HASS.Agent.Contracts.Managers;
+
 public interface ISettingsManager
 {
-    ObservableCollection<ConfiguredEntity> ConfiguredSensors { get; }
-    ObservableCollection<ConfiguredEntity> ConfiguredCommands { get; }
-    ObservableCollection<IQuickAction> ConfiguredQuickActions { get; } //TODO(Amadeo): rethink
+	ObservableCollection<ConfiguredEntity> ConfiguredSensors { get; }
+	ObservableCollection<ConfiguredEntity> ConfiguredCommands { get; }
+	ObservableCollection<IQuickAction> ConfiguredQuickActions { get; } //TODO(Amadeo): rethink
 
-    public T GetSettings<T>() where T : new();
-    
-    bool StoreConfiguredEntities();
-    bool StoreSettings();
-    bool GetExtendedLoggingSetting();
-    void SetExtendedLoggingSetting(bool enabled);
-    bool GetDpiWarningShown();
-    void SetDpiWarningShown(bool shown);
-    //TODO(Amadeo): remove
-    Task<bool> SendMqttSettingsToServiceAsync(bool sendNewClientId = false);
-    string GetDeviceSerialNumber();
-    void SetDeviceSerialNumber(string deviceSerialNumber);
-    bool GetHideDonateButtonSetting();
-    void SetHideDonateButtonSetting(bool hide);
+	IConfiguration Configuration { get; }
+	
+	public IConfiguration GetConfiguration();
+
+	public T GetSettings<T>() where T : new();
+
+	bool StoreConfiguredEntities();
+	bool StoreSettings();
+	bool GetExtendedLoggingSetting();
+	void SetExtendedLoggingSetting(bool enabled);
+	bool GetDpiWarningShown();
+
+	void SetDpiWarningShown(bool shown);
+
+	//TODO(Amadeo): remove
+	Task<bool> SendMqttSettingsToServiceAsync(bool sendNewClientId = false);
+	string GetDeviceSerialNumber();
+	void SetDeviceSerialNumber(string deviceSerialNumber);
+	bool GetHideDonateButtonSetting();
+	void SetHideDonateButtonSetting(bool hide);
 }

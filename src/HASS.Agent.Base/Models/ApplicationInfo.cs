@@ -9,7 +9,9 @@ namespace HASS.Agent.Base.Models;
 public class ApplicationInfo //TODO(Amadeo): readonly?
 {
     public string Name { get; set; } = string.Empty;
-    public AgentVersion Version { get; set; } = new AgentVersion();
-    public string ExecutablePath { get; set; } = string.Empty;
+    public AgentVersion Version { get; init; } = new AgentVersion();
+    public string ExecutablePath { get; init; } = string.Empty;
     public string Executable { get; set; } = string.Empty;
+    public string OsVersion  { get; init; } = string.Empty;
+    public string StartupPath { get; init; } = string.Empty;
 }

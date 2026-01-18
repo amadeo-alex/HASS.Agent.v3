@@ -13,39 +13,30 @@ public class VariableManager : IVariableManager
 {
     public string RootRegKey { get; } = @"HKEY_CURRENT_USER\SOFTWARE\HASSAgent\Client";
     public string CertificateHash { get; } = "F5E2C6F0BB7C78E82BFFE33ABC98A689BE690D10";
-
-    public string ClientVersion { get; }
-    public bool IsClientBeta { get; }
-    public string ApplicationName { get; }
-    public string StartupPath { get; }
+    
     public string CachePath { get; }
     public string ImageCachePath { get; }
     public string AudioCachePath { get; }
     public string WebViewCachePath { get; }
     public string LogPath { get; }
     public string ConfigPath { get; }
+    public string ApplicationSettingsFile { get; }
+    public string QuickActionsFile { get; }
+    public string CommandsFile { get; }
+    public string SensorsFile { get; }
 
     public VariableManager(ApplicationInfo applicationInfo)
     {
-        StartupPath = Path.GetDirectoryName(applicationInfo.ExecutablePath) ?? throw new Exception("cannot get executable path directory name");
-        CachePath = Path.Combine(StartupPath, "cache");
+        CachePath = Path.Combine(applicationInfo.StartupPath, "cache");
         ImageCachePath = Path.Combine(CachePath, "images");
         AudioCachePath = Path.Combine(CachePath, "audio");
         WebViewCachePath = Path.Combine(CachePath, "webview");
-        LogPath = Path.Combine(StartupPath, "logs");
-        ConfigPath = Path.Combine(StartupPath, "config");
+        LogPath = Path.Combine(applicationInfo.StartupPath, "logs");
+        ConfigPath = Path.Combine(applicationInfo.StartupPath, "config");
 
-        /*ApplicationSettingsFile = Path.Combine(ConfigPath, "applicationSettings.json");
-        HomeAssistantSettingsFile = Path.Combine(ConfigPath, "homeAssistantSettings.json");
-        NotificationSettingsFile = Path.Combine(ConfigPath, "notificationSettings.json");
-        MqttSettingsSettingsFile = Path.Combine(ConfigPath, "mqttSettings.json");
-        StorageCacheSettingsFile = Path.Combine(ConfigPath, "storageSettings.json");
-        TraySettingsFile = Path.Combine(ConfigPath, "traySettings.json");
-        UpdateSettingsFile = Path.Combine(ConfigPath, "updateSettings.json");
-        WebViewSettingsFile = Path.Combine(ConfigPath, "webViewSettings.json");
-
-        QuickActionsFile = Path.Combine(ConfigPath, "quickactions.json");
-        CommandsFile = Path.Combine(ConfigPath, "commands.json");
-        SensorsFile = Path.Combine(ConfigPath, "sensors.json");*/
+        ApplicationSettingsFile = "userappsettings.json";
+        QuickActionsFile = "quickactions.json";
+        CommandsFile = "commands.json";
+        SensorsFile = "sensors.json";
     }
 }
