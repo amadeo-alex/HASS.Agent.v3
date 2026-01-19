@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -10,9 +11,11 @@ using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
+using Avalonia.Threading;
 using HASS.Agent.Base;
 using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Sensors.SingleValue;
+using HASS.Agent.Client.Models.Log;
 using HASS.Agent.Client.ViewModels;
 using HASS.Agent.Client.Views;
 using HASS.Agent.Contracts.Managers;
@@ -20,14 +23,18 @@ using HASS.Agent.Contracts.Models;
 using HASS.Agent.Contracts.Models.Entity;
 using HASS.Agent.Contracts.Models.Settings;
 using HASS.Agent.Contracts.Models.Update;
+using LogViewer.Core;
+using LogViewer.Core.ViewModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MQTTnet;
+using Serilog;
 using Serilog.Core;
 using Serilog.Events;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace HASS.Agent.Client;
 
@@ -41,7 +48,7 @@ public partial class App : Application
     {
         _applicationBase = new HassAgentBase();
 
-        _applicationBase.Initialize(LogEventLevel.Debug, ExternalServicesPreInitializer, ExternalServicesPostInitializer);
+        _applicationBase.Initialize(LogEventLevel.Debug, ExternalServicesPreInitializer, ExternalServicesPostInitializer, AdditionalLoggerConfiguration);
 
         _logger = _applicationBase.GetService<ILogger<App>>();
         _logger.LogDebug("Application class constructed");
@@ -78,6 +85,43 @@ public partial class App : Application
 
     private void ExternalServicesPostInitializer(HostBuilderContext context, IServiceCollection services)
     {
+        services.AddSingleton<DataStoreLoggerConfiguration>(_ =>
+        {
+            var loggerConfiguration = new DataStoreLoggerConfiguration();
+            loggerConfiguration.Colors[LogLevel.Information].Foreground = System.Drawing.Color.Gray;
+            loggerConfiguration.Colors[LogLevel.Debug].Foreground = System.Drawing.Color.DarkGray;
+            loggerConfiguration.Colors[LogLevel.Warning].Foreground = System.Drawing.Color.Orange;
+            loggerConfiguration.Colors[LogLevel.Error].Foreground = System.Drawing.Color.DarkRed;
+            loggerConfiguration.Colors[LogLevel.Critical].Foreground = System.Drawing.Color.Red;
+            loggerConfiguration.Colors[LogLevel.Trace].Foreground = System.Drawing.Color.Gray;
+            loggerConfiguration.MaxLogEntries = 256;
+            
+            return loggerConfiguration;
+        });
+        
+        services.AddSingleton<ILogDataStore>(sp =>
+        {
+            var config = sp.GetService<IOptionsMonitor<DataStoreLoggerConfiguration>>();
+            if (config == null)
+            {
+                return new LogDataStore();
+            }
+            
+            var currentConfig = config.CurrentValue;
+            return new LogDataStore(currentConfig.MaxLogEntries, currentConfig.DispatcherPriority);
+        });
+
+        services.AddSingleton<LogDataStoreSink>();
+        
+        services.AddSingleton<LogViewerControlViewModel>();
+        services.AddSingleton<LoggerWindowViewModel>();
+        services.AddSingleton<LoggerWindow>();
+    }
+
+    private void AdditionalLoggerConfiguration(LoggerConfiguration config, IServiceProvider sp)
+    {
+        var dataStoreSink = sp.GetRequiredService<LogDataStoreSink>();
+        config.WriteTo.Sink(dataStoreSink);
     }
 
     public override void OnFrameworkInitializationCompleted()
@@ -174,6 +218,17 @@ public partial class App : Application
             {
                 DataContext = new MainWindowViewModel(),
             };
+
+            Task.Run(async () =>
+            {
+                await Task.Delay(1000);
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    var lw = _applicationBase.GetService<LoggerWindow>();
+                    lw.Show();
+                    lw.Focus();
+                });
+            });
         }
 
         base.OnFrameworkInitializationCompleted();

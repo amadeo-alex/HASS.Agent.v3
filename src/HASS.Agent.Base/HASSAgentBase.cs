@@ -28,7 +28,11 @@ public class HassAgentBase
 
     public bool Debug { get; private set; } = false;
 
-    public IHost Initialize(LogEventLevel logEventLevel, Action<HostBuilderContext, IServiceCollection> externalServicesPreInitializer, Action<HostBuilderContext, IServiceCollection> externalServicesPostInitializer)
+    public IHost Initialize(LogEventLevel logEventLevel,
+        Action<HostBuilderContext, IServiceCollection> externalServicesPreInitializer,
+        Action<HostBuilderContext, IServiceCollection> externalServicesPostInitializer,
+        Action<LoggerConfiguration, IServiceProvider>? additionalLoggerConfiguration = null
+    )
     {
         Debug = logEventLevel < LogEventLevel.Information;
 
@@ -36,7 +40,7 @@ public class HassAgentBase
             .ConfigureServices((context, services) =>
             {
                 externalServicesPreInitializer(context, services);
-                
+
                 services.AddSingleton(_ => new LoggingLevelSwitch
                 {
                     MinimumLevel = logEventLevel
@@ -56,7 +60,7 @@ public class HassAgentBase
                     var logName = $"[{DateTime.Now:yyyy-MM-dd}]{elevatedTag} {applicationName}_{logTag}.log";
 
                     var variableManager = sp.GetRequiredService<IVariableManager>();
-                    
+
                     loggerConfiguration.MinimumLevel.ControlledBy(sp.GetRequiredService<LoggingLevelSwitch>())
                         .WriteTo.Async(a =>
                             a.File(Path.Combine(variableManager.LogPath, logName),
@@ -66,6 +70,8 @@ public class HassAgentBase
                                 rollOnFileSizeLimit: true,
                                 buffered: true,
                                 flushToDiskInterval: TimeSpan.FromMilliseconds(150)));
+                    
+                    additionalLoggerConfiguration?.Invoke(loggerConfiguration, sp);
                 });
 
                 services.AddSingleton<IExceptionManager, ExceptionManager>();
