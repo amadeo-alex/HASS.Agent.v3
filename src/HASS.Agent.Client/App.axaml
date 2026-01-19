@@ -2,7 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="HASS.Agent.Client.App"
              xmlns:local="using:HASS.Agent.Client"
-             xmlns:themes="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
+             xmlns:semi="https://irihi.tech/semi"
+             xmlns:u-semi="https://irihi.tech/ursa/themes/semi"
              RequestedThemeVariant="Default">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
@@ -11,6 +12,8 @@
     </Application.DataTemplates>
   
     <Application.Styles>
-        <themes:MaterialTheme BaseTheme="Dark" PrimaryColor="Purple" SecondaryColor="Lime" />
+        <semi:SemiTheme Locale="en-GB" />
+        <u-semi:SemiTheme Locale="en-GB"/>
+        <semi:DataGridSemiTheme />
     </Application.Styles>
 </Application>

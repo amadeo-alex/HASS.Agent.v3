@@ -16,7 +16,6 @@
 	</PropertyGroup>
 	
     <ItemGroup>
-        <Folder Include="Controls\" />
         <Folder Include="Models\" />
         <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
@@ -33,8 +32,10 @@
         </PackageReference>
         <PackageReference Include="BigMission.Avalonia.LogViewer" Version="1.0.4" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-        <PackageReference Include="Material.Avalonia" Version="3.13.4" />
-        <PackageReference Include="Material.Avalonia.DataGrid" Version="3.13.4" />
+        <PackageReference Include="Irihi.Ursa" Version="1.14.1" />
+        <PackageReference Include="Irihi.Ursa.Themes.Semi" Version="1.14.1" />
+        <PackageReference Include="Semi.Avalonia" Version="11.3.7.2" />
+        <PackageReference Include="Semi.Avalonia.DataGrid" Version="11.3.7.2" />
     </ItemGroup>
 
     <ItemGroup>
