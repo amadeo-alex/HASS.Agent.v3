@@ -15,5 +15,7 @@
         <semi:SemiTheme Locale="en-GB" />
         <u-semi:SemiTheme Locale="en-GB"/>
         <semi:DataGridSemiTheme />
+        
+        <StyleInclude Source="avares://IconPacks.Avalonia.Material/Material.axaml" />
     </Application.Styles>
 </Application>

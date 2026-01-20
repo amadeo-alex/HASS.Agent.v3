@@ -1,29 +1,16 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
+using Avalonia.Threading;
 
 namespace HASS.Agent.Client.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
-	[ObservableProperty]
-	private ViewModelBase _selectedPage;
-
-	[ObservableProperty]
-	private object? _selectedItem;
+	public MainViewViewModel MainViewViewModel { get; set; }
 	
-	public MainWindowViewModel()
+	public MainWindowViewModel(Dispatcher dispatcher, MainViewViewModel mainViewViewModel) : base(dispatcher)
 	{
-		SelectedPage = new TestWindowViewModel();
+		MainViewViewModel = mainViewViewModel;
 	}
 
-	partial void OnSelectedItemChanging(object? oldValue, object? newValue)
-	{
-		throw new NotImplementedException();
-	}
-
-	
-	partial void OnSelectedItemChanged(object? value)
-	{
-		Console.WriteLine();
-	}
 }

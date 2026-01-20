@@ -2,10 +2,76 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:u="https://irihi.tech/ursa"
+             xmlns:vm="clr-namespace:HASS.Agent.Client.ViewModels"
+             xmlns:m="clr-namespace:HASS.Agent.Client"
+             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="HASS.Agent.Client.Views.MainView">
-    
-    <Button>sdawd</Button>
+             x:Class="HASS.Agent.Client.Views.MainView"
+             x:DataType="vm:MainViewViewModel">
 
-    
+    <Design.DataContext>
+        <vm:MainViewViewModel />
+    </Design.DataContext>
+
+    <Panel>
+
+        <Grid ColumnDefinitions="Auto, *">
+            <Border Padding="8,4" VerticalAlignment="Stretch" Theme="{DynamicResource CardBorder}">
+
+                <u:NavMenu Name="MainMenu"
+                           ExpandWidth="300"
+                           ItemsSource="{Binding MenuViewModel.MenuItems}"
+                           CommandBinding="{Binding ActivateCommand}"
+                           SubMenuBinding="{Binding SubMenu}"
+                           IconBinding="{Binding IconKind}">
+                    <u:NavMenu.Styles>
+                        <Style x:DataType="vm:MenuItemViewModel" Selector="u|NavMenuItem">
+                            <Setter Property="IsSeparator" Value="{Binding IsSeparator}" />
+                        </Style>
+                    </u:NavMenu.Styles>
+
+                    <u:NavMenu.IconTemplate>
+                        <DataTemplate>
+                                <iconPacks:PackIconMaterial Kind="{Binding }"
+                                                            Width="16" Height="16"
+                                                            Foreground="{DynamicResource SemiGrey5}" />
+                        </DataTemplate>
+                    </u:NavMenu.IconTemplate>
+                    <u:NavMenu.HeaderTemplate>
+                        <DataTemplate x:DataType="vm:MenuItemViewModel">
+                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource SemiSpacingExtraTight}">
+                                <TextBlock HorizontalAlignment="Left" Text="{Binding Header}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </u:NavMenu.HeaderTemplate>
+                    <u:NavMenu.Header>
+                        <DockPanel Margin="8 32 8 8" HorizontalAlignment="Center">
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Classes="H4"
+                                Margin="16 0 0 0"
+                                IsVisible="{Binding !#MainMenu.IsHorizontalCollapsed}"
+                                Text="HASS.Agent v3"
+                                Theme="{DynamicResource TitleTextBlock}" />
+                        </DockPanel>
+                    </u:NavMenu.Header>
+                </u:NavMenu>
+
+            </Border>
+
+            <ContentControl
+                Grid.Column="1"
+                Margin="12,36,12,12"
+                Content="{Binding Content}">
+                <ContentControl.ContentTemplate>
+                    <m:ViewLocator />
+                </ContentControl.ContentTemplate>
+            </ContentControl>
+
+        </Grid>
+
+    </Panel>
+
+
 </UserControl>

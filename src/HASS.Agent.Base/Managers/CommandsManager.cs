@@ -293,7 +293,7 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
             try
             {
                 await Task.Delay(TimeSpan.FromMilliseconds(750)); //TODO(Amadeo): add application config for this
-                if (Pause || _mqttManager.Status != MqttStatus.Connected)
+                if (Pause || _mqttManager.Status != ManagerStatus.Running)
                 {
                     continue;
                 }

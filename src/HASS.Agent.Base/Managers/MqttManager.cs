@@ -63,9 +63,7 @@ public partial class MqttManager : ObservableObject, IMqttManager
     private readonly Dictionary<string, IMqttMessageHandler> _mqttMessageHandlers = [];
 
     [ObservableProperty]
-    public MqttStatus status = MqttStatus.NotInitialized;
-    public bool Initialized { get; private set; } = false;
-    public bool Ready => Initialized && Status == MqttStatus.Connected;
+    public ManagerStatus status = ManagerStatus.NotInitialized;
 
     public AbstractMqttDeviceConfigModel DeviceConfigModel
     {
@@ -77,7 +75,8 @@ public partial class MqttManager : ObservableObject, IMqttManager
         _logger = logger;
 
         _logger.LogInformation("[MQTT] Initializing manager");
-
+        Status =  ManagerStatus.Initializing;
+        
         _settingsManager = settingsManager;
         _applicationInfo = applicationInfo;
         _guidManager = guidManager;
@@ -92,6 +91,7 @@ public partial class MqttManager : ObservableObject, IMqttManager
         _mqttClientOptions = GetMqttClientOptions();
 
         _logger.LogInformation("[MQTT] Manager initialized");
+        Status =  ManagerStatus.Initialized;
     }
 
     private MqttDeviceDiscoveryConfigModel GetDeviceConfigModel()
@@ -145,6 +145,7 @@ public partial class MqttManager : ObservableObject, IMqttManager
 
     public async Task StartClientAsync()
     {
+        Status = ManagerStatus.Connecting;
         TakeSettingsSnapshot();
 
         _logger.LogDebug("[MQTT] Attempting to start the client");
@@ -163,6 +164,8 @@ public partial class MqttManager : ObservableObject, IMqttManager
 
             //await _mqttClient.StartAsync(_mqttClientOptions);
             await _mqttClient.ConnectAsync(_mqttClientOptions);
+            Status = ManagerStatus.Connected;
+            
             InitialRegistration();
         }
         catch (MqttConnectingFailedException e)
@@ -183,17 +186,15 @@ public partial class MqttManager : ObservableObject, IMqttManager
     {
         _logger.LogDebug("[MQTT] Attempting to stop the client");
 
-        Initialized = false;
+        //Initialized = false; //TODO(Amadeo): remove
 
-        Status = MqttStatus.Disconnecting;
+        Status = ManagerStatus.Disconnecting;
         await _mqttClient.DisconnectAsync();
         //_logger.LogDebug("[MQTT] Attempting to stop the client - finished A");
         //await _mqttClient.InternalClient.DisconnectAsync();
 
         _logger.LogDebug("[MQTT] Attempting to stop the client - finished");
-        Status = MqttStatus.Disconnected;
-
-        return;
+        Status = ManagerStatus.Disconnected;
     }
 
     public async Task RestartClientAsync()
@@ -201,7 +202,7 @@ public partial class MqttManager : ObservableObject, IMqttManager
         _logger.LogDebug("[MQTT] Restarting client");
 
         await StopClientAsync();
-        while (Status == MqttStatus.Disconnecting)
+        while (Status == ManagerStatus.Disconnecting) //TODO(Amadeo): verify if needed since StopClientAsync awaits disconnection
         {
             await Task.Delay(100);
         }
@@ -217,15 +218,16 @@ public partial class MqttManager : ObservableObject, IMqttManager
 
     private async void InitialRegistration()
     {
-        while (!_mqttClient.IsConnected || Status != MqttStatus.Connected)
+        while (!_mqttClient.IsConnected || Status != ManagerStatus.Connected)
         {
             await Task.Delay(2000);
         }
 
         await AnnounceAvailabilityAsync();
-        Initialized = true;
+        //Initialized = true; //TODO(Amadeo): remove
 
         _logger.LogInformation("[MQTT] Initial registration completed");
+        Status = ManagerStatus.Running;
     }
 
     private async Task AnnounceAvailabilityAsync(bool offline = false) //TODO(Amadeo): move to separate handler?
@@ -276,8 +278,10 @@ public partial class MqttManager : ObservableObject, IMqttManager
 
     private async Task OnDisconnectedAsync(MqttClientDisconnectedEventArgs args)
     {
-        Status = MqttStatus.Disconnected;
-        _logger.LogInformation("[MQTT] Disconnected");
+        Status = ManagerStatus.Disconnected;
+        _logger.LogInformation("[MQTT] Disconnected, restarting");
+        
+        await RestartClientAsync();
     }
 
 /*    private async Task OnApplicationMessageSkippedAsync(ApplicationMessageSkippedEventArgs args)
@@ -374,12 +378,10 @@ public partial class MqttManager : ObservableObject, IMqttManager
 
     private async Task OnConnectedAsync(MqttClientConnectedEventArgs arg)
     {
-        Status = MqttStatus.Connected;
+        Status = ManagerStatus.Connected;
         _logger.LogInformation("[MQTT] Connected");
 
         _connectionErrorLogged = false;
-
-        return;
     }
 
     //TODO(Amadeo): handle connection failure
@@ -525,14 +527,12 @@ public partial class MqttManager : ObservableObject, IMqttManager
 
     public async Task PublishAsync(MqttApplicationMessage message)
     {
-        if (!Ready)
+        if (Status != ManagerStatus.Running)
         {
             return;
         }
 
         await _mqttClient.PublishAsync(message);
-
-        return;
     }
 
     /// Idea thanks to https://github.com/hobbyquaker/mqtt-wildcard implementation

@@ -1,0 +1,70 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:u="https://irihi.tech/ursa"
+             xmlns:vm="clr-namespace:HASS.Agent.Client.ViewModels"
+             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="HASS.Agent.Client.Views.Pages.HomePageView"
+             x:DataType="vm:Pages.HomePageViewModel">
+    
+    <Control.Styles>
+        <Style Selector="TextBlock.Header">
+            <Setter Property="Theme" Value="{StaticResource TitleTextBlock}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+    </Control.Styles>
+    
+    <ScrollViewer>
+        
+        <StackPanel Margin="20" Spacing="8" HorizontalAlignment="Stretch">
+            
+            <HeaderedContentControl Theme="{StaticResource GroupBox}">
+                <HeaderedContentControl.Header>
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <TextBlock Classes="Header H6">Client Status</TextBlock>
+                        </StackPanel>
+                    </DockPanel>
+
+                </HeaderedContentControl.Header>
+                
+                <Panel>
+                    <StackPanel Spacing="8">
+                        <u:Descriptions>
+                            <u:DescriptionsItem Label="MQTT" Content="{Binding MqttStatus}"/>
+                        </u:Descriptions>
+                    </StackPanel>
+                </Panel>
+            </HeaderedContentControl>
+            
+            <HeaderedContentControl Theme="{StaticResource GroupBox}">
+                <HeaderedContentControl.Header>
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <u:IconButton Icon="{iconPacks:Material Kind=Refresh}"
+                                          Theme="{DynamicResource BorderlessIconButton}"
+                                          ToolTip.Tip="Refresh service information"
+                                          IsLoading="{Binding RefreshingServiceInformation}"
+                                          Command="{Binding RefreshSatelliteInformationCommand}"/>
+                        </StackPanel>
+                        <TextBlock Classes="Header H6">Service Status</TextBlock>
+                    </DockPanel>
+
+                </HeaderedContentControl.Header>
+                
+                <Panel>
+                    <StackPanel Spacing="8">
+                        <u:Descriptions>
+                            <u:DescriptionsItem Label="MQTT" Content="{Binding MqttStatus}"/>
+                        </u:Descriptions>
+                    </StackPanel>
+                </Panel>
+            </HeaderedContentControl>
+            
+        </StackPanel>
+        
+    </ScrollViewer>
+    
+</UserControl>

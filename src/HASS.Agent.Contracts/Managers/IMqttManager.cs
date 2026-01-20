@@ -16,8 +16,8 @@ public interface IMqttMessageHandler
 }
 public interface IMqttManager : INotifyPropertyChanged
 {
-    MqttStatus Status { get; }
-    bool Ready { get; }
+    ManagerStatus Status { get; }
+    
     AbstractMqttDeviceConfigModel? DeviceConfigModel { get; }
 
     void RegisterMessageHandler(string topic, IMqttMessageHandler handler);

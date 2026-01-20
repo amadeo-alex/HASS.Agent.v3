@@ -17,7 +17,10 @@ using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Sensors.SingleValue;
 using HASS.Agent.Client.Models.Log;
 using HASS.Agent.Client.ViewModels;
+using HASS.Agent.Client.ViewModels.Pages;
 using HASS.Agent.Client.Views;
+using HASS.Agent.Client.Views.Pages;
+using HASS.Agent.Contracts.Enums;
 using HASS.Agent.Contracts.Managers;
 using HASS.Agent.Contracts.Models;
 using HASS.Agent.Contracts.Models.Entity;
@@ -43,12 +46,13 @@ public partial class App : Application
     private readonly HassAgentBase _applicationBase;
     private readonly ILogger _logger;
 
+    public static IHost XXX;
 
     public App()
     {
         _applicationBase = new HassAgentBase();
 
-        _applicationBase.Initialize(LogEventLevel.Debug, ExternalServicesPreInitializer, ExternalServicesPostInitializer, AdditionalLoggerConfiguration);
+        XXX = _applicationBase.Initialize(LogEventLevel.Debug, ExternalServicesPreInitializer, ExternalServicesPostInitializer, AdditionalLoggerConfiguration);
 
         _logger = _applicationBase.GetService<ILogger<App>>();
         _logger.LogDebug("Application class constructed");
@@ -116,6 +120,13 @@ public partial class App : Application
         services.AddSingleton<LogViewerControlViewModel>();
         services.AddSingleton<LoggerWindowViewModel>();
         services.AddSingleton<LoggerWindow>();
+
+        services.AddSingleton<MainWindowViewModel>();
+        services.AddSingleton<MainViewViewModel>();
+        
+        services.AddSingleton<HomePageViewModel>();
+
+        services.AddSingleton(Dispatcher.UIThread);
     }
 
     private void AdditionalLoggerConfiguration(LoggerConfiguration config, IServiceProvider sp)
@@ -194,7 +205,7 @@ public partial class App : Application
 
                 await Task.Run(async () =>
                 {
-                    while (!mqtt.Ready)
+                    while (mqtt.Status != ManagerStatus.Running)
                     {
                         await Task.Delay(1000);
                     }
@@ -216,7 +227,7 @@ public partial class App : Application
             DisableAvaloniaDataAnnotationValidation();
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainWindowViewModel(),
+                DataContext = _applicationBase.GetService<MainWindowViewModel>(),
             };
 
             Task.Run(async () =>

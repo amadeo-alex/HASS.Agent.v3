@@ -185,7 +185,7 @@ public class SensorManager : ISensorManager
 
 	private async Task PublishSingleSensorStateAsync(AbstractDiscoverable sensor, bool respectChecks = true, bool clear = false)
 	{
-		if (_mqttManager.Status != MqttStatus.Connected || !_mqttManager.Ready)
+		if (_mqttManager.Status != ManagerStatus.Running)
         {
             return;
         }
@@ -307,7 +307,7 @@ public class SensorManager : ISensorManager
 			try
 			{
 				await Task.Delay(TimeSpan.FromMilliseconds(750)); //TODO(Amadeo): add application config for this
-                if (Pause || _mqttManager.Status != MqttStatus.Connected)
+                if (Pause || _mqttManager.Status != ManagerStatus.Running)
                 {
                     continue;
                 }
