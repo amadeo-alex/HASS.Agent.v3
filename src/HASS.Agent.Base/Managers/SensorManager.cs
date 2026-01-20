@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 using HASS.Agent.Contracts.Managers;
 using HASS.Agent.Contracts.Models.Entity;
 using HASS.Agent.Base.Models;
@@ -20,7 +21,7 @@ using Microsoft.Extensions.Logging;
 
 namespace HASS.Agent.Base.Managers;
 
-public class SensorManager : ISensorManager
+public partial class SensorManager : ObservableObject, ISensorManager
 {
     private readonly ILogger _logger;
 
@@ -41,6 +42,9 @@ public class SensorManager : ISensorManager
 
 	private bool _discoveryPublished = false;
 
+	[ObservableProperty]
+	private ManagerStatus _status;
+	
 	public bool Pause { get; set; }
 	public bool Exit { get; set; }
 
@@ -57,6 +61,7 @@ public class SensorManager : ISensorManager
 
 	public async Task InitializeAsync()
 	{
+		Status = ManagerStatus.Initializing;
 		_settingsManager.ConfiguredSensors.CollectionChanged -= ConfiguredSensors_CollectionChanged;
 
         foreach (var configuredSensor in _settingsManager.ConfiguredSensors)
@@ -65,6 +70,7 @@ public class SensorManager : ISensorManager
         }
 
         _settingsManager.ConfiguredSensors.CollectionChanged += ConfiguredSensors_CollectionChanged;
+        Status = ManagerStatus.Initialized;
 	}
 
 	private async Task AddSensor(ConfiguredEntity configuredSensor)
@@ -299,6 +305,8 @@ public class SensorManager : ISensorManager
 
 	public async Task Process()
 	{
+		Status = ManagerStatus.Running;
+			
 		var firstRun = true;
 		var firstRunDone = false;
 
@@ -320,6 +328,8 @@ public class SensorManager : ISensorManager
 				_logger.LogCritical(e, "[SENSORMGR] Error while processing: {err}", e.Message);
 			}
 		}
+
+		Status = ManagerStatus.Stopped;
 	}
 
 	public void ResetAllSensorChecks()

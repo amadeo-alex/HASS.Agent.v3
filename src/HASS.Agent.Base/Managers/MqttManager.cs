@@ -51,7 +51,7 @@ public partial class MqttManager : ObservableObject, IMqttManager
 
     private readonly IMqttClient _mqttClient = new MqttClientFactory().CreateMqttClient();
     private MqttClientOptions _mqttClientOptions;
-    
+
     private bool _connectionErrorLogged = false;
 
     private ApplicationSettings _applicationSettingsSnapshot;
@@ -63,20 +63,17 @@ public partial class MqttManager : ObservableObject, IMqttManager
     private readonly Dictionary<string, IMqttMessageHandler> _mqttMessageHandlers = [];
 
     [ObservableProperty]
-    public ManagerStatus status = ManagerStatus.NotInitialized;
+    private ManagerStatus _status = ManagerStatus.NotInitialized;
 
-    public AbstractMqttDeviceConfigModel DeviceConfigModel
-    {
-        get; set;
-    }
+    public AbstractMqttDeviceConfigModel DeviceConfigModel { get; set; }
 
     public MqttManager(ILogger<MqttManager> logger, ISettingsManager settingsManager, ApplicationInfo applicationInfo, IGuidManager guidManager)
     {
         _logger = logger;
 
         _logger.LogInformation("[MQTT] Initializing manager");
-        Status =  ManagerStatus.Initializing;
-        
+        Status = ManagerStatus.Initializing;
+
         _settingsManager = settingsManager;
         _applicationInfo = applicationInfo;
         _guidManager = guidManager;
@@ -91,7 +88,7 @@ public partial class MqttManager : ObservableObject, IMqttManager
         _mqttClientOptions = GetMqttClientOptions();
 
         _logger.LogInformation("[MQTT] Manager initialized");
-        Status =  ManagerStatus.Initialized;
+        Status = ManagerStatus.Initialized;
     }
 
     private MqttDeviceDiscoveryConfigModel GetDeviceConfigModel()
@@ -164,8 +161,7 @@ public partial class MqttManager : ObservableObject, IMqttManager
 
             //await _mqttClient.StartAsync(_mqttClientOptions);
             await _mqttClient.ConnectAsync(_mqttClientOptions);
-            Status = ManagerStatus.Connected;
-            
+
             InitialRegistration();
         }
         catch (MqttConnectingFailedException e)
@@ -216,11 +212,11 @@ public partial class MqttManager : ObservableObject, IMqttManager
         _applicationSettingsSnapshot = _settingsManager.GetSettings<ApplicationSettings>();
     }
 
-    private async void InitialRegistration()
+    private async Task InitialRegistration()
     {
-        while (!_mqttClient.IsConnected || Status != ManagerStatus.Connected)
+        while (Status != ManagerStatus.Connected)
         {
-            await Task.Delay(2000);
+            await Task.Delay(100);
         }
 
         await AnnounceAvailabilityAsync();
@@ -255,7 +251,6 @@ public partial class MqttManager : ObservableObject, IMqttManager
                 await _mqttClient.PublishAsync(availabilityMessage);
 
                 //TODO: integration message
-
             }
             else
             {
@@ -279,9 +274,16 @@ public partial class MqttManager : ObservableObject, IMqttManager
     private async Task OnDisconnectedAsync(MqttClientDisconnectedEventArgs args)
     {
         Status = ManagerStatus.Disconnected;
-        _logger.LogInformation("[MQTT] Disconnected, restarting");
-        
-        await RestartClientAsync();
+
+        if (args.Reason != MqttClientDisconnectReason.NormalDisconnection)
+        {
+            _logger.LogInformation("[MQTT] Unexpected disconnection, restarting");
+            await RestartClientAsync();
+        }
+        else
+        {
+            _logger.LogInformation("[MQTT] Disconnected");
+        }
     }
 
 /*    private async Task OnApplicationMessageSkippedAsync(ApplicationMessageSkippedEventArgs args)
@@ -340,20 +342,20 @@ public partial class MqttManager : ObservableObject, IMqttManager
                 //_mediaManager.HandleReceivedCommand(command);
 
                 /*                switch (command.Type)
-								{
-									case MediaPlayerCommandType.PlayMedia:
-										MediaManager.ProcessMedia(command.Data.GetString());
-										break;
-									case MediaPlayerCommandType.Seek:
-										MediaManager.ProcessSeekCommand(TimeSpan.FromSeconds(command.Data.GetDouble()).Ticks);
-										break;
-									case MediaPlayerCommandType.SetVolume:
-										MediaManagerCommands.SetVolume(command.Data.GetInt32());
-										break;
-									default:
-										MediaManager.ProcessCommand(command.Command);
-										break;
-								}*/
+                                {
+                                    case MediaPlayerCommandType.PlayMedia:
+                                        MediaManager.ProcessMedia(command.Data.GetString());
+                                        break;
+                                    case MediaPlayerCommandType.Seek:
+                                        MediaManager.ProcessSeekCommand(TimeSpan.FromSeconds(command.Data.GetDouble()).Ticks);
+                                        break;
+                                    case MediaPlayerCommandType.SetVolume:
+                                        MediaManagerCommands.SetVolume(command.Data.GetInt32());
+                                        break;
+                                    default:
+                                        MediaManager.ProcessCommand(command.Command);
+                                        break;
+                                }*/
 
                 return;
             }
@@ -361,14 +363,14 @@ public partial class MqttManager : ObservableObject, IMqttManager
             //_commandsManager.HandleReceivedCommand(applicationMessage);
 
             /*            foreach (var command in Variables.Commands)
-						{
-							var commandConfig = (CommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig();
+                        {
+                            var commandConfig = (CommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig();
 
-							if (commandConfig.Command_topic == applicationMessage.Topic)
-								HandleCommandReceived(applicationMessage, command);
-							else if (commandConfig.Action_topic == applicationMessage.Topic)
-								HandleActionReceived(applicationMessage, command);
-						}*/
+                            if (commandConfig.Command_topic == applicationMessage.Topic)
+                                HandleCommandReceived(applicationMessage, command);
+                            else if (commandConfig.Action_topic == applicationMessage.Topic)
+                                HandleActionReceived(applicationMessage, command);
+                        }*/
         }
         catch (Exception ex)
         {
@@ -385,7 +387,7 @@ public partial class MqttManager : ObservableObject, IMqttManager
     }
 
     //TODO(Amadeo): handle connection failure
-    /*    private async Task OnConnectingFailedAsync(ConnectingFailedEventArgs arg) 
+    /*    private async Task OnConnectingFailedAsync(ConnectingFailedEventArgs arg)
         {
             Status = MqttStatus.Error;
             _logger.LogInformation("[MQTT] Connecting failed");
@@ -497,10 +499,7 @@ public partial class MqttManager : ObservableObject, IMqttManager
         {
             clientTlsOptions.IgnoreCertificateChainErrors = _mqttSettingsSnapshot.AllowCertificateChainErrors;
             clientTlsOptions.IgnoreCertificateRevocationErrors = _mqttSettingsSnapshot.AllowCertificationRevokationErrors;
-            clientTlsOptions.CertificateValidationHandler = delegate (MqttClientCertificateValidationEventArgs _)
-            {
-                return true;
-            };
+            clientTlsOptions.CertificateValidationHandler = delegate(MqttClientCertificateValidationEventArgs _) { return true; };
         }
 
         if (certificates.Count > 0)
@@ -509,19 +508,17 @@ public partial class MqttManager : ObservableObject, IMqttManager
         }
 
         clientOptionsBuilder.WithTlsOptions(clientTlsOptions);
-        
+
         return clientOptionsBuilder.Build();
     }
 
     public async Task AnnounceDeviceConfigModelAsync()
     {
-
         return;
     }
 
     public async Task ClearDeviceConfigModelAsync()
     {
-
         return;
     }
 

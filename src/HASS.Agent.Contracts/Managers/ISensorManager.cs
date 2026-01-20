@@ -1,14 +1,18 @@
-﻿using System;
+﻿using HASS.Agent.Contracts.Enums;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HASS.Agent.Contracts.Models.Entity;
+using System.ComponentModel;
 
 namespace HASS.Agent.Contracts.Managers;
-public interface ISensorManager
+public interface ISensorManager : INotifyPropertyChanged
 {
+	ManagerStatus Status { get; }
+	
     ObservableCollection<AbstractDiscoverable> Sensors { get; }
 
     bool Pause { get; set; }

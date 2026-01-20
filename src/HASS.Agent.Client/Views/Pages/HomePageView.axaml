@@ -34,6 +34,8 @@
                     <StackPanel Spacing="8">
                         <u:Descriptions>
                             <u:DescriptionsItem Label="MQTT" Content="{Binding MqttStatus}"/>
+                            <u:DescriptionsItem Label="Sensors Manager" Content="{Binding SensorsManagerStatus}"/>
+                            <u:DescriptionsItem Label="Commands Manager" Content="{Binding CommandsManagerStatus}"/>
                         </u:Descriptions>
                     </StackPanel>
                 </Panel>
@@ -47,7 +49,7 @@
                                           Theme="{DynamicResource BorderlessIconButton}"
                                           ToolTip.Tip="Refresh service information"
                                           IsLoading="{Binding RefreshingServiceInformation}"
-                                          Command="{Binding RefreshSatelliteInformationCommand}"/>
+                                          Command="{Binding KillMqtt}"/>
                         </StackPanel>
                         <TextBlock Classes="Header H6">Service Status</TextBlock>
                     </DockPanel>
@@ -56,11 +58,30 @@
                 
                 <Panel>
                     <StackPanel Spacing="8">
-                        <u:Descriptions>
-                            <u:DescriptionsItem Label="MQTT" Content="{Binding MqttStatus}"/>
+                        <u:Descriptions ItemAlignment="Left">
+                            <u:DescriptionsItem Label="Dummy MQTT" Content="{Binding MqttStatus}"/>
                         </u:Descriptions>
                     </StackPanel>
                 </Panel>
+            </HeaderedContentControl>
+            
+            <HeaderedContentControl Theme="{StaticResource GroupBox}">
+                <HeaderedContentControl.Header>
+                    <DockPanel>
+                        <TextBlock Classes="Header H6">Sum Buttons</TextBlock>
+                    </DockPanel>
+                </HeaderedContentControl.Header>
+                
+                <StackPanel Spacing="8">
+                    <StackPanel Spacing="8" Orientation="Horizontal">
+                        <Button Command="{Binding KillMqtt}">Kill MQTT</Button>
+                        <Button Command="{Binding KillSensors}">Kill Sensors</Button>
+                        <Button Command="{Binding KillCommands}">Kill Commands</Button>
+                    </StackPanel>
+                    <StackPanel Spacing="8" Orientation="Horizontal">
+                        <Button Command="{Binding StartMqtt}">Start MQTT</Button>
+                    </StackPanel>
+                </StackPanel>
             </HeaderedContentControl>
             
         </StackPanel>

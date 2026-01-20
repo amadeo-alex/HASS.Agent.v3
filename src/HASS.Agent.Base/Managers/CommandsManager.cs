@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 using HASS.Agent.Contracts.Managers;
 using HASS.Agent.Contracts.Models.Entity;
 using HASS.Agent.Base.Models;
@@ -18,7 +19,7 @@ using HASS.Agent.Contracts.Models.Settings;
 using Microsoft.Extensions.Logging;
 
 namespace HASS.Agent.Base.Managers;
-public class CommandsManager : ICommandsManager, IMqttMessageHandler
+public partial class CommandsManager : ObservableObject, ICommandsManager, IMqttMessageHandler
 {
     private readonly ILogger _logger;
 
@@ -39,6 +40,9 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
 
     private bool _discoveryPublished = false;
 
+    [ObservableProperty]
+    private ManagerStatus _status;
+    
     public bool Pause { get; set; }
     public bool Exit { get; set; }
 
@@ -55,6 +59,7 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
 
     public async Task InitializeAsync()
     {
+        Status  = ManagerStatus.Initializing;
         _settingsManager.ConfiguredCommands.CollectionChanged -= ConfiguredCommands_CollectionChanged;
 
         foreach (var configuredCommand in _settingsManager.ConfiguredCommands)
@@ -63,6 +68,7 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
         }
 
         _settingsManager.ConfiguredCommands.CollectionChanged += ConfiguredCommands_CollectionChanged; ;
+        Status = ManagerStatus.Initialized;
     }
 
     private async Task AddCommand(ConfiguredEntity configuredCommand)
@@ -285,6 +291,8 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
 
     public async Task Process()
     {
+        Status = ManagerStatus.Running;
+        
         var firstRun = true;
         var firstRunDone = false;
 
@@ -306,6 +314,8 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
                 _logger.LogCritical(e, "[COMMANDMGR] Error while processing: {err}", e.Message);
             }
         }
+        
+        Status = ManagerStatus.Stopped;
     }
 
     public void ResetAllCommandsChecks()

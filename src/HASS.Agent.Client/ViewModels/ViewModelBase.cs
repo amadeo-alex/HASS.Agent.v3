@@ -39,6 +39,7 @@ public class ViewModelBase : ObservableObject
         _propertyMap.Add(sourcePropertyName, targetPropertyNames);
     }
 
+    //TODO(Amadeo): enable more than one same property name registration - "State" from multiple sources
     protected void AddPropertyListenerMap(string sourcePropertyName, string targetPropertyName) =>
         AddPropertyListenerMap(sourcePropertyName, [targetPropertyName]);
 

@@ -10,5 +10,5 @@
         Title="LoggerWindow">
     
         <logViewer:LogViewerControl DataContext="{Binding LogViewer}"/>
-        
+        <!-- TODO(Amadeo): this control seems not to keep the correct log order sometimes? -->
 </Window>
