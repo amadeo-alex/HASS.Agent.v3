@@ -18,24 +18,11 @@ public interface ISettingsManager
 	ObservableCollection<ConfiguredEntity> ConfiguredCommands { get; }
 	ObservableCollection<IQuickAction> ConfiguredQuickActions { get; } //TODO(Amadeo): rethink
 
-	IConfiguration Configuration { get; }
-	
-	public IConfiguration GetConfiguration();
-
 	public T GetSettings<T>() where T : new();
-
-	bool StoreConfiguredEntities();
-	bool StoreSettings();
-	bool GetExtendedLoggingSetting();
-	void SetExtendedLoggingSetting(bool enabled);
-	bool GetDpiWarningShown();
-
-	void SetDpiWarningShown(bool shown);
-
-	//TODO(Amadeo): remove
-	Task<bool> SendMqttSettingsToServiceAsync(bool sendNewClientId = false);
-	string GetDeviceSerialNumber();
-	void SetDeviceSerialNumber(string deviceSerialNumber);
-	bool GetHideDonateButtonSetting();
-	void SetHideDonateButtonSetting(bool hide);
+	
+	bool SaveSettings<T>(T settings) where T : notnull, new();
+	
+	bool SaveConfiguredSensors();
+	bool SaveConfiguredCommands();
+	bool SaveConfiguredQuickActions();
 }

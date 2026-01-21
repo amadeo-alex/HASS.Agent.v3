@@ -22,6 +22,7 @@ public class GuidManager : IGuidManager
     {
         MarkAsUsed(guid.ToString());
     }
+    
     public void MarkAsUsed(string guid)
     {
         if (string.IsNullOrWhiteSpace(guid))
@@ -34,8 +35,9 @@ public class GuidManager : IGuidManager
     }
     public void MarkAsUnused(Guid guid)
     {
-        MarkAsUsed(guid.ToString());
+        MarkAsUnused(guid.ToString());
     }
+    
     public void MarkAsUnused(string guid)
     {
         if (string.IsNullOrWhiteSpace(guid))

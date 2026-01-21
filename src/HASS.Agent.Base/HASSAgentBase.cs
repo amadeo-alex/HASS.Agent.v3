@@ -105,11 +105,11 @@ public class HassAgentBase
 
                 externalServicesPostInitializer(context, services);
 
-                services.AddSingleton((sp) =>
+                /*services.AddSingleton((sp) =>
                 {
                     var settingsManager = sp.GetRequiredService<ISettingsManager>();
                     return settingsManager.GetConfiguration();
-                });
+                });*/
 
 
                 services.AddSingleton(sp => sp);

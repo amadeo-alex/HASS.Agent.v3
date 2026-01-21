@@ -5,9 +5,14 @@
              xmlns:u="https://irihi.tech/ursa"
              xmlns:vm="clr-namespace:HASS.Agent.Client.ViewModels"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             xmlns:converters="clr-namespace:HASS.Agent.Client.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="HASS.Agent.Client.Views.Pages.HomePageView"
              x:DataType="vm:Pages.HomePageViewModel">
+    
+    <Control.Resources>
+        <converters:ManagerStateToColorBrushConverter x:Key="ManagerStateToColorBrushConverter" />
+    </Control.Resources>
     
     <Control.Styles>
         <Style Selector="TextBlock.Header">
@@ -33,9 +38,15 @@
                 <Panel>
                     <StackPanel Spacing="8">
                         <u:Descriptions>
-                            <u:DescriptionsItem Label="MQTT" Content="{Binding MqttStatus}"/>
-                            <u:DescriptionsItem Label="Sensors Manager" Content="{Binding SensorsManagerStatus}"/>
-                            <u:DescriptionsItem Label="Commands Manager" Content="{Binding CommandsManagerStatus}"/>
+                            <u:DescriptionsItem Label="MQTT">
+                                <TextBlock Text="{Binding MqttStatus}" Foreground="{Binding MqttStatus, Converter={StaticResource ManagerStateToColorBrushConverter}}"/>
+                            </u:DescriptionsItem>
+                            <u:DescriptionsItem Label="Sensors Manager">
+                                <TextBlock Text="{Binding SensorsManagerStatus}" Foreground="{Binding SensorsManagerStatus, Converter={StaticResource ManagerStateToColorBrushConverter}}"/>
+                            </u:DescriptionsItem>
+                            <u:DescriptionsItem Label="Commands Manager">
+                                <TextBlock Text="{Binding CommandsManagerStatus}" Foreground="{Binding CommandsManagerStatus, Converter={StaticResource ManagerStateToColorBrushConverter}}"/>
+                            </u:DescriptionsItem>
                         </u:Descriptions>
                     </StackPanel>
                 </Panel>
