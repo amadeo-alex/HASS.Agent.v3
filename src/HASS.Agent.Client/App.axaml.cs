@@ -125,6 +125,7 @@ public partial class App : Application
         services.AddSingleton<MainViewViewModel>();
         
         services.AddSingleton<HomePageViewModel>();
+        services.AddSingleton<SettingsPageViewModel>();
 
         services.AddSingleton(Dispatcher.UIThread);
     }

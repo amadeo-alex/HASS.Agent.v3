@@ -1,0 +1,51 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:u="https://irihi.tech/ursa"
+             xmlns:vm="clr-namespace:HASS.Agent.Client.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="HASS.Agent.Client.Views.Pages.SettingsPageView"
+             x:DataType="vm:Pages.SettingsPageViewModel">
+    
+    <Grid ColumnDefinitions="*, Auto">
+        
+        <ScrollViewer Name="AnchorTarget" VerticalAlignment="Stretch">
+            <StackPanel>
+                <Border Height="300" HorizontalAlignment="Stretch" u:Anchor.Id="sectionGeneral" Background="{DynamicResource SemiRed2}">
+                    <TextBlock>GENERAL</TextBlock>
+                </Border>
+                <Border Height="300" HorizontalAlignment="Stretch" u:Anchor.Id="sectionSecurity" Background="{DynamicResource SemiPink2}">
+                    <TextBlock>SECURITY</TextBlock>
+                </Border>
+                <Border Height="300" HorizontalAlignment="Stretch" u:Anchor.Id="sectionMqtt" Background="{DynamicResource SemiGreen2}">
+                    <TextBlock>MQTT</TextBlock>
+                </Border>
+                <Border Height="300" HorizontalAlignment="Stretch" u:Anchor.Id="sectionHA" Background="{DynamicResource SemiBlue2}">
+                    <TextBlock>HA</TextBlock>
+                </Border>
+                <Border Height="300" HorizontalAlignment="Stretch" u:Anchor.Id="sectionNotifications" Background="{DynamicResource SemiOrange2}">
+                    <TextBlock>NOTIFICATIONS</TextBlock>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+        
+        <u:Anchor Grid.Column="1"
+                  Width="200" Margin="24" 
+                  ItemsSource="{Binding SettingsSections}"
+                  TargetContainer="{Binding #AnchorTarget}">
+            <u:Anchor.Styles>
+                <Style x:DataType="vm:AnchorItemViewModel" Selector="u|AnchorItem">
+                    <Setter Property="AnchorId" Value="{Binding AnchorId}" />
+                </Style>
+            </u:Anchor.Styles>
+            <u:Anchor.ItemTemplate>
+                <TreeDataTemplate ItemsSource="{Binding Children}">
+                    <TextBlock Text="{Binding Header}" />
+                </TreeDataTemplate>
+            </u:Anchor.ItemTemplate>
+        </u:Anchor>
+    </Grid>
+    
+    
+</UserControl>

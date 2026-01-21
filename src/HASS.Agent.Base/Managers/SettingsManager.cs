@@ -27,7 +27,7 @@ public class SettingsManager : ISettingsManager
     private const string CommandsConfigurationFileName = "commands.json";
     private const string QuickActionsConfigurationFileName = "quickactions.json";
 
-    private const string DefaultSettingsFilePath = $"{RelativeConfigPath}/{DefaultSettingsFileName}";
+    private const string DefaultSettingsFilePath = $"./{DefaultSettingsFileName}";
     private const string UserSettingsFilePath = $"{RelativeConfigPath}/{UserSettingsFileName}";
     private const string SensorsConfigurationFilePath = $"{RelativeConfigPath}/{SensorsConfigurationFileName}";
     private const string CommandsConfigurationFilePath = $"{RelativeConfigPath}/{CommandsConfigurationFileName}";

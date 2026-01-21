@@ -33,7 +33,7 @@ public partial class MainViewViewModel : ViewModelBase
             }
         };
 
-        Content = App.XXX.Services.GetRequiredService<HomePageViewModel>();
+        Content = App.XXX.Services.GetRequiredService<SettingsPageViewModel>();
     }
 
     partial void OnContentChanging(ViewModelBase? oldValue, ViewModelBase? newValue)
