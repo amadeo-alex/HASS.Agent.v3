@@ -33,7 +33,7 @@ public class HomeAssistantApiManager : IHomeAssistantApiManager
 
         try
         {
-            var homeAssistantSettings = _settingsManager.GetSettings<HomeAssistantSettings>();
+            var homeAssistantSettings = _settingsManager.GetSettingsSnapshot<HomeAssistantSettings>();
             
             var uri = new Uri(homeAssistantSettings.HassUri);
             var httpClientHandler = new HttpClientHandler();

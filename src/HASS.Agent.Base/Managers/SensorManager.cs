@@ -76,7 +76,7 @@ public partial class SensorManager : ObservableObject, ISensorManager
 	private async Task AddSensor(ConfiguredEntity configuredSensor)
 	{
 		var sensor = (AbstractDiscoverable)_entityTypeRegistry.CreateSensorInstance(configuredSensor);
-		sensor.ConfigureAutoDiscoveryConfig(_settingsManager.GetSettings<MqttSettings>().DiscoveryPrefix, _mqttManager.DeviceConfigModel);
+		sensor.ConfigureAutoDiscoveryConfig(_settingsManager.GetSettingsSnapshot<MqttSettings>().DiscoveryPrefix, _mqttManager.DeviceConfigModel);
 		await PublishSensorAutoDiscoveryConfigAsync(sensor);
 		Sensors.Add(sensor);
 	}
@@ -142,11 +142,11 @@ public partial class SensorManager : ObservableObject, ISensorManager
 	{
 		try
 		{
-			var topic = $"{_settingsManager.GetSettings<MqttSettings>().DiscoveryPrefix}/{sensor.Domain}/{_settingsManager.GetSettings<ApplicationSettings>().DeviceName}/{sensor.EntityIdName}/config";
+			var topic = $"{_settingsManager.GetSettingsSnapshot<MqttSettings>().DiscoveryPrefix}/{sensor.Domain}/{_settingsManager.GetSettingsSnapshot<ApplicationSettings>().DeviceName}/{sensor.EntityIdName}/config";
 
 			var messageBuilder = new MqttApplicationMessageBuilder()
 				.WithTopic(topic)
-				.WithRetainFlag(_settingsManager.GetSettings<MqttSettings>().UseRetainFlag);
+				.WithRetainFlag(_settingsManager.GetSettingsSnapshot<MqttSettings>().UseRetainFlag);
 
 			if (clear)
 			{
@@ -226,7 +226,7 @@ public partial class SensorManager : ObservableObject, ISensorManager
 
             var message = new MqttApplicationMessageBuilder()
 				.WithTopic(autodiscoveryConfig.StateTopic)
-				.WithRetainFlag(_settingsManager.GetSettings<MqttSettings>().UseRetainFlag);
+				.WithRetainFlag(_settingsManager.GetSettingsSnapshot<MqttSettings>().UseRetainFlag);
 
             if (clear)
             {
@@ -243,7 +243,7 @@ public partial class SensorManager : ObservableObject, ISensorManager
 			{
 				var attributesMessage = new MqttApplicationMessageBuilder()
 					.WithTopic(autodiscoveryConfig.JsonAttributesTopic)
-					.WithRetainFlag(_settingsManager.GetSettings<MqttSettings>().UseRetainFlag);
+					.WithRetainFlag(_settingsManager.GetSettingsSnapshot<MqttSettings>().UseRetainFlag);
 
 				if (clear)
                 {

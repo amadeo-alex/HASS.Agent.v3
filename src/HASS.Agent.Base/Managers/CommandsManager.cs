@@ -74,7 +74,7 @@ public partial class CommandsManager : ObservableObject, ICommandsManager, IMqtt
     private async Task AddCommand(ConfiguredEntity configuredCommand)
     {
         var command = (AbstractDiscoverable)_entityTypeRegistry.CreateCommandInstance(configuredCommand);
-        command.ConfigureAutoDiscoveryConfig(_settingsManager.GetSettings<MqttSettings>().DiscoveryPrefix, _mqttManager.DeviceConfigModel);
+        command.ConfigureAutoDiscoveryConfig(_settingsManager.GetSettingsSnapshot<MqttSettings>().DiscoveryPrefix, _mqttManager.DeviceConfigModel);
 
         if (command.GetAutoDiscoveryConfig() is not MqttCommandDiscoveryConfigModel commandConfig)
         {
@@ -144,11 +144,11 @@ public partial class CommandsManager : ObservableObject, ICommandsManager, IMqtt
     {
         try
         {
-            var topic = $"{_settingsManager.GetSettings<MqttSettings>().DiscoveryPrefix}/{command.Domain}/{_settingsManager.GetSettings<ApplicationSettings>().DeviceName}/{command.EntityIdName}/config";
+            var topic = $"{_settingsManager.GetSettingsSnapshot<MqttSettings>().DiscoveryPrefix}/{command.Domain}/{_settingsManager.GetSettingsSnapshot<ApplicationSettings>().DeviceName}/{command.EntityIdName}/config";
 
             var messageBuilder = new MqttApplicationMessageBuilder()
                 .WithTopic(topic)
-                .WithRetainFlag(_settingsManager.GetSettings<MqttSettings>().UseRetainFlag);
+                .WithRetainFlag(_settingsManager.GetSettingsSnapshot<MqttSettings>().UseRetainFlag);
 
             if (clear)
             {
@@ -210,7 +210,7 @@ public partial class CommandsManager : ObservableObject, ICommandsManager, IMqtt
 
             var message = new MqttApplicationMessageBuilder()
                 .WithTopic(autodiscoveryConfig.StateTopic)
-                .WithRetainFlag(_settingsManager.GetSettings<MqttSettings>().UseRetainFlag);
+                .WithRetainFlag(_settingsManager.GetSettingsSnapshot<MqttSettings>().UseRetainFlag);
 
             if (clear)
             {
@@ -227,7 +227,7 @@ public partial class CommandsManager : ObservableObject, ICommandsManager, IMqtt
             {
                 var attributesMessage = new MqttApplicationMessageBuilder()
                     .WithTopic(autodiscoveryConfig.JsonAttributesTopic)
-                    .WithRetainFlag(_settingsManager.GetSettings<MqttSettings>().UseRetainFlag);
+                    .WithRetainFlag(_settingsManager.GetSettingsSnapshot<MqttSettings>().UseRetainFlag);
 
                 if (clear)
                 {

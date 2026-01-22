@@ -6,6 +6,8 @@
              xmlns:vm="clr-namespace:HASS.Agent.Client.ViewModels"
              xmlns:m="clr-namespace:HASS.Agent.Client"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             xmlns:echoes="clr-namespace:Echoes;assembly=Echoes.Avalonia"
+             xmlns:translations="clr-namespace:HASS.Agent.Translations;assembly=HASS.Agent.Translations"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="HASS.Agent.Client.Views.MainView"
              x:DataType="vm:MainViewViewModel">
@@ -21,21 +23,24 @@
 
                 <u:NavMenu Name="MainMenu"
                            ExpandWidth="300"
-                           ItemsSource="{Binding MenuViewModel.MenuItems}"
-                           CommandBinding="{Binding ActivateCommand}"
+                           ItemsSource="{Binding MenuItems}"
+                           CommandBinding="{Binding $parent.((vm:MainViewViewModel)DataContext).MenuItemActivatedCommand}"
                            SubMenuBinding="{Binding SubMenu}"
-                           IconBinding="{Binding IconKind}">
+                           IconBinding="{Binding IconKind}"
+                           SelectedItem="{Binding SelectedMenuItem, Mode=TwoWay}">
+
                     <u:NavMenu.Styles>
                         <Style x:DataType="vm:MenuItemViewModel" Selector="u|NavMenuItem">
                             <Setter Property="IsSeparator" Value="{Binding IsSeparator}" />
+                            <Setter Property="CommandParameter" Value="{Binding}" />
                         </Style>
                     </u:NavMenu.Styles>
 
                     <u:NavMenu.IconTemplate>
                         <DataTemplate>
-                                <iconPacks:PackIconMaterial Kind="{Binding }"
-                                                            Width="16" Height="16"
-                                                            Foreground="{DynamicResource SemiGrey5}" />
+                            <iconPacks:PackIconMaterial Kind="{Binding }"
+                                                        Width="16" Height="16"
+                                                        Foreground="{DynamicResource SemiGrey5}" />
                         </DataTemplate>
                     </u:NavMenu.IconTemplate>
                     <u:NavMenu.HeaderTemplate>
@@ -52,10 +57,42 @@
                                 Classes="H4"
                                 Margin="16 0 0 0"
                                 IsVisible="{Binding !#MainMenu.IsHorizontalCollapsed}"
-                                Text="HASS.Agent v3"
+                                Text="{echoes:Translate {x:Static translations:Strings.AppName}}"
                                 Theme="{DynamicResource TitleTextBlock}" />
                         </DockPanel>
                     </u:NavMenu.Header>
+
+                    <u:NavMenu.Footer>
+                        <u:NavMenu Name="FooterMenu"
+                                   ExpandWidth="300"
+                                   ItemsSource="{Binding FooterMenuItems}"
+                                   CommandBinding="{Binding $parent.((vm:MainViewViewModel)DataContext).MenuItemActivatedCommand}"
+                                   SubMenuBinding="{Binding SubMenu}"
+                                   IconBinding="{Binding IconKind}"
+                                   SelectedItem="{Binding SelectedFooterMenuItem, Mode=TwoWay}">
+
+                            <u:NavMenu.Styles>
+                                <Style x:DataType="vm:MenuItemViewModel" Selector="u|NavMenuItem">
+                                    <Setter Property="IsSeparator" Value="{Binding IsSeparator}" />
+                                    <Setter Property="CommandParameter" Value="{Binding}" />
+                                </Style>
+                            </u:NavMenu.Styles>
+                            <u:NavMenu.IconTemplate>
+                                <DataTemplate>
+                                    <iconPacks:PackIconMaterial Kind="{Binding }"
+                                                                Width="16" Height="16"
+                                                                Foreground="{DynamicResource SemiGrey5}" />
+                                </DataTemplate>
+                            </u:NavMenu.IconTemplate>
+                            <u:NavMenu.HeaderTemplate>
+                                <DataTemplate x:DataType="vm:MenuItemViewModel">
+                                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource SemiSpacingExtraTight}">
+                                        <TextBlock HorizontalAlignment="Left" Text="{Binding Header}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </u:NavMenu.HeaderTemplate>
+                        </u:NavMenu>
+                    </u:NavMenu.Footer>
                 </u:NavMenu>
 
             </Border>

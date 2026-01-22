@@ -208,8 +208,8 @@ public partial class MqttManager : ObservableObject, IMqttManager
 
     private void TakeSettingsSnapshot()
     {
-        _mqttSettingsSnapshot = _settingsManager.GetSettings<MqttSettings>();
-        _applicationSettingsSnapshot = _settingsManager.GetSettings<ApplicationSettings>();
+        _mqttSettingsSnapshot = _settingsManager.GetSettingsSnapshot<MqttSettings>();
+        _applicationSettingsSnapshot = _settingsManager.GetSettingsSnapshot<ApplicationSettings>();
     }
 
     private async Task InitialRegistration()

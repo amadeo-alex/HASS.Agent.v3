@@ -18,7 +18,7 @@ public interface ISettingsManager
 	ObservableCollection<ConfiguredEntity> ConfiguredCommands { get; }
 	ObservableCollection<IQuickAction> ConfiguredQuickActions { get; } //TODO(Amadeo): rethink
 
-	public T GetSettings<T>() where T : new();
+	public T GetSettingsSnapshot<T>() where T : new();
 	
 	bool SaveSettings<T>(T settings) where T : notnull, new();
 	

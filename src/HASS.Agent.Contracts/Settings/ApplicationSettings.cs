@@ -24,18 +24,14 @@ public partial class ApplicationSettings : ObservableObject
     private bool sanitizeName = true;
     [Obsolete("Configuration variable, please use DeviceName")]
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(DeviceName))]
-    private string configuredDeviceName = string.Empty;
+    private string deviceName = string.Empty;
     [ObservableProperty]
     private string language = string.Empty;
     [ObservableProperty]
     private bool enableStateNotifications = true;
     [ObservableProperty]
     private string theme = "Default";
-
-    [JsonIgnore]
-    public string DeviceName => SanitizeName ? SanitizeRegex().Replace(ConfiguredDeviceName, "_") : ConfiguredDeviceName;
-
+	
 
     public string ServiceAuthId { get; set; } = string.Empty;
 

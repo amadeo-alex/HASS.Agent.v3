@@ -276,7 +276,7 @@ public class SettingsManager : ISettingsManager
         }
     }
 
-    public T GetSettings<T>() where T : new()
+    public T GetSettingsSnapshot<T>() where T : new()
     {
         var settingsSubsection = _settingsObject[typeof(T).Name];
         if (settingsSubsection == null)

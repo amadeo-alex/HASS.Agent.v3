@@ -25,7 +25,7 @@ public class UpdateManager : IUpdateManager
     }
     public Task InitializeAsync()
     {
-        if (!_settingsManager.GetSettings<UpdateSettings>().PeriodicUpdateCheckEnabled)
+        if (!_settingsManager.GetSettingsSnapshot<UpdateSettings>().PeriodicUpdateCheckEnabled)
         {
             _logger.LogInformation("[Update] Periodic update check have been disabled");
             return Task.CompletedTask;
@@ -52,12 +52,12 @@ public class UpdateManager : IUpdateManager
             return false;
         }
 
-        if (_settingsManager.GetSettings<UpdateSettings>().IgnoredVersions.Contains(latestRelease.Version.ToString()))
+        if (_settingsManager.GetSettingsSnapshot<UpdateSettings>().IgnoredVersions.Contains(latestRelease.Version.ToString()))
         {
             return false;
         }
 
-        if (latestRelease.Version.IsBeta && !_settingsManager.GetSettings<UpdateSettings>().ShowBetaUpdates)
+        if (latestRelease.Version.IsBeta && !_settingsManager.GetSettingsSnapshot<UpdateSettings>().ShowBetaUpdates)
         {
             return false;
         }
@@ -77,7 +77,7 @@ public class UpdateManager : IUpdateManager
         //Note(Amadeo): initial update check?
         while (true) //TODO(Amadeo): cancellation token?
         {
-            await Task.Delay(TimeSpan.FromMinutes(_settingsManager.GetSettings<UpdateSettings>().PeriodicUpdateIntervalMinutes));
+            await Task.Delay(TimeSpan.FromMinutes(_settingsManager.GetSettingsSnapshot<UpdateSettings>().PeriodicUpdateIntervalMinutes));
             await CheckForUpdateAsync();
         }
     }

@@ -1,31 +1,45 @@
 using System.Collections.Generic;
 using Avalonia.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
+using HASS.Agent.Contracts.Managers;
+using HASS.Agent.Contracts.Models;
 
 namespace HASS.Agent.Client.ViewModels.Pages;
 
-public class SettingsPageViewModel : ViewModelBase, INavigationAware
+public partial class SettingsPageViewModel : ViewModelBase, INavigationAware
 {
+    private ISettingsManager _settingsManager { get; }
+
+    private ApplicationSettings _applicationSettingsSnapshot { get; }
+
     public List<AnchorItemViewModel> SettingsSections { get; }
-    
-    public SettingsPageViewModel(Dispatcher dispatcher) : base(dispatcher)
+
+    public string DeviceName
     {
+        get => _applicationSettingsSnapshot.DeviceName;
+        set => _applicationSettingsSnapshot.DeviceName = value;
+    }
+
+    public SettingsPageViewModel(Dispatcher dispatcher, ISettingsManager settingsManager) : base(dispatcher)
+    {
+        _settingsManager = settingsManager;
+
+        _applicationSettingsSnapshot = settingsManager.GetSettingsSnapshot<ApplicationSettings>();
+
         SettingsSections =
         [
-            new AnchorItemViewModel() { AnchorId = "sectionGeneral", Header = "General" },
-            new AnchorItemViewModel() { AnchorId = "sectionSecurity", Header = "Security" },
-            new AnchorItemViewModel() { AnchorId = "sectionMqtt", Header = "MQTT" },
-            new AnchorItemViewModel() { AnchorId = "sectionHA", Header = "Home Assistant" },
-            new AnchorItemViewModel() { AnchorId = "sectionNotifications", Header = "Notifications" }
+            new AnchorItemViewModel() { Header = Translations.Strings.SettingsGeneralSection.CurrentValue },
+            new AnchorItemViewModel() { Header = Translations.Strings.SettingsMqttSection.CurrentValue },
+            new AnchorItemViewModel() { Header = Translations.Strings.SettingsHASection.CurrentValue },
+            new AnchorItemViewModel() { Header = Translations.Strings.SettingsNotificationsSection.CurrentValue }
         ];
     }
 
     public void OnNavigatedTo()
     {
-        
     }
 
     public void OnNavigatedFrom()
     {
-        
     }
 }

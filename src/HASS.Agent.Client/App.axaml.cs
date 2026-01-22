@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reactive.Subjects;
 using System.Reflection;
 using System.Threading.Tasks;
 using Avalonia;
@@ -146,8 +147,8 @@ public partial class App : Application
 
             //var testZ = settingsManager.GetConfiguration();
             //var testZ1 = testZ.GetSection("Settings");
-            
-            
+
+                
             var testY = _applicationBase._host.Services.GetService<IConfiguration>();
             
             var testX = _applicationBase._host.Services.GetService<IOptions<MqttSettings>>().Value;
@@ -160,7 +161,7 @@ public partial class App : Application
                 //settingsManager.Settings.Application.ExtendedLogging = true; //TODO(Amadeo) fix this and saving of settings in general
             }
 
-            if (settingsManager.GetSettings<ApplicationSettings>().ExtendedLogging)
+            if (settingsManager.GetSettingsSnapshot<ApplicationSettings>().ExtendedLogging)
             {
                 _applicationBase.GetService<LoggingLevelSwitch>().MinimumLevel = LogEventLevel.Debug;
                 _logger.LogDebug("[MAIN] Extended logging enabled");
@@ -177,7 +178,7 @@ public partial class App : Application
             var initializationTask = Task.Run(async () =>
             {
                 var guidManager = _applicationBase.GetService<IGuidManager>();
-                guidManager.MarkAsUsed(settingsManager.GetSettings<MqttSettings>().ClientId);
+                guidManager.MarkAsUsed(settingsManager.GetSettingsSnapshot<MqttSettings>().ClientId);
 
                 if (settingsManager.ConfiguredSensors.Count == 0)
                 {

@@ -1,0 +1,28 @@
+[echoes_config]
+generated_class_name = "Strings"
+generated_namespace = "HASS.Agent.Translations"
+
+[translations]
+AppName= "HASS.Agent v3"
+
+Home = "Home"
+Debug = "Debug"
+Settings = "Settings"
+Refresh = "Refresh"
+Edit = "Edit"
+
+ClientStatus = "Client Status"
+Mqtt = "MQTT"
+SensorsManager = "Sensors Manager"
+CommandsManager = "CommandsManager"
+
+ServiceStatus = "Service Status"
+RefreshServiceStatus = "Refresh service status"
+
+SettingsGeneralSection = "General"
+SettingsGeneralDeviceName = "Device name:"
+SettingsGeneralSerialNumber = "Serial number:"
+
+SettingsMqttSection = "MQTT"
+SettingsHASection = "Home Assistant"
+SettingsNotificationsSection = "Notifications"

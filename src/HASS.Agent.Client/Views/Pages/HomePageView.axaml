@@ -6,6 +6,8 @@
              xmlns:vm="clr-namespace:HASS.Agent.Client.ViewModels"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
              xmlns:converters="clr-namespace:HASS.Agent.Client.Converters"
+             xmlns:echoes="clr-namespace:Echoes;assembly=Echoes.Avalonia"
+             xmlns:translations="clr-namespace:HASS.Agent.Translations;assembly=HASS.Agent.Translations"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="HASS.Agent.Client.Views.Pages.HomePageView"
              x:DataType="vm:Pages.HomePageViewModel">
@@ -29,7 +31,7 @@
                 <HeaderedContentControl.Header>
                     <DockPanel>
                         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                            <TextBlock Classes="Header H6">Client Status</TextBlock>
+                            <TextBlock Classes="Header H6" Text="{echoes:Translate {x:Static translations:Strings.ClientStatus}}"/>
                         </StackPanel>
                     </DockPanel>
 
@@ -38,13 +40,13 @@
                 <Panel>
                     <StackPanel Spacing="8">
                         <u:Descriptions>
-                            <u:DescriptionsItem Label="MQTT">
+                            <u:DescriptionsItem Label="{echoes:Translate {x:Static translations:Strings.Mqtt}}">
                                 <TextBlock Text="{Binding MqttStatus}" Foreground="{Binding MqttStatus, Converter={StaticResource ManagerStateToColorBrushConverter}}"/>
                             </u:DescriptionsItem>
-                            <u:DescriptionsItem Label="Sensors Manager">
+                            <u:DescriptionsItem Label="{echoes:Translate {x:Static translations:Strings.SensorsManager}}">
                                 <TextBlock Text="{Binding SensorsManagerStatus}" Foreground="{Binding SensorsManagerStatus, Converter={StaticResource ManagerStateToColorBrushConverter}}"/>
                             </u:DescriptionsItem>
-                            <u:DescriptionsItem Label="Commands Manager">
+                            <u:DescriptionsItem Label="{echoes:Translate {x:Static translations:Strings.CommandsManager}}">
                                 <TextBlock Text="{Binding CommandsManagerStatus}" Foreground="{Binding CommandsManagerStatus, Converter={StaticResource ManagerStateToColorBrushConverter}}"/>
                             </u:DescriptionsItem>
                         </u:Descriptions>
@@ -58,11 +60,10 @@
                         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
                             <u:IconButton Icon="{iconPacks:Material Kind=Refresh}"
                                           Theme="{DynamicResource BorderlessIconButton}"
-                                          ToolTip.Tip="Refresh service information"
-                                          IsLoading="{Binding RefreshingServiceInformation}"
-                                          Command="{Binding KillMqtt}"/>
+                                          ToolTip.Tip="{echoes:Translate {x:Static translations:Strings.RefreshServiceStatus}}"
+                                          IsLoading="{Binding RefreshingServiceInformation}"/>
                         </StackPanel>
-                        <TextBlock Classes="Header H6">Service Status</TextBlock>
+                        <TextBlock Classes="Header H6" Text="{echoes:Translate {x:Static translations:Strings.ServiceStatus}}"/>
                     </DockPanel>
 
                 </HeaderedContentControl.Header>

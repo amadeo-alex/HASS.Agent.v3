@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HASS.Agent.Base.Linux", "HA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HASS.Agent.Base.Windows", "HASS.Agent.Base.Windows\HASS.Agent.Base.Windows.csproj", "{60F59DA4-2AA5-4A95-BE5A-002F15550156}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HASS.Agent.Translations", "HASS.Agent.Translations\HASS.Agent.Translations.csproj", "{D99A9150-6E37-4091-AB14-5183ABE16EA4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -76,6 +78,14 @@ Global
 		{60F59DA4-2AA5-4A95-BE5A-002F15550156}.Release|x64.Build.0 = Release|x64
 		{60F59DA4-2AA5-4A95-BE5A-002F15550156}.Release|x86.ActiveCfg = Release|Any CPU
 		{60F59DA4-2AA5-4A95-BE5A-002F15550156}.Release|x86.Build.0 = Release|Any CPU
+		{D99A9150-6E37-4091-AB14-5183ABE16EA4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D99A9150-6E37-4091-AB14-5183ABE16EA4}.Debug|x64.Build.0 = Debug|Any CPU
+		{D99A9150-6E37-4091-AB14-5183ABE16EA4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D99A9150-6E37-4091-AB14-5183ABE16EA4}.Debug|x86.Build.0 = Debug|Any CPU
+		{D99A9150-6E37-4091-AB14-5183ABE16EA4}.Release|x64.ActiveCfg = Release|Any CPU
+		{D99A9150-6E37-4091-AB14-5183ABE16EA4}.Release|x64.Build.0 = Release|Any CPU
+		{D99A9150-6E37-4091-AB14-5183ABE16EA4}.Release|x86.ActiveCfg = Release|Any CPU
+		{D99A9150-6E37-4091-AB14-5183ABE16EA4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

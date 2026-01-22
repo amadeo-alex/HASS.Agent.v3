@@ -4,34 +4,140 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:u="https://irihi.tech/ursa"
              xmlns:vm="clr-namespace:HASS.Agent.Client.ViewModels"
+             xmlns:echoes="clr-namespace:Echoes;assembly=Echoes.Avalonia"
+             xmlns:translations="clr-namespace:HASS.Agent.Translations;assembly=HASS.Agent.Translations"
+             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="HASS.Agent.Client.Views.Pages.SettingsPageView"
              x:DataType="vm:Pages.SettingsPageViewModel">
-    
-    <Grid ColumnDefinitions="*, Auto">
+
+    <UserControl.Styles>
+        <!--<Style Selector="HeaderedContentControl">
+            ~1~<Setter Property="Background" Value="{DynamicResource TextBoxDefaultBackground}" />@1@
+            <Style Selector="^ /template/ ContentPresenter#PART_HeaderPresenter">
+                <Setter Property="Background" Value="{DynamicResource TextBoxDefaultBackground}" />
+            </Style>
+        </Style>-->
+
+        <Style Selector="TextBox:disabled /template/ Border#PART_ContentPresenterBorder">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
         
+    </UserControl.Styles>
+
+    <Grid ColumnDefinitions="*, Auto">
+
         <ScrollViewer Name="AnchorTarget" VerticalAlignment="Stretch">
-            <StackPanel>
-                <Border Height="300" HorizontalAlignment="Stretch" u:Anchor.Id="sectionGeneral" Background="{DynamicResource SemiRed2}">
-                    <TextBlock>GENERAL</TextBlock>
-                </Border>
-                <Border Height="300" HorizontalAlignment="Stretch" u:Anchor.Id="sectionSecurity" Background="{DynamicResource SemiPink2}">
-                    <TextBlock>SECURITY</TextBlock>
-                </Border>
-                <Border Height="300" HorizontalAlignment="Stretch" u:Anchor.Id="sectionMqtt" Background="{DynamicResource SemiGreen2}">
-                    <TextBlock>MQTT</TextBlock>
-                </Border>
-                <Border Height="300" HorizontalAlignment="Stretch" u:Anchor.Id="sectionHA" Background="{DynamicResource SemiBlue2}">
-                    <TextBlock>HA</TextBlock>
-                </Border>
-                <Border Height="300" HorizontalAlignment="Stretch" u:Anchor.Id="sectionNotifications" Background="{DynamicResource SemiOrange2}">
-                    <TextBlock>NOTIFICATIONS</TextBlock>
-                </Border>
+            <StackPanel Margin="20" Spacing="8">
+                <HeaderedContentControl Theme="{StaticResource GroupBox}"
+                                        u:Anchor.Id="{echoes:Translate {x:Static translations:Strings.SettingsGeneralSection}}">
+                    <HeaderedContentControl.Header>
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                <TextBlock Theme="{DynamicResource TitleTextBlock}"
+                                           Classes="H5"
+                                           Text="{echoes:Translate {x:Static translations:Strings.SettingsGeneralSection}}" />
+                            </StackPanel>
+                        </DockPanel>
+                    </HeaderedContentControl.Header>
+
+                    <Panel>
+                        <StackPanel Spacing="8" Height="500">
+
+                            <Border Background="{DynamicResource SemiColorTertiaryLight}"
+                                    BorderThickness="{DynamicResource TextBoxBorderThickness}"
+                                    CornerRadius="{DynamicResource TextBoxDefaultCornerRadius}"
+                                    HorizontalAlignment="Left">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBox Text="{Binding DeviceName}"
+                                             IsEnabled="False"
+                                             InnerLeftContent="{echoes:Translate {x:Static translations:Strings.SettingsGeneralDeviceName}}" />
+                                    <u:IconButton Icon="{iconPacks:Material Kind=Pencil, Width=12, Height=12}"
+                                                  Background="Transparent"
+                                                  ToolTip.Tip="{echoes:Translate {x:Static translations:Strings.Edit}}" />
+                                </StackPanel>
+                            </Border>
+                            
+                            <Border Background="{DynamicResource SemiColorTertiaryLight}"
+                                    BorderThickness="{DynamicResource TextBoxBorderThickness}"
+                                    CornerRadius="{DynamicResource TextBoxDefaultCornerRadius}"
+                                    HorizontalAlignment="Left">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBox Watermark="serial number"
+                                             IsEnabled="False"
+                                             InnerLeftContent="{echoes:Translate {x:Static translations:Strings.SettingsGeneralSerialNumber}}" />
+                                    <u:IconButton Icon="{iconPacks:Material Kind=Pencil, Width=12, Height=12}"
+                                                  Background="Transparent"
+                                                  ToolTip.Tip="{echoes:Translate {x:Static translations:Strings.Edit}}" />
+                                </StackPanel>
+                            </Border>
+
+
+                        </StackPanel>
+                    </Panel>
+                </HeaderedContentControl>
+
+                <HeaderedContentControl Theme="{StaticResource GroupBox}"
+                                        u:Anchor.Id="{echoes:Translate {x:Static translations:Strings.SettingsMqttSection}}">
+                    <HeaderedContentControl.Header>
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                <TextBlock Classes="Header H6"
+                                           Text="{echoes:Translate {x:Static translations:Strings.SettingsMqttSection}}" />
+                            </StackPanel>
+                        </DockPanel>
+
+                    </HeaderedContentControl.Header>
+
+                    <Panel>
+                        <StackPanel Spacing="8" Height="500">
+
+                        </StackPanel>
+                    </Panel>
+                </HeaderedContentControl>
+
+                <HeaderedContentControl Theme="{StaticResource GroupBox}"
+                                        u:Anchor.Id="{echoes:Translate {x:Static translations:Strings.SettingsHASection}}">
+                    <HeaderedContentControl.Header>
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                <TextBlock Classes="Header H6"
+                                           Text="{echoes:Translate {x:Static translations:Strings.SettingsHASection}}" />
+                            </StackPanel>
+                        </DockPanel>
+
+                    </HeaderedContentControl.Header>
+
+                    <Panel>
+                        <StackPanel Spacing="8" Height="500">
+
+                        </StackPanel>
+                    </Panel>
+                </HeaderedContentControl>
+
+                <HeaderedContentControl Theme="{StaticResource GroupBox}"
+                                        u:Anchor.Id="{echoes:Translate {x:Static translations:Strings.SettingsNotificationsSection}}">
+                    <HeaderedContentControl.Header>
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                <TextBlock Classes="Header H6"
+                                           Text="{echoes:Translate {x:Static translations:Strings.SettingsNotificationsSection}}" />
+                            </StackPanel>
+                        </DockPanel>
+
+                    </HeaderedContentControl.Header>
+
+                    <Panel>
+                        <StackPanel Spacing="8" Height="500">
+
+                        </StackPanel>
+                    </Panel>
+                </HeaderedContentControl>
             </StackPanel>
         </ScrollViewer>
-        
+
         <u:Anchor Grid.Column="1"
-                  Width="200" Margin="24" 
+                  Width="200" Margin="24"
                   ItemsSource="{Binding SettingsSections}"
                   TargetContainer="{Binding #AnchorTarget}">
             <u:Anchor.Styles>
@@ -46,6 +152,6 @@
             </u:Anchor.ItemTemplate>
         </u:Anchor>
     </Grid>
-    
-    
+
+
 </UserControl>
