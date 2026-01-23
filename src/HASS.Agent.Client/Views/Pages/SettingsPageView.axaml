@@ -22,13 +22,13 @@
         <Style Selector="TextBox:disabled /template/ Border#PART_ContentPresenterBorder">
             <Setter Property="Background" Value="Transparent" />
         </Style>
-        
+
     </UserControl.Styles>
 
-    <Grid ColumnDefinitions="*, Auto">
+    <Grid ColumnDefinitions="*, Auto, Auto">
 
         <ScrollViewer Name="AnchorTarget" VerticalAlignment="Stretch">
-            <StackPanel Margin="20" Spacing="8">
+            <StackPanel Margin="20 0 20 20" Spacing="8">
                 <HeaderedContentControl Theme="{StaticResource GroupBox}"
                                         u:Anchor.Id="{echoes:Translate {x:Static translations:Strings.SettingsGeneralSection}}">
                     <HeaderedContentControl.Header>
@@ -54,16 +54,17 @@
                                              InnerLeftContent="{echoes:Translate {x:Static translations:Strings.SettingsGeneralDeviceName}}" />
                                     <u:IconButton Icon="{iconPacks:Material Kind=Pencil, Width=12, Height=12}"
                                                   Background="Transparent"
-                                                  ToolTip.Tip="{echoes:Translate {x:Static translations:Strings.Edit}}" />
+                                                  ToolTip.Tip="{echoes:Translate {x:Static translations:Strings.Edit}}"
+                                                  Command="{Binding ChangeDeviceNameCommand}" />
                                 </StackPanel>
                             </Border>
-                            
+
                             <Border Background="{DynamicResource SemiColorTertiaryLight}"
                                     BorderThickness="{DynamicResource TextBoxBorderThickness}"
                                     CornerRadius="{DynamicResource TextBoxDefaultCornerRadius}"
                                     HorizontalAlignment="Left">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBox Watermark="serial number"
+                                    <TextBox Text="{Binding SerialNumber}"
                                              IsEnabled="False"
                                              InnerLeftContent="{echoes:Translate {x:Static translations:Strings.SettingsGeneralSerialNumber}}" />
                                     <u:IconButton Icon="{iconPacks:Material Kind=Pencil, Width=12, Height=12}"
@@ -137,6 +138,7 @@
         </ScrollViewer>
 
         <u:Anchor Grid.Column="1"
+                  Name="SectionsAnchor"
                   Width="200" Margin="24"
                   ItemsSource="{Binding SettingsSections}"
                   TargetContainer="{Binding #AnchorTarget}">

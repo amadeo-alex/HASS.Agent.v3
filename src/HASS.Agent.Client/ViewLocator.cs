@@ -7,6 +7,8 @@ namespace HASS.Agent.Client;
 
 public class ViewLocator : IDataTemplate
 {
+    public Type BaseViewModelType { get; set; } =  typeof(ViewModelBase);
+    
     public Control? Build(object? param)
     {
         if (param is null)
@@ -28,6 +30,6 @@ public class ViewLocator : IDataTemplate
 
     public bool Match(object? data)
     {
-        return data is ViewModelBase;
+        return data?.GetType().IsSubclassOf(BaseViewModelType) == true;
     }
 }

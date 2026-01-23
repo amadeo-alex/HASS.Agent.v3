@@ -372,13 +372,14 @@ public class SettingsManager : ISettingsManager
             File.WriteAllText(UserSettingsFilePath, serializedSettingsObject);
             
             _logger.LogInformation("[SETTINGS] Settings for section {section} saved", typeof(T).Name);
+            
+            return true;
         }
         catch (Exception ex)
         {
             _logger.LogCritical("[SETTINGS] Exception saving setting for section: {ex}", ex);
-            return false;
         }
 
-        return true;
+        return false;
     }
 }

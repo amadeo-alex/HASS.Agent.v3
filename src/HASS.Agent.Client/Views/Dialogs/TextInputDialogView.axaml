@@ -1,0 +1,42 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:HASS.Agent.Client.ViewModels.Dialogs"
+             mc:Ignorable="d" d:DesignWidth="384" d:DesignHeight="200"
+             x:Class="HASS.Agent.Client.Views.Dialogs.TextInputDialogView"
+             x:DataType="vm:TextInputDialogViewModel">
+
+    <Design.DataContext>
+        <vm:TextInputDialogViewModel />
+    </Design.DataContext>
+
+    <StackPanel Orientation="Vertical"
+                Spacing="16"
+                Margin="24">
+        <TextBlock Text="{Binding Title}"
+                   Theme="{DynamicResource TitleTextBlock}"
+                   Classes="H3"
+                   IsVisible="{Binding IsTitlePresent}"/>
+
+        <TextBlock Text="{Binding Query}"
+                   Theme="{DynamicResource TitleTextBlock}"
+                   Classes="H6" />
+
+        <TextBox Text="{Binding UserText, Mode=TwoWay}"/>
+        
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    Spacing="8" Margin="0 0"
+                    HorizontalAlignment="Right">
+            <Button Theme="{DynamicResource SolidButton}" Classes="Success"
+                    Content="{Binding Accept}"
+                    Command="{Binding AcceptedCommand}" />
+            <Button Theme="{DynamicResource SolidButton}"
+                    Classes="Tertiary"
+                    Content="{Binding Deny}"
+                    Command="{Binding DeniedCommand}" />
+        </StackPanel>
+    </StackPanel>
+
+</UserControl>

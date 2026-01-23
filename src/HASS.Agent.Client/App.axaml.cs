@@ -17,6 +17,7 @@ using HASS.Agent.Base;
 using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Sensors.SingleValue;
 using HASS.Agent.Client.Models.Log;
+using HASS.Agent.Client.Services;
 using HASS.Agent.Client.ViewModels;
 using HASS.Agent.Client.ViewModels.Pages;
 using HASS.Agent.Client.Views;
@@ -27,6 +28,7 @@ using HASS.Agent.Contracts.Models;
 using HASS.Agent.Contracts.Models.Entity;
 using HASS.Agent.Contracts.Models.Settings;
 using HASS.Agent.Contracts.Models.Update;
+using HASS.Agent.Contracts.Services;
 using LogViewer.Core;
 using LogViewer.Core.ViewModels;
 using Microsoft.Extensions.Configuration;
@@ -128,6 +130,8 @@ public partial class App : Application
         services.AddSingleton<HomePageViewModel>();
         services.AddSingleton<SettingsPageViewModel>();
 
+        services.AddSingleton<IDialogService, DialogService>();
+        
         services.AddSingleton(Dispatcher.UIThread);
     }
 
