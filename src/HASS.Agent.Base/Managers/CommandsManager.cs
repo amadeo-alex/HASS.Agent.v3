@@ -86,10 +86,20 @@ public partial class CommandsManager : ObservableObject, ICommandsManager, IMqtt
 
         await PublishCommandAutoDiscoveryConfigAsync(command);
         Commands.Add(command);
+        
+        if (command is IReactiveDiscoverable reactiveCommand)
+        {
+            reactiveCommand.NewStateDetectedAsync += OnReactiveCommandNewStateAsync;
+        }
     }
 
     private async Task RemoveCommand(AbstractDiscoverable command)
     {
+        if (command is IReactiveDiscoverable reactiveCommand)
+        {
+            reactiveCommand.NewStateDetectedAsync -= OnReactiveCommandNewStateAsync;
+        }
+        
         Commands.Remove(command);
         await PublishCommandStateAsync(command, respectChecks: false, clear: true);
         await PublishCommandAutoDiscoveryConfigAsync(command, clear: true);
@@ -101,6 +111,11 @@ public partial class CommandsManager : ObservableObject, ICommandsManager, IMqtt
 
         _mqttManager.UnregisterMessageHandler(commandConfig.CommandTopic);
         _mqttManager.UnregisterMessageHandler(commandConfig.ActionTopic);
+    }
+    
+    private async Task OnReactiveCommandNewStateAsync(AbstractDiscoverable sensor)
+    {
+        await PublishCommandStateAsync(sensor, respectChecks: false);
     }
 
     private void ConfiguredCommands_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)

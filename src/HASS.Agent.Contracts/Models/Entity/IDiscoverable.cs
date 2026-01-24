@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HASS.Agent.Contracts.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,9 @@ using HASS.Agent.Contracts.Models.Mqtt;
 namespace HASS.Agent.Contracts.Models.Entity;
 public interface IDiscoverable
 {
-    public string Domain { get; set; }
+	public EntityCategory? Category { get; set; }
+	
+    public HassDomain Domain { get; set; }
     public string EntityIdName { get; set; }
     public string Name { get; set; }
     public string TopicName { get; set; }

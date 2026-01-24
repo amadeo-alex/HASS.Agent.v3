@@ -16,16 +16,16 @@ using Microsoft.Extensions.Logging;
 namespace HASS.Agent.Base.Commands;
 public class DummySwitch : AbstractCommand
 {
-
+    private readonly ILogger _logger;
+    
     public override string DefaultEntityIdName { get; } = "dummyCommand";
 
     private MqttCommandDiscoveryConfigModel? _discoveryConfigModel;
     private string _state = StateOff;
 
-    public DummySwitch(ILogger<DummySwitch> logger, IServiceProvider serviceProvider, ConfiguredEntity configuredSensor) : base(logger, serviceProvider, configuredSensor)
+    public DummySwitch(ILogger<DummySwitch> logger, IServiceProvider serviceProvider, ConfiguredEntity configuredSensor) : base(serviceProvider, configuredSensor)
     {
-        Domain = HassDomain.Switch.ToString().ToLower();
-        var mqtt = serviceProvider.GetService<IMqttManager>();
+        Domain = HassDomain.Switch;
     }
 
     public override AbstractMqttDiscoveryConfigModel ConfigureAutoDiscoveryConfig(string discoveryPrefix, AbstractMqttDeviceConfigModel deviceConfigModel)

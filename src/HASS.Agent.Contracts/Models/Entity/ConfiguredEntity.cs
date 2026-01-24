@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using HASS.Agent.Contracts.Enums;
 using Newtonsoft.Json;
 
 namespace HASS.Agent.Contracts.Models.Entity;
@@ -12,6 +13,18 @@ public class ConfiguredEntity : IEquatable<ConfiguredEntity> //TODO(Amadeo): int
 {
     public Dictionary<string, string> Properties { get; set; } = [];
 
+    [JsonIgnore]
+    public HassDomain Domain
+    {
+	    get {
+		    var parsed = Enum.TryParse<HassDomain>(GetParameter(nameof(Domain)), true, out var domain);
+		    return parsed ? domain : throw new InvalidOperationException($"cannot convert {GetParameter(nameof(Domain))} to HassDomain");
+	    }
+	    set {
+		    SetParameter(nameof(Domain), nameof(value).ToLower());
+	    }
+    }
+    
     [JsonIgnore]
     public string Type
     {

@@ -7,6 +7,7 @@ using System.Xml.Linq;
 using System.Xml;
 using HASS.Agent.Contracts.Models;
 using HASS.Agent.Contracts.Enums;
+using Serilog;
 
 namespace HASS.Agent.Contracts.Models.Entity;
 
@@ -17,31 +18,10 @@ public abstract class AbstractSingleValueSensor : AbstractDiscoverable
 {
     public abstract string DefaultEntityIdName { get; }
 
-    /*    protected AbstractSingleValueSensor(string entityIdName, string name, int updateIntervalSeconds, string uniqueId, bool useAttributes)
-        {
-            UniqueId = uniqueId;
-            EntityIdName = entityIdName;
-            Name = name;
-            UpdateIntervalSeconds = updateIntervalSeconds;
-            Domain = HassDomain.Sensor.ToString();
-            UseAttributes = useAttributes;
-        }*/
-
     protected AbstractSingleValueSensor(IServiceProvider serviceProvider, ConfiguredEntity configuredEntity) : base(configuredEntity)
     {
-        UniqueId = configuredEntity.UniqueId.ToString();
-        EntityIdName = configuredEntity.EntityIdName;
-        Name = configuredEntity.Name;
-        UpdateIntervalSeconds = configuredEntity.UpdateIntervalSeconds;
-        Domain = HassDomain.Sensor.ToString().ToLower();
-        UseAttributes = configuredEntity.UseAttributes;
+
     }
 
-    public override void ResetChecks()
-    {
-        LastUpdated = DateTime.MinValue;
 
-        PreviousPublishedState = string.Empty;
-        PreviousPublishedAttributes = string.Empty;
-    }
 }

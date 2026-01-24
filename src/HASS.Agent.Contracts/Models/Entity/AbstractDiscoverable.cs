@@ -11,25 +11,18 @@ using HASS.Agent.Contracts.Models.Mqtt;
 namespace HASS.Agent.Contracts.Models.Entity;
 public abstract partial class AbstractDiscoverable : IDiscoverable
 {
-    [GeneratedRegex("[^a-zA-Z0-9_-]")]
-    private static partial Regex SanitizeRegex();
-    private static string Sanitize(string inputString)
-    {
-        return SanitizeRegex().Replace(inputString, "_");
-    }
-
     protected readonly ConfiguredEntity _configuration;
 
     public EntityCategory? Category { get; set; }
-    public string Domain { get; set; } = string.Empty;
-    public string EntityIdName { get; set; } = string.Empty;
-    public string Name { get; set; } = string.Empty;
+    public HassDomain Domain { get; set; }
+    public string EntityIdName { get; set; }
+    public string Name { get; set; } 
     public string TopicName { get; set; } = string.Empty;
-    public string UniqueId { get; set; } = string.Empty;
+    public string UniqueId { get; set; }
     public bool UseAttributes { get; set; } = false;
-    public bool IgnoreAvailability { get; set; } = false;
-    public int UpdateIntervalSeconds { get; set; } = 1;
-    public bool Active { get; set; } = true;
+    public bool IgnoreAvailability { get; set; }
+    public int UpdateIntervalSeconds { get; set; }
+    public bool Active { get; set; }
 
     public DateTime LastUpdated { get; set; } = DateTime.MinValue;
     public string PreviousPublishedState { get; set; } = string.Empty;
@@ -38,7 +31,7 @@ public abstract partial class AbstractDiscoverable : IDiscoverable
     public abstract Task<string> GetState();
     public async virtual Task<string> GetAttributes() { return string.Empty; }
 
-    protected AbstractDiscoverable(ConfiguredEntity configuredEntity)
+    protected AbstractDiscoverable(ConfiguredEntity configuredEntity) //TODO(Amadeo): order properties in two sections, ones from ConfiguredEntity and others
     {
         _configuration = configuredEntity;
 
@@ -46,14 +39,22 @@ public abstract partial class AbstractDiscoverable : IDiscoverable
         EntityIdName = configuredEntity.EntityIdName;
         Name = configuredEntity.Name;
         UpdateIntervalSeconds = configuredEntity.UpdateIntervalSeconds;
-        Domain = HassDomain.Sensor.ToString();
+        Domain = configuredEntity.Domain;
         UseAttributes = configuredEntity.UseAttributes;
         Active = configuredEntity.Active;
+        IgnoreAvailability = configuredEntity.IgnoreAvailability;
     }
 
     public abstract AbstractMqttDiscoveryConfigModel ConfigureAutoDiscoveryConfig(string discoveryPrefix, AbstractMqttDeviceConfigModel deviceConfigModel);
     public abstract AbstractMqttDiscoveryConfigModel? GetAutoDiscoveryConfig();
     //public abstract void ClearAutoDiscoveryConfig();
-    public abstract void ResetChecks();
     public abstract ConfiguredEntity ToConfiguredEntity();
+    
+    public void ResetChecks()
+    {
+	    LastUpdated = DateTime.MinValue;
+
+	    PreviousPublishedState = string.Empty;
+	    PreviousPublishedAttributes = string.Empty;
+    }
 }

@@ -25,44 +25,44 @@ public partial class SensorManager : ObservableObject, ISensorManager
 {
     private readonly ILogger _logger;
 
-	private readonly ISettingsManager _settingsManager;
-	private readonly IEntityTypeRegistry _entityTypeRegistry;
-	private readonly IMqttManager _mqttManager;
+    private readonly ISettingsManager _settingsManager;
+    private readonly IEntityTypeRegistry _entityTypeRegistry;
+    private readonly IMqttManager _mqttManager;
 
-	private readonly JsonSerializerSettings _jsonSerializerSettings = new()
-	{
-		Formatting = Formatting.Indented,
-		ContractResolver = new DefaultContractResolver()
-		{
-			NamingStrategy = new CamelCaseNamingStrategy()
-		},
-		NullValueHandling = NullValueHandling.Ignore,
-		DefaultValueHandling = DefaultValueHandling.Ignore,
-	};
+    private readonly JsonSerializerSettings _jsonSerializerSettings = new()
+    {
+        Formatting = Formatting.Indented,
+        ContractResolver = new DefaultContractResolver()
+        {
+            NamingStrategy = new CamelCaseNamingStrategy()
+        },
+        NullValueHandling = NullValueHandling.Ignore,
+        DefaultValueHandling = DefaultValueHandling.Ignore,
+    };
 
-	private bool _discoveryPublished = false;
+    private bool _discoveryPublished = false;
 
-	[ObservableProperty]
-	private ManagerStatus _status;
-	
-	public bool Pause { get; set; }
-	public bool Exit { get; set; }
+    [ObservableProperty]
+    private ManagerStatus _status;
 
-	public ObservableCollection<AbstractDiscoverable> Sensors { get; set; } = [];
+    public bool Pause { get; set; }
+    public bool Exit { get; set; }
 
-	public SensorManager(ILogger<SensorManager> logger, ISettingsManager settingsManager, IEntityTypeRegistry entityTypeRegistry, IMqttManager mqttManager)
-	{
+    public ObservableCollection<AbstractDiscoverable> Sensors { get; set; } = [];
+
+    public SensorManager(ILogger<SensorManager> logger, ISettingsManager settingsManager, IEntityTypeRegistry entityTypeRegistry, IMqttManager mqttManager)
+    {
         _logger = logger;
 
-		_settingsManager = settingsManager;
-		_entityTypeRegistry = entityTypeRegistry;
-		_mqttManager = mqttManager;
-	}
+        _settingsManager = settingsManager;
+        _entityTypeRegistry = entityTypeRegistry;
+        _mqttManager = mqttManager;
+    }
 
-	public async Task InitializeAsync()
-	{
-		Status = ManagerStatus.Initializing;
-		_settingsManager.ConfiguredSensors.CollectionChanged -= ConfiguredSensors_CollectionChanged;
+    public async Task InitializeAsync()
+    {
+        Status = ManagerStatus.Initializing;
+        _settingsManager.ConfiguredSensors.CollectionChanged -= ConfiguredSensors_CollectionChanged;
 
         foreach (var configuredSensor in _settingsManager.ConfiguredSensors)
         {
@@ -71,30 +71,45 @@ public partial class SensorManager : ObservableObject, ISensorManager
 
         _settingsManager.ConfiguredSensors.CollectionChanged += ConfiguredSensors_CollectionChanged;
         Status = ManagerStatus.Initialized;
-	}
+    }
 
-	private async Task AddSensor(ConfiguredEntity configuredSensor)
-	{
-		var sensor = (AbstractDiscoverable)_entityTypeRegistry.CreateSensorInstance(configuredSensor);
-		sensor.ConfigureAutoDiscoveryConfig(_settingsManager.GetSettingsSnapshot<MqttSettings>().DiscoveryPrefix, _mqttManager.DeviceConfigModel);
-		await PublishSensorAutoDiscoveryConfigAsync(sensor);
-		Sensors.Add(sensor);
-	}
+    private async Task AddSensor(ConfiguredEntity configuredSensor)
+    {
+        var sensor = (AbstractDiscoverable)_entityTypeRegistry.CreateSensorInstance(configuredSensor);
+        sensor.ConfigureAutoDiscoveryConfig(_settingsManager.GetSettingsSnapshot<MqttSettings>().DiscoveryPrefix, _mqttManager.DeviceConfigModel);
+        await PublishSensorAutoDiscoveryConfigAsync(sensor);
+        Sensors.Add(sensor);
 
-	private async Task RemoveSensor(AbstractDiscoverable sensor)
-	{
-		Sensors.Remove(sensor);
-		await PublishSingleSensorStateAsync(sensor, respectChecks: false, clear: true);
-		await PublishSensorAutoDiscoveryConfigAsync(sensor, clear: true);
-	}
+        if (sensor is IReactiveDiscoverable reactiveSensor)
+        {
+            reactiveSensor.NewStateDetectedAsync += OnReactiveSensorNewStateAsync;
+        }
+    }
 
-	private void ConfiguredSensors_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-	{
-		_discoveryPublished = false;
+    private async Task RemoveSensor(AbstractDiscoverable sensor)
+    {
+        if (sensor is IReactiveDiscoverable reactiveSensor)
+        {
+            reactiveSensor.NewStateDetectedAsync -= OnReactiveSensorNewStateAsync;
+        }
+        
+        Sensors.Remove(sensor);
+        await PublishSingleSensorStateAsync(sensor, respectChecks: false, clear: true);
+        await PublishSensorAutoDiscoveryConfigAsync(sensor, clear: true);
+    }
 
-		switch (e.Action)
-		{
-			case NotifyCollectionChangedAction.Add:
+    private async Task OnReactiveSensorNewStateAsync(AbstractDiscoverable sensor)
+    {
+        await PublishSingleSensorStateAsync(sensor, respectChecks: false);
+    }
+
+    private void ConfiguredSensors_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        _discoveryPublished = false;
+
+        switch (e.Action)
+        {
+            case NotifyCollectionChangedAction.Add:
                 if (e.NewItems == null)
                 {
                     return;
@@ -107,54 +122,56 @@ public partial class SensorManager : ObservableObject, ISensorManager
 
                 break;
 
-			case NotifyCollectionChangedAction.Remove:
+            case NotifyCollectionChangedAction.Remove:
                 if (e.OldItems == null)
                 {
                     return;
                 }
 
                 foreach (ConfiguredEntity configuredSensor in e.OldItems)
-				{
-					var sensor = Sensors.Where(s => s.UniqueId == configuredSensor.UniqueId.ToString()).FirstOrDefault();
+                {
+                    var sensor = Sensors.Where(s => s.UniqueId == configuredSensor.UniqueId.ToString()).FirstOrDefault();
                     if (sensor != null)
                     {
                         _ = RemoveSensor(sensor);
                     }
                 }
-				break;
-		}
-	}
 
-	private async Task PublishSensorAutoDiscoveryConfigAsync(AbstractDiscoverable sensor, bool clear = false)
-	{
-		if (sensor is AbstractSingleValueSensor)
-		{
-			await PublishSingleSensorAutoDiscoveryConfigAsync(sensor, clear);
-		}
-		/*        else if (sensor is AbstractMultiValueSensor multiValueSensor)
+                break;
+        }
+    }
+
+    private async Task PublishSensorAutoDiscoveryConfigAsync(AbstractDiscoverable sensor, bool clear = false)
+    {
+        if (sensor is AbstractSingleValueSensor)
+        {
+            await PublishSingleSensorAutoDiscoveryConfigAsync(sensor, clear);
+        }
+        /*        else if (sensor is AbstractMultiValueSensor multiValueSensor)
                 {
                     foreach (var singleSensor in multiValueSensor.Sensors)
                         await PublishSingleSensorAutoDiscoveryConfigAsync(singleSensor.Value, clear);
                 }*/
-	}
+    }
 
-	private async Task PublishSingleSensorAutoDiscoveryConfigAsync(AbstractDiscoverable sensor, bool clear)
-	{
-		try
-		{
-			var topic = $"{_settingsManager.GetSettingsSnapshot<MqttSettings>().DiscoveryPrefix}/{sensor.Domain}/{_settingsManager.GetSettingsSnapshot<ApplicationSettings>().DeviceName}/{sensor.EntityIdName}/config";
+    private async Task PublishSingleSensorAutoDiscoveryConfigAsync(AbstractDiscoverable sensor, bool clear)
+    {
+        try
+        {
+            var topic =
+                $"{_settingsManager.GetSettingsSnapshot<MqttSettings>().DiscoveryPrefix}/{sensor.Domain}/{_settingsManager.GetSettingsSnapshot<ApplicationSettings>().DeviceName}/{sensor.EntityIdName}/config";
 
-			var messageBuilder = new MqttApplicationMessageBuilder()
-				.WithTopic(topic)
-				.WithRetainFlag(_settingsManager.GetSettingsSnapshot<MqttSettings>().UseRetainFlag);
+            var messageBuilder = new MqttApplicationMessageBuilder()
+                .WithTopic(topic)
+                .WithRetainFlag(_settingsManager.GetSettingsSnapshot<MqttSettings>().UseRetainFlag);
 
-			if (clear)
-			{
-				messageBuilder.WithPayload(Array.Empty<byte>());
-			}
-			else
-			{
-				var payload = sensor.GetAutoDiscoveryConfig();
+            if (clear)
+            {
+                messageBuilder.WithPayload(Array.Empty<byte>());
+            }
+            else
+            {
+                var payload = sensor.GetAutoDiscoveryConfig();
                 if (payload == null)
                 {
                     return;
@@ -166,58 +183,58 @@ public partial class SensorManager : ObservableObject, ISensorManager
                 }
 
                 messageBuilder.WithPayload(JsonConvert.SerializeObject(payload, _jsonSerializerSettings));
-			}
+            }
 
-			await _mqttManager.PublishAsync(messageBuilder.Build());
-		}
-		catch (Exception e)
-		{
-			_logger.LogCritical("[SENSORMGR] [{name}] Error publishing discovery: {err}", sensor, e.Message);
-		}
-	}
+            await _mqttManager.PublishAsync(messageBuilder.Build());
+        }
+        catch (Exception e)
+        {
+            _logger.LogCritical("[SENSORMGR] [{name}] Error publishing discovery: {err}", sensor, e.Message);
+        }
+    }
 
-	private async Task PublishSensorStateAsync(AbstractDiscoverable sensor)
-	{
-		if (sensor is AbstractSingleValueSensor)
-		{
-			await PublishSingleSensorStateAsync(sensor);
-		}
-		/*        else if (sensor is AbstractMultiValueSensor multiValueSensor)
+    private async Task PublishSensorStateAsync(AbstractDiscoverable sensor)
+    {
+        if (sensor is AbstractSingleValueSensor)
+        {
+            await PublishSingleSensorStateAsync(sensor);
+        }
+        /*        else if (sensor is AbstractMultiValueSensor multiValueSensor)
                 {
                     foreach (var singleSensor in multiValueSensor.Sensors)
                         await PublishSingleSensorStateAsync(singleSensor.Value);
                 }*/
-	}
+    }
 
-	private async Task PublishSingleSensorStateAsync(AbstractDiscoverable sensor, bool respectChecks = true, bool clear = false)
-	{
-		if (_mqttManager.Status != ManagerStatus.Running)
+    private async Task PublishSingleSensorStateAsync(AbstractDiscoverable sensor, bool respectChecks = true, bool clear = false)
+    {
+        if (_mqttManager.Status != ManagerStatus.Running)
         {
             return;
         }
 
         try
-		{
+        {
             if (respectChecks && sensor.LastUpdated.AddSeconds(sensor.UpdateIntervalSeconds) > DateTime.Now)
             {
                 return;
             }
 
             var state = await sensor.GetState();
-			if (state == null)
+            if (state == null)
             {
                 return;
             }
 
             var attributes = await sensor.GetAttributes();
 
-			if (respectChecks &&
-				sensor.PreviousPublishedState == state &&
-				sensor.PreviousPublishedAttributes == attributes)
-			{
-				sensor.LastUpdated = DateTime.Now;
-				return;
-			}
+            if (respectChecks &&
+                sensor.PreviousPublishedState == state &&
+                sensor.PreviousPublishedAttributes == attributes)
+            {
+                sensor.LastUpdated = DateTime.Now;
+                return;
+            }
 
             if (sensor.GetAutoDiscoveryConfig() is not MqttSensorDiscoveryConfigModel autodiscoveryConfig)
             {
@@ -225,8 +242,8 @@ public partial class SensorManager : ObservableObject, ISensorManager
             }
 
             var message = new MqttApplicationMessageBuilder()
-				.WithTopic(autodiscoveryConfig.StateTopic)
-				.WithRetainFlag(_settingsManager.GetSettingsSnapshot<MqttSettings>().UseRetainFlag);
+                .WithTopic(autodiscoveryConfig.StateTopic)
+                .WithRetainFlag(_settingsManager.GetSettingsSnapshot<MqttSettings>().UseRetainFlag);
 
             if (clear)
             {
@@ -239,13 +256,13 @@ public partial class SensorManager : ObservableObject, ISensorManager
 
             await _mqttManager.PublishAsync(message.Build());
 
-			if (sensor.UseAttributes)
-			{
-				var attributesMessage = new MqttApplicationMessageBuilder()
-					.WithTopic(autodiscoveryConfig.JsonAttributesTopic)
-					.WithRetainFlag(_settingsManager.GetSettingsSnapshot<MqttSettings>().UseRetainFlag);
+            if (sensor.UseAttributes)
+            {
+                var attributesMessage = new MqttApplicationMessageBuilder()
+                    .WithTopic(autodiscoveryConfig.JsonAttributesTopic)
+                    .WithRetainFlag(_settingsManager.GetSettingsSnapshot<MqttSettings>().UseRetainFlag);
 
-				if (clear)
+                if (clear)
                 {
                     attributesMessage.WithPayload(Array.Empty<byte>());
                 }
@@ -255,89 +272,89 @@ public partial class SensorManager : ObservableObject, ISensorManager
                 }
 
                 await _mqttManager.PublishAsync(attributesMessage.Build());
-			}
+            }
 
-			if (!respectChecks || clear)
+            if (!respectChecks || clear)
             {
                 return;
             }
 
             sensor.PreviousPublishedState = state;
-			sensor.PreviousPublishedAttributes = attributes;
-			sensor.LastUpdated = DateTime.Now;
-		}
-		catch (Exception e)
-		{
-			_logger.LogCritical("[SENSORMGR] [{name}] Error publishing state: {err}", sensor, e.Message);
-		}
-	}
+            sensor.PreviousPublishedAttributes = attributes;
+            sensor.LastUpdated = DateTime.Now;
+        }
+        catch (Exception e)
+        {
+            _logger.LogCritical("[SENSORMGR] [{name}] Error publishing state: {err}", sensor, e.Message);
+        }
+    }
 
-	public async Task PublishSensorsDiscoveryAsync(bool force = false)
-	{
-		if (force || !_discoveryPublished)
-		{
-			foreach (var sensor in Sensors)
+    public async Task PublishSensorsDiscoveryAsync(bool force = false)
+    {
+        if (force || !_discoveryPublished)
+        {
+            foreach (var sensor in Sensors)
             {
                 await PublishSensorAutoDiscoveryConfigAsync(sensor);
             }
 
             _discoveryPublished = true;
-		}
-	}
-	public async Task PublishSensorsStateAsync()
-	{
-		foreach (var sensor in Sensors)
-		{
-			if (sensor.Active)
+        }
+    }
+
+    public async Task PublishSensorsStateAsync()
+    {
+        foreach (var sensor in Sensors)
+        {
+            if (sensor.Active)
             {
                 await PublishSensorStateAsync(sensor);
             }
         }
-	}
+    }
 
-	public async Task UnpublishSensorsDiscoveryAsync()
-	{
+    public async Task UnpublishSensorsDiscoveryAsync()
+    {
         foreach (var sensor in Sensors)
         {
             await PublishSensorAutoDiscoveryConfigAsync(sensor, clear: true);
         }
     }
 
-	public async Task Process()
-	{
-		Status = ManagerStatus.Running;
-			
-		var firstRun = true;
-		var firstRunDone = false;
+    public async Task Process()
+    {
+        Status = ManagerStatus.Running;
 
-		while (!Exit)
-		{
-			try
-			{
-				await Task.Delay(TimeSpan.FromMilliseconds(750)); //TODO(Amadeo): add application config for this
-                if (Pause || _mqttManager.Status != ManagerStatus.Running)
+        var firstRun = true;
+        var firstRunDone = false;
+
+        while (!Exit)
+        {
+            try
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(750)); //TODO(Amadeo): add application config for this
+                if (Pause || _mqttManager.Status != ManagerStatus.Running) //TODO(Amadeo): pause when sensors are added/removed?
                 {
                     continue;
                 }
 
                 await PublishSensorsDiscoveryAsync();
-				await PublishSensorsStateAsync();
-			}
-			catch (Exception e)
-			{
-				_logger.LogCritical(e, "[SENSORMGR] Error while processing: {err}", e.Message);
-			}
-		}
+                await PublishSensorsStateAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogCritical(e, "[SENSORMGR] Error while processing: {err}", e.Message);
+            }
+        }
 
-		Status = ManagerStatus.Stopped;
-	}
+        Status = ManagerStatus.Stopped;
+    }
 
-	public void ResetAllSensorChecks()
-	{
+    public void ResetAllSensorChecks()
+    {
         foreach (var sensor in Sensors)
         {
             sensor.ResetChecks();
         }
     }
-
 }

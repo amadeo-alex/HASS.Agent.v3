@@ -20,33 +20,16 @@ public abstract class AbstractCommand : AbstractDiscoverable
     public const string StateOn = "ON";
     public const string StateOff = "OFF";
 
-    protected readonly ILogger _logger;
-
     public abstract string DefaultEntityIdName { get; }
 
     public string ConfiguredAction => _configuration.GetParameter(_configuredActionParam);
 
-    protected AbstractCommand(ILogger logger, IServiceProvider serviceProvider, ConfiguredEntity configuredEntity) : base(configuredEntity)
+    protected AbstractCommand(IServiceProvider serviceProvider, ConfiguredEntity configuredEntity) : base(configuredEntity)
     {
-        _logger = logger;
 
-        UniqueId = configuredEntity.UniqueId.ToString();
-        EntityIdName = configuredEntity.EntityIdName;
-        Name = configuredEntity.Name;
-        UpdateIntervalSeconds = configuredEntity.UpdateIntervalSeconds;
-        Domain = HassDomain.Button.ToString().ToLower();
-        UseAttributes = configuredEntity.UseAttributes;
     }
 
     public abstract Task TurnOn();
     public abstract Task TurnOn(string action);
     public abstract Task TurnOff();
-
-    public override void ResetChecks()
-    {
-        LastUpdated = DateTime.MinValue;
-
-        PreviousPublishedState = string.Empty;
-        PreviousPublishedAttributes = string.Empty;
-    }
 }
