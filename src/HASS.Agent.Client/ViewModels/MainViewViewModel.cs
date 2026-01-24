@@ -28,7 +28,7 @@ public partial class MainViewViewModel : ViewModelBase
             new() { Header = "Home", DestinationType = typeof(HomePageViewModel), IconKind = PackIconMaterialKind.Cog },
 
             new() { Header = "Client", IsSeparator = true },
-            new() { Header = "Sensors", IconKind = PackIconMaterialKind.DatabaseOutline },
+            new() { Header = "Sensors", DestinationType = typeof(SensorsPageViewModel), IconKind = PackIconMaterialKind.DatabaseOutline },
             new() { Header = "Commands", IconKind = PackIconMaterialKind.FileAlert },
 
             new() { Header = "Service", IsSeparator = true },

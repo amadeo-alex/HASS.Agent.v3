@@ -21,7 +21,7 @@ public class ConfiguredEntity : IEquatable<ConfiguredEntity> //TODO(Amadeo): int
 		    return parsed ? domain : throw new InvalidOperationException($"cannot convert {GetParameter(nameof(Domain))} to HassDomain");
 	    }
 	    set {
-		    SetParameter(nameof(Domain), nameof(value).ToLower());
+		    SetParameter(nameof(Domain), value.ToString());
 	    }
     }
     

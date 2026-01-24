@@ -75,6 +75,7 @@ public partial class SensorManager : ObservableObject, ISensorManager
 
     private async Task AddSensor(ConfiguredEntity configuredSensor)
     {
+        //TODO(Amadeo): handle graceful sensor init failure without impacting other and the whole app
         var sensor = (AbstractDiscoverable)_entityTypeRegistry.CreateSensorInstance(configuredSensor);
         sensor.ConfigureAutoDiscoveryConfig(_settingsManager.GetSettingsSnapshot<MqttSettings>().DiscoveryPrefix, _mqttManager.DeviceConfigModel);
         await PublishSensorAutoDiscoveryConfigAsync(sensor);

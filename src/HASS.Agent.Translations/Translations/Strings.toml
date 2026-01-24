@@ -15,6 +15,7 @@ Deny = "Deny"
 Ok = "Ok"
 Cancel = "Cancel"
 Save = "Save"
+Sensors = "Sensors"
 
 ClientStatus = "Client Status"
 Mqtt = "MQTT"

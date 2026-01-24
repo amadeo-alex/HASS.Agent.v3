@@ -129,6 +129,7 @@ public partial class App : Application
         
         services.AddSingleton<HomePageViewModel>();
         services.AddSingleton<SettingsPageViewModel>();
+        services.AddSingleton<SensorsPageViewModel>();
 
         services.AddSingleton<IDialogService, DialogService>();
         
@@ -179,7 +180,7 @@ public partial class App : Application
             _logger.LogInformation("[MAIN] HASS.Agent version: '{version}' on '{os}'", applicationInfo.Version, applicationInfo.OsVersion);
 
 
-            var initializationTask = Task.Run(async () =>
+            var initializationTask = Task.Run(async () => //TODO(Amadeo): exceptions inside this will be lost
             {
                 var guidManager = _applicationBase.GetService<IGuidManager>();
                 guidManager.MarkAsUsed(settingsManager.GetSettingsSnapshot<MqttSettings>().ClientId);
@@ -188,6 +189,7 @@ public partial class App : Application
                 {
                     var ce = new ConfiguredEntity()
                     {
+                        Domain = HassDomain.Sensor,
                         Type = nameof(DummySensor),
                         EntityIdName = "DummySensor1",
                         Name = "Dummy Sensor 1",

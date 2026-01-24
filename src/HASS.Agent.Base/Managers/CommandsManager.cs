@@ -73,6 +73,7 @@ public partial class CommandsManager : ObservableObject, ICommandsManager, IMqtt
 
     private async Task AddCommand(ConfiguredEntity configuredCommand)
     {
+        //TODO(Amadeo): handle graceful command init failure without impacting other and the whole app
         var command = (AbstractDiscoverable)_entityTypeRegistry.CreateCommandInstance(configuredCommand);
         command.ConfigureAutoDiscoveryConfig(_settingsManager.GetSettingsSnapshot<MqttSettings>().DiscoveryPrefix, _mqttManager.DeviceConfigModel);
 
