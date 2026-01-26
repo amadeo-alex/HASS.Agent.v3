@@ -1,0 +1,110 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:HASS.Agent.Client.ViewModels.Dialogs"
+             xmlns:design="clr-namespace:HASS.Agent.Client.ViewModels.Design"
+             xmlns:u="https://irihi.tech/ursa"
+             xmlns:echoes="clr-namespace:Echoes;assembly=Echoes.Avalonia"
+             xmlns:translations="clr-namespace:HASS.Agent.Translations;assembly=HASS.Agent.Translations"
+             xmlns:client="clr-namespace:HASS.Agent.Client"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="550"
+             x:Class="HASS.Agent.Client.Views.Dialogs.SensorEditDialogView"
+             x:DataType="vm:SensorEditDialogViewModel">
+
+    <Design.DataContext>
+        <design:DesignSensorEditDialogViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,Auto">
+        <Grid Grid.Row="0">
+            <StackPanel Orientation="Horizontal"
+                        Margin="24 24 24 4">
+                <Border Theme="{StaticResource CardBorder}"
+                        IsVisible="{Binding ShowEntityCategories}">
+                    <StackPanel Orientation="Vertical" Spacing="4">
+                        <u:Divider
+                            Content="{echoes:Translate {x:Static translations:Strings.SensorEditDialogDisplayName}}" />
+                        <TreeView ItemsSource="{Binding EntityCategories.SubCategories}"
+                                  SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
+                                  Width="256">
+                            <TreeView.ItemTemplate>
+                                <TreeDataTemplate ItemsSource="{Binding SubCategories}">
+                                    <TextBlock Text="{Binding Name}" />
+                                </TreeDataTemplate>
+                            </TreeView.ItemTemplate>
+                        </TreeView>
+                    </StackPanel>
+                </Border>
+
+                <Border Theme="{StaticResource CardBorder}">
+                    <StackPanel Orientation="Vertical" Spacing="16">
+                        <StackPanel Orientation="Vertical" Spacing="4">
+                            <u:Divider
+                                Content="{echoes:Translate {x:Static translations:Strings.SensorEditDialogDisplayName}}" />
+                            <TextBox Text="{Binding DisplayName, Mode=OneWay}"
+                                     IsEnabled="False" />
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical" Spacing="4">
+                            <u:Divider
+                                Content="{echoes:Translate {x:Static translations:Strings.SensorEditDialogEntityId}}" />
+                            <TextBox Text="{Binding Sensor.EntityIdName, Mode=TwoWay}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical" Spacing="4">
+                            <u:Divider
+                                Content="{echoes:Translate {x:Static translations:Strings.SensorEditDialogName}}" />
+                            <TextBox Text="{Binding Sensor.Name, Mode=TwoWay}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical" Spacing="4">
+                            <u:Divider
+                                Content="{echoes:Translate {x:Static translations:Strings.SensorEditDialogUniqueId}}" />
+                            <TextBox Text="{Binding Sensor.UniqueId, Mode=OneWay}"
+                                     IsEnabled="False" />
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical" Spacing="4">
+                            <u:Divider
+                                Content="{echoes:Translate {x:Static translations:Strings.SensorEditDialogUpdateInterval}}" />
+                            <u:NumericIntUpDown Value="{Binding Sensor.UpdateIntervalSeconds, Mode=TwoWay}"
+                                                ShowButtonSpinner="True"
+                                                Step="1"
+                                                InnerRightContent="{echoes:Translate {x:Static translations:Strings.SensorEditDialogSeconds}}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical" Spacing="4">
+                            <u:Divider Content="{echoes:Translate {x:Static translations:Strings.Availability}}" />
+                            <CheckBox IsChecked="{Binding Sensor.IgnoreAvailability, Mode=TwoWay}"
+                                      Content="{echoes:Translate {x:Static translations:Strings.SensorEditDialogIgnoreAvailability}}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border Theme="{StaticResource CardBorder}"
+                        IsVisible="{Binding AdditionalSettingsPresent}">
+                    <StackPanel Orientation="Vertical">
+                        <Grid>
+                            <ContentControl
+                                Content="{Binding AdditionalSettingsViewModel}">
+                                <ContentControl.ContentTemplate>
+                                    <client:ViewLocator />
+                                </ContentControl.ContentTemplate>
+                            </ContentControl>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1">  <!--Background="{DynamicResource BorderCardBackground}"-->
+            <StackPanel Orientation="Horizontal"
+                        Spacing="8"
+                        Margin="24 8 24 16"
+                        HorizontalAlignment="Right">
+                <Button Content="{echoes:Translate {x:Static translations:Strings.Save}}"
+                        Theme="{DynamicResource SolidButton}" Classes="Success"
+                        Command="{Binding AcceptedCommand}" />
+                <Button Content="{echoes:Translate {x:Static translations:Strings.Cancel}}"
+                        Theme="{DynamicResource SolidButton}" Classes="Tertiary"
+                        Command="{Binding DeniedCommand}" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

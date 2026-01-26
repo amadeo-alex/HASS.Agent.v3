@@ -1,0 +1,34 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:HASS.Agent.Client.ViewModels.Sensors"
+             xmlns:u="https://irihi.tech/ursa"
+             xmlns:echoes="clr-namespace:Echoes;assembly=Echoes.Avalonia"
+             xmlns:translations="clr-namespace:HASS.Agent.Translations;assembly=HASS.Agent.Translations"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="HASS.Agent.Client.Views.Sensors.DummySensorSettingsView"
+             x:DataType="vm:DummySensorSettingsViewModel">
+
+    <StackPanel Orientation="Vertical" Spacing="16">
+
+        <StackPanel Orientation="Vertical" Spacing="4">
+            <u:Divider Content="{echoes:Translate {x:Static translations:Strings.DummySensorEnsureRandom}}" />
+            <CheckBox IsChecked="{Binding EnsureRandom, Mode=TwoWay}" />
+        </StackPanel>
+        <StackPanel Orientation="Vertical" Spacing="4">
+            <u:Divider Content="{echoes:Translate {x:Static translations:Strings.DummySensorMaxValue}}" />
+            <u:NumericIntUpDown Value="{Binding MaxValue, Mode=TwoWay}"
+                                ShowButtonSpinner="True"
+                                Step="1" />
+        </StackPanel>
+        <StackPanel Orientation="Vertical" Spacing="4">
+            <u:Divider Content="{echoes:Translate {x:Static translations:Strings.DummySensorMinValue}}" />
+            <u:NumericIntUpDown Value="{Binding MinValue, Mode=TwoWay}"
+                                ShowButtonSpinner="True"
+                                Step="1" />
+        </StackPanel>
+
+    </StackPanel>
+
+</UserControl>

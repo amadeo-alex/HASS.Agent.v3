@@ -71,7 +71,7 @@ public class DummySwitch : AbstractCommand
     {
         var configuredCommand = new ConfiguredEntity()
         {
-            Type = typeof(DummySwitch).Name,
+            Type = nameof(DummySwitch),
             EntityIdName = EntityIdName,
             Name = Name,
             UpdateIntervalSeconds = UpdateIntervalSeconds,

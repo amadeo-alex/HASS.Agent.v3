@@ -3,7 +3,7 @@ generated_class_name = "Strings"
 generated_namespace = "HASS.Agent.Translations"
 
 [translations]
-AppName= "HASS.Agent v3"
+AppName = "HASS.Agent v3"
 
 Home = "Home"
 Debug = "Debug"
@@ -16,6 +16,7 @@ Ok = "Ok"
 Cancel = "Cancel"
 Save = "Save"
 Sensors = "Sensors"
+Availability = "Availability"
 
 ClientStatus = "Client Status"
 Mqtt = "MQTT"
@@ -33,3 +34,15 @@ SettingsGeneralDeviceNameChangeDialogQuery = "Please provide updated device name
 SettingsMqttSection = "MQTT"
 SettingsHASection = "Home Assistant"
 SettingsNotificationsSection = "Notifications"
+
+SensorEditDialogDisplayName = "Type"
+SensorEditDialogEntityId = "Entity ID"
+SensorEditDialogName = "Name"
+SensorEditDialogUniqueId = "Unique ID"
+SensorEditDialogUpdateInterval = "Update interval"
+SensorEditDialogSeconds = "seconds"
+SensorEditDialogIgnoreAvailability = "Ignore availability"
+
+DummySensorEnsureRandom = "Ensure random"
+DummySensorMaxValue = "Maximum value"
+DummySensorMinValue = "Minimum value"
