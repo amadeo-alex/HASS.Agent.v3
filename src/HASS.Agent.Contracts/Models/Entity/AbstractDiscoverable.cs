@@ -39,10 +39,12 @@ public abstract partial class AbstractDiscoverable : IDiscoverable
         EntityIdName = configuredEntity.EntityIdName;
         Name = configuredEntity.Name;
         UpdateIntervalSeconds = configuredEntity.UpdateIntervalSeconds;
-        Domain = configuredEntity.Domain;
         UseAttributes = configuredEntity.UseAttributes;
         Active = configuredEntity.Active;
         IgnoreAvailability = configuredEntity.IgnoreAvailability;
+        
+        var parsed = Enum.TryParse<HassDomain>(configuredEntity.Domain, true, out var domain);
+        Domain = parsed ? domain : throw new InvalidOperationException($"cannot convert {configuredEntity.Domain} to HassDomain");
     }
 
     public abstract AbstractMqttDiscoveryConfigModel ConfigureAutoDiscoveryConfig(string discoveryPrefix, AbstractMqttDeviceConfigModel deviceConfigModel);

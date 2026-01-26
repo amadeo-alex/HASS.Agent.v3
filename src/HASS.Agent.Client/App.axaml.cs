@@ -189,7 +189,7 @@ public partial class App : Application
                 {
                     var ce = new ConfiguredEntity()
                     {
-                        Domain = HassDomain.Sensor,
+                        Domain = nameof(HassDomain.Sensor),
                         Type = nameof(DummySensor),
                         EntityIdName = "DummySensor1",
                         Name = "Dummy Sensor 1",

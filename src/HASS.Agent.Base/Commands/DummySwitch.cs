@@ -30,16 +30,18 @@ public class DummySwitch : AbstractCommand
 
     public override AbstractMqttDiscoveryConfigModel ConfigureAutoDiscoveryConfig(string discoveryPrefix, AbstractMqttDeviceConfigModel deviceConfigModel)
     {
+        var domain = Domain.ToString().ToLower();
+        
         _discoveryConfigModel = new MqttCommandDiscoveryConfigModel()
         {
             Name = Name,
             UniqueId = UniqueId,
             ObjectId = $"{deviceConfigModel.Name}_{EntityIdName}",
             Device = deviceConfigModel,
-            StateTopic = $"{discoveryPrefix}/{Domain}/{deviceConfigModel.Name}/{EntityIdName}/state",
+            StateTopic = $"{discoveryPrefix}/{domain}/{deviceConfigModel.Name}/{EntityIdName}/state",
             AvailabilityTopic = $"{discoveryPrefix}/hass.agent/{deviceConfigModel.Name}/availability",
-            CommandTopic = $"{discoveryPrefix}/{Domain}/{deviceConfigModel.Name}/{EntityIdName}/set",
-            ActionTopic = $"{discoveryPrefix}/{Domain}/{deviceConfigModel.Name}/{EntityIdName}/action"
+            CommandTopic = $"{discoveryPrefix}/{domain}/{deviceConfigModel.Name}/{EntityIdName}/set",
+            ActionTopic = $"{discoveryPrefix}/{domain}/{deviceConfigModel.Name}/{EntityIdName}/action"
         };
 
         return _discoveryConfigModel;

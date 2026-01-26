@@ -50,4 +50,6 @@ public enum HassDomain
 
     [EnumMember(Value = "fan")]
     Fan
+    
+    
 }

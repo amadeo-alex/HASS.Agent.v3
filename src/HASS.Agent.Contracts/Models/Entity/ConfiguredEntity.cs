@@ -9,173 +9,197 @@ using HASS.Agent.Contracts.Enums;
 using Newtonsoft.Json;
 
 namespace HASS.Agent.Contracts.Models.Entity;
-public class ConfiguredEntity : IEquatable<ConfiguredEntity> //TODO(Amadeo): interface?
+
+public class ConfiguredEntity : ObservableObject, IEquatable<ConfiguredEntity> //TODO(Amadeo): interface?
 {
-    public Dictionary<string, string> Properties { get; set; } = [];
+	public Dictionary<string, string> Properties { get; set; } = [];
 
-    [JsonIgnore]
-    public HassDomain Domain
-    {
-	    get {
-		    var parsed = Enum.TryParse<HassDomain>(GetParameter(nameof(Domain)), true, out var domain);
-		    return parsed ? domain : throw new InvalidOperationException($"cannot convert {GetParameter(nameof(Domain))} to HassDomain");
-	    }
-	    set {
-		    SetParameter(nameof(Domain), value.ToString());
-	    }
-    }
-    
-    [JsonIgnore]
-    public string Type
-    {
-        get => GetParameter(nameof(Type));
-        set => SetParameter(nameof(Type), value);
-    }
+	[JsonIgnore]
+	public string Domain
+	{
+		get => GetParameter(nameof(Domain));
+		set {
+			SetParameter(nameof(Domain), value);
+			OnPropertyChanged();
+		}
+	}
 
-    [JsonIgnore]
-    public Guid UniqueId
-    {
-        get => Guid.TryParse(GetParameter(nameof(UniqueId)), out var guid) ? guid : Guid.Empty;
-        set => SetParameter(nameof(UniqueId), value.ToString());
-    }
+	[JsonIgnore]
+	public string Type
+	{
+		get => GetParameter(nameof(Type));
+		set {
+			SetParameter(nameof(Type), value);
+			OnPropertyChanged();
+		}
+	}
 
-    [JsonIgnore]
-    public string Name
-    {
-        get => GetParameter(nameof(Name));
-        set => SetParameter(nameof(Name), value);
-    }
+	[JsonIgnore]
+	public Guid UniqueId
+	{
+		get => Guid.TryParse(GetParameter(nameof(UniqueId)), out var guid) ? guid : Guid.Empty;
+		set {
+			SetParameter(nameof(UniqueId), value.ToString());
+			OnPropertyChanged();
+		}
+	}
 
-    [JsonIgnore]
-    public string EntityIdName
-    {
-        get => GetParameter(nameof(EntityIdName));
-        set => SetParameter(nameof(EntityIdName), value);
-    }
+	[JsonIgnore]
+	public string Name
+	{
+		get => GetParameter(nameof(Name));
+		set {
+			SetParameter(nameof(Name), value);
+			OnPropertyChanged();
+		}
+	}
 
-    [JsonIgnore]
-    public int UpdateIntervalSeconds
-    {
-        get => GetIntParameter(nameof(UpdateIntervalSeconds), 0);
-        set => SetIntParameter(nameof(UpdateIntervalSeconds), value);
-    }
+	[JsonIgnore]
+	public string EntityIdName
+	{
+		get => GetParameter(nameof(EntityIdName));
+		set {
+			SetParameter(nameof(EntityIdName), value);
+			OnPropertyChanged();
+		}
+	}
 
-    [JsonIgnore]
-    public bool IgnoreAvailability
-    {
-        get => GetBoolParameter(nameof(IgnoreAvailability), false);
-        set => SetBoolParameter(nameof(IgnoreAvailability), value);
-    }
+	[JsonIgnore]
+	public int UpdateIntervalSeconds
+	{
+		get => GetIntParameter(nameof(UpdateIntervalSeconds), 0);
+		set {
+			SetIntParameter(nameof(UpdateIntervalSeconds), value);
+			OnPropertyChanged();
+		}
+	}
 
-    [JsonIgnore]
-    public bool UseAttributes
-    {
-        get => GetBoolParameter(nameof(UseAttributes), false);
-        set => SetBoolParameter(nameof(UseAttributes), value);
-    }
+	[JsonIgnore]
+	public bool IgnoreAvailability
+	{
+		get => GetBoolParameter(nameof(IgnoreAvailability), false);
+		set {
+			SetBoolParameter(nameof(IgnoreAvailability), value);
+			OnPropertyChanged();
+		}
+	}
 
-    [JsonIgnore]
-    public bool Active
-    {
-        get => GetBoolParameter(nameof(Active), true);
-        set => SetBoolParameter(nameof(Active), value);
-    }
+	[JsonIgnore]
+	public bool UseAttributes
+	{
+		get => GetBoolParameter(nameof(UseAttributes), false);
+		set {
+			SetBoolParameter(nameof(UseAttributes), value);
+			OnPropertyChanged();
+		}
+	}
 
-    public void SetParameter(string parameterName, string value)
-    {
-        if (string.IsNullOrWhiteSpace(parameterName))
-            throw new ArgumentException("parameter name cannot be empty");
+	[JsonIgnore]
+	public bool Active
+	{
+		get => GetBoolParameter(nameof(Active), true);
+		set {
+			SetBoolParameter(nameof(Active), value);
+			OnPropertyChanged();
+		}
+	}
 
-        Properties[parameterName] = value;
-    }
+	public void SetParameter(string parameterName, string value)
+	{
+		if (string.IsNullOrWhiteSpace(parameterName))
+			throw new ArgumentException("parameter name cannot be empty");
 
-    public void SetIntParameter(string parameterName, int value)
-    {
-        if (string.IsNullOrWhiteSpace(parameterName))
-            throw new ArgumentException("parameter name cannot be empty");
+		Properties[parameterName] = value;
+	}
 
-        Properties[parameterName] = value.ToString();
-    }
+	public void SetIntParameter(string parameterName, int value)
+	{
+		if (string.IsNullOrWhiteSpace(parameterName))
+			throw new ArgumentException("parameter name cannot be empty");
 
-    public void SetBoolParameter(string parameterName, bool value)
-    {
-        if (string.IsNullOrWhiteSpace(parameterName))
-            throw new ArgumentException("parameter name cannot be empty");
+		Properties[parameterName] = value.ToString();
+	}
 
-        Properties[parameterName] = value.ToString();
-    }
+	public void SetBoolParameter(string parameterName, bool value)
+	{
+		if (string.IsNullOrWhiteSpace(parameterName))
+			throw new ArgumentException("parameter name cannot be empty");
 
-    public string GetParameter(string parameterName, string defaultValue = "")
-    {
-        if (string.IsNullOrWhiteSpace(parameterName))
-            throw new ArgumentException("parameter name cannot be empty");
+		Properties[parameterName] = value.ToString();
+	}
 
-        if (!Properties.ContainsKey(parameterName))
-            Properties[parameterName] = defaultValue;
+	public string GetParameter(string parameterName, string defaultValue = "")
+	{
+		if (string.IsNullOrWhiteSpace(parameterName))
+			throw new ArgumentException("parameter name cannot be empty");
 
-        return Properties[parameterName];
-    }
+		if (!Properties.ContainsKey(parameterName))
+			Properties[parameterName] = defaultValue;
 
-    public int GetIntParameter(string parameterName, int defaultValue)
-    {
-        if (string.IsNullOrWhiteSpace(parameterName))
-            throw new ArgumentException("parameter name cannot be empty");
+		return Properties[parameterName];
+	}
 
-        var stringParam = GetParameter(parameterName, defaultValue.ToString());
-        return Convert.ToInt32(stringParam);
-    }
+	public int GetIntParameter(string parameterName, int defaultValue)
+	{
+		if (string.IsNullOrWhiteSpace(parameterName))
+			throw new ArgumentException("parameter name cannot be empty");
 
-    public bool GetBoolParameter(string parameterName, bool defaultValue)
-    {
-        if (string.IsNullOrWhiteSpace(parameterName))
-            throw new ArgumentException("parameter name cannot be empty");
+		var stringParam = GetParameter(parameterName, defaultValue.ToString());
+		return Convert.ToInt32(stringParam);
+	}
 
-        var stringParam = GetParameter(parameterName, defaultValue.ToString());
-        return Convert.ToBoolean(stringParam);
-    }
+	public bool GetBoolParameter(string parameterName, bool defaultValue)
+	{
+		if (string.IsNullOrWhiteSpace(parameterName))
+			throw new ArgumentException("parameter name cannot be empty");
 
-    public object Clone()
-    {
-        var clone = JsonConvert.DeserializeObject<ConfiguredEntity>(JsonConvert.SerializeObject(this));
-        return clone ?? throw new InvalidOperationException("cannot clone configured entity");
-    }
+		var stringParam = GetParameter(parameterName, defaultValue.ToString());
+		return Convert.ToBoolean(stringParam);
+	}
 
-    private bool CompareSettings(ConfiguredEntity other)
-    {
-        if (UniqueId != other.UniqueId || Type != other.Type)
-            return false;
+	public object Clone()
+	{
+		var clone = JsonConvert.DeserializeObject<ConfiguredEntity>(JsonConvert.SerializeObject(this));
+		return clone ?? throw new InvalidOperationException("cannot clone configured entity");
+	}
 
-        return other.Properties
-            .OrderBy(kvp => kvp.Key)
-            .SequenceEqual(Properties.OrderBy(kvp => kvp.Key));
-    }
+	private bool CompareSettings(ConfiguredEntity other)
+	{
+		if (UniqueId != other.UniqueId || Type != other.Type)
+			return false;
 
-    public static bool operator ==(ConfiguredEntity? obj1, ConfiguredEntity? obj2)
-    {
-        if (ReferenceEquals(obj1, obj2))
-            return true;
-        if (obj1 is null || obj2 is null)
-            return false;
+		return other.Properties
+			.OrderBy(kvp => kvp.Key)
+			.SequenceEqual(Properties.OrderBy(kvp => kvp.Key));
+	}
 
-        return obj1.Equals(obj2);
-    }
-    public static bool operator !=(ConfiguredEntity? obj1, ConfiguredEntity? obj2) => !(obj1 == obj2);
+	public static bool operator ==(ConfiguredEntity? obj1, ConfiguredEntity? obj2)
+	{
+		if (ReferenceEquals(obj1, obj2))
+			return true;
+		if (obj1 is null || obj2 is null)
+			return false;
 
-    public bool Equals(ConfiguredEntity? other)
-    {
-        if (other is null)
-            return false;
+		return obj1.Equals(obj2);
+	}
 
-        if (ReferenceEquals(this, other))
-            return true;
+	public static bool operator !=(ConfiguredEntity? obj1, ConfiguredEntity? obj2) => !(obj1 == obj2);
 
-        return CompareSettings(other);
-    }
+	public bool Equals(ConfiguredEntity? other)
+	{
+		if (other is null)
+			return false;
 
-    public override bool Equals(object? obj) => Equals(obj as ConfiguredEntity);
+		if (ReferenceEquals(this, other))
+			return true;
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(UniqueId, Type);
-    }
+		return CompareSettings(other);
+	}
+
+	public override bool Equals(object? obj) => Equals(obj as ConfiguredEntity);
+
+	public override int GetHashCode()
+	{
+		return HashCode.Combine(UniqueId, Type);
+	}
 }

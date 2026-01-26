@@ -44,7 +44,7 @@ public class DummySensor : AbstractSingleValueSensor
             UniqueId = UniqueId,
             ObjectId = $"{deviceConfigModel.Name}_{EntityIdName}",
             Device = deviceConfigModel,
-            StateTopic = $"{discoveryPrefix}/{Domain}/{deviceConfigModel.Name}/{EntityIdName}/state",
+            StateTopic = $"{discoveryPrefix}/{Domain.ToString().ToLower()}/{deviceConfigModel.Name}/{EntityIdName}/state",
             AvailabilityTopic = $"{discoveryPrefix}/hass.agent/{deviceConfigModel.Name}/availability"
         };
         
