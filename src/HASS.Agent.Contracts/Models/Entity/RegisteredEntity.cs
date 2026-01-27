@@ -5,9 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace HASS.Agent.Contracts.Models.Entity;
+
 public class RegisteredEntity
 {
-    public Type EntityType { get; set;} = typeof(RegisteredEntity); //TODO(Amadeo): ugly
-    public bool ClientCompatible { get; set; }
-    public bool SatelliteCompatible { get; set; }
+	public Type EntityType { get; set; } = typeof(RegisteredEntity); //TODO(Amadeo): ugly
+	public bool ClientCompatible { get; set; }
+	public bool SatelliteCompatible { get; set; }
+	public ConfiguredEntity? DefaultConfiguration { get; set; }
 }

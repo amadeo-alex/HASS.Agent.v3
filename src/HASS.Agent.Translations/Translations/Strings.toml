@@ -43,6 +43,11 @@ SensorEditDialogUpdateInterval = "Update interval"
 SensorEditDialogSeconds = "seconds"
 SensorEditDialogIgnoreAvailability = "Ignore availability"
 
+CategoryOther = "Other"
+CategoryDebug = "Debug"
+CategoryDummy = "Dummy"
+CategoryDummySensor = "Dummy Sensor"
+
 DummySensorEnsureRandom = "Ensure random"
 DummySensorMaxValue = "Maximum value"
 DummySensorMinValue = "Minimum value"

@@ -8,6 +8,7 @@
              xmlns:echoes="clr-namespace:Echoes;assembly=Echoes.Avalonia"
              xmlns:translations="clr-namespace:HASS.Agent.Translations;assembly=HASS.Agent.Translations"
              xmlns:client="clr-namespace:HASS.Agent.Client"
+             xmlns:converters="clr-namespace:HASS.Agent.Client.Converters"
              mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="550"
              x:Class="HASS.Agent.Client.Views.Dialogs.SensorEditDialogView"
              x:DataType="vm:SensorEditDialogViewModel">
@@ -15,6 +16,10 @@
     <Design.DataContext>
         <design:DesignSensorEditDialogViewModel />
     </Design.DataContext>
+    
+    <Control.Resources>
+        <converters:StringTranslationConverter Prefix="Category" x:Key="StringTranslationConverter" />
+    </Control.Resources>
 
     <Grid RowDefinitions="Auto,Auto">
         <Grid Grid.Row="0">
@@ -30,7 +35,7 @@
                                   Width="256">
                             <TreeView.ItemTemplate>
                                 <TreeDataTemplate ItemsSource="{Binding SubCategories}">
-                                    <TextBlock Text="{Binding Name}" />
+                                    <TextBlock Text="{Binding Name, Converter={StaticResource StringTranslationConverter}}" />
                                 </TreeDataTemplate>
                             </TreeView.ItemTemplate>
                         </TreeView>
@@ -42,7 +47,7 @@
                         <StackPanel Orientation="Vertical" Spacing="4">
                             <u:Divider
                                 Content="{echoes:Translate {x:Static translations:Strings.SensorEditDialogDisplayName}}" />
-                            <TextBox Text="{Binding DisplayName, Mode=OneWay}"
+                            <TextBox Text="{Binding Sensor.Type, Mode=OneWay}"
                                      IsEnabled="False" />
                         </StackPanel>
                         <StackPanel Orientation="Vertical" Spacing="4">

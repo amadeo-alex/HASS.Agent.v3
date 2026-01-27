@@ -8,16 +8,23 @@ using System.Threading.Tasks;
 using HASS.Agent.Contracts.Models.Entity;
 
 namespace HASS.Agent.Contracts.Managers;
+
 public interface IEntityTypeRegistry
 {
-    Dictionary<string, RegisteredEntity> SensorTypes { get; }
-    EntityCategory SensorsCategories { get; }
+	Dictionary<string, RegisteredEntity> SensorTypes { get; }
+	EntityCategory SensorsCategories { get; }
 
-    Dictionary<string, RegisteredEntity> CommandTypes { get; }
-    EntityCategory CommandsCategories { get; }
+	Dictionary<string, RegisteredEntity> CommandTypes { get; }
+	EntityCategory CommandsCategories { get; }
 
-    void RegisterSensorType(Type sensorType, string categoryString, bool clientCompatible, bool satelliteCompatible);
-    void RegisterCommandType(Type commandType, string categoryString, bool clientCompatible, bool satelliteCompatible);
-    IDiscoverable CreateSensorInstance(ConfiguredEntity configuredEntity);
-    IDiscoverable CreateCommandInstance(ConfiguredEntity configuredEntity);
+	void RegisterSensorType(Type sensorType, string categoryString, bool clientCompatible, bool satelliteCompatible,
+		ConfiguredEntity? defaultConfiguration = null);
+
+	void RegisterCommandType(Type commandType, string categoryString, bool clientCompatible, bool satelliteCompatible,
+		ConfiguredEntity? defaultConfiguration = null);
+
+	IDiscoverable CreateSensorInstance(ConfiguredEntity configuredEntity);
+	IDiscoverable CreateCommandInstance(ConfiguredEntity configuredEntity);
+
+	ConfiguredEntity? GetDefaultConfiguration(string entityTypeName);
 }

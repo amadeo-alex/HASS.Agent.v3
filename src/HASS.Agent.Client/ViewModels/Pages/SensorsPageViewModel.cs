@@ -41,7 +41,7 @@ public partial class SensorsPageViewModel : ViewModelBase, INavigationAware
     {
         var guid = _guidManager.GenerateGuid();
         
-        var dialogVm = new SensorEditDialogViewModel()
+        var dialogVm = new SensorEditDialogViewModel(_entityTypeRegistry)
         {
             ShowEntityCategories = true,
             EntityCategories = _entityTypeRegistry.SensorsCategories,
@@ -76,7 +76,7 @@ public partial class SensorsPageViewModel : ViewModelBase, INavigationAware
     private async Task EditSensor(ConfiguredEntity sensor)
     {
         var editedSensor = (ConfiguredEntity)sensor.Clone();
-        var dialogVm = new SensorEditDialogViewModel(editedSensor)
+        var dialogVm = new SensorEditDialogViewModel(_entityTypeRegistry, editedSensor)
         {
             EntityCategories = _entityTypeRegistry.SensorsCategories
         };

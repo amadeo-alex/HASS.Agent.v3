@@ -3,42 +3,44 @@ using System.Collections.Generic;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using HASS.Agent.Contracts.Managers;
 using HASS.Agent.Contracts.Models.Entity;
 
 namespace HASS.Agent.Client.ViewModels.Dialogs;
 
-public partial class SensorEditDialogViewModel : DialogViewModelBase
+public partial class SensorEditDialogViewModel : DialogViewModelBase //TODO(Amadeo): ugly
 {
     private const string AdditionalSettingsBaseNamespace = "HASS.Agent.Client.ViewModels.Sensors";
 
-    [ObservableProperty]
-    private EntityCategory _selectedCategory;
+    private readonly IEntityTypeRegistry? _entityTypeRegistry;
 
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(AdditionalSettingsPresent))] [NotifyPropertyChangedFor(nameof(DisplayName))]
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(Sensor))]
+    private EntityCategory? _selectedCategory;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(AdditionalSettingsPresent))]
     private EntitySettingsViewModelBase? _additionalSettingsViewModel;
 
     public EntityCategory EntityCategories { get; set; }
     public bool ShowEntityCategories { get; set; }
 
-    public ConfiguredEntity Sensor { get; set; }
-
-    public string DisplayName
-    {
-        get => Sensor.Type; //TODO(Amadeo): provide proper translated name
-    }
+    public ConfiguredEntity Sensor { get; set; } = new();
 
     public string Description { get; set; } = "Some Description";
 
     public bool AdditionalSettingsPresent => AdditionalSettingsViewModel != null;
 
-    public SensorEditDialogViewModel()
+    public SensorEditDialogViewModel(IEntityTypeRegistry? entityTypeRegistry = null)
     {
+        _entityTypeRegistry = entityTypeRegistry;
+
+        EntityCategories = _entityTypeRegistry != null ? _entityTypeRegistry.SensorsCategories : new EntityCategory("blank", null);
     }
 
-    public SensorEditDialogViewModel(ConfiguredEntity sensor)
+    public SensorEditDialogViewModel(IEntityTypeRegistry? entityTypeRegistry, ConfiguredEntity sensor) : this(entityTypeRegistry)
     {
         Sensor = sensor;
-
         EvaluateAdditionalSettingsViewModel();
     }
 
@@ -62,7 +64,13 @@ public partial class SensorEditDialogViewModel : DialogViewModelBase
             return;
         }
 
-        Sensor.Type = value.Name;
+        var newSensor = _entityTypeRegistry?.GetDefaultConfiguration(value.Name);
+        if (newSensor != null)
+        {
+            newSensor.UniqueId = Sensor.UniqueId;
+            Sensor = newSensor;
+        }
+
         EvaluateAdditionalSettingsViewModel();
     }
 }
