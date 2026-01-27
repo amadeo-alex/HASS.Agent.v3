@@ -8,10 +8,15 @@
              xmlns:u="https://irihi.tech/ursa"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
              xmlns:markupExtensions="clr-namespace:HASS.Agent.Client.MarkupExtensions"
+             xmlns:converters="clr-namespace:HASS.Agent.Client.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="HASS.Agent.Client.Views.Pages.SensorsPageView"
              x:DataType="vm:SensorsPageViewModel">
 
+    <Control.Resources>
+        <converters:BoolToBrushConverter TrueBrush="{StaticResource SemiGrey5}" FalseBrush="{StaticResource SemiColorWarning}" x:Key="BoolToBrushConverter" />
+    </Control.Resources>
+    
     <Grid RowDefinitions="Auto,*" Margin="20">
 
         <u:IconButton Icon="{iconPacks:Material Kind=Plus}"
@@ -29,9 +34,9 @@
                             <Grid ColumnDefinitions="*,4*,4*,4*">
                                 <Panel Grid.Column="0">
                                     <iconPacks:PackIconMaterial
-                                        Kind="{markupExtensions:IconExtension {Binding Active}, TrueIcon=Play, FalseIcon=Pause}"
+                                        Kind="{markupExtensions:Icon {Binding Active}, TrueIcon=Run, FalseIcon=PauseBoxOutline}"
                                         Width="16" Height="16"
-                                        Foreground="{DynamicResource SemiGrey5}"
+                                        Foreground="{Binding Active, Converter={StaticResource BoolToBrushConverter}}"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center" />
                                 </Panel>

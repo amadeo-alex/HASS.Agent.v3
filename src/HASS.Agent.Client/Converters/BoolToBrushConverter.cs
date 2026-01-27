@@ -1,0 +1,27 @@
+using System;
+using System.Globalization;
+using Avalonia.Data.Converters;
+using Avalonia.Media;
+
+namespace HASS.Agent.Client.Converters;
+
+public class BoolToBrushConverter : IValueConverter
+{
+    public Brush TrueBrush { get; set; } 
+    public Brush FalseBrush { get; set; } 
+    
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is not bool boolValue)
+        {
+            return null;
+        }
+
+        return boolValue ? TrueBrush : FalseBrush;
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}

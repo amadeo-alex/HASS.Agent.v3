@@ -1,10 +1,12 @@
+using System;
 using Avalonia.Data;
 using Avalonia.Data.Converters;
 using IconPacks.Avalonia.Material;
+using Irihi.Avalonia.Shared.MarkupExtensions;
 
 namespace HASS.Agent.Client.MarkupExtensions;
 
-public class IconExtension
+public class IconExtension : IMarkupExtension
 {
     private readonly BindingBase _valueBinding;
     
@@ -20,5 +22,10 @@ public class IconExtension
     {
         _valueBinding.Converter = new FuncValueConverter<bool, PackIconMaterialKind>(b => b ? TrueIcon : FalseIcon);
         return _valueBinding;
+    }
+
+    public object ProvideValue(IServiceProvider serviceProvider)
+    {
+        return ProvideValue();
     }
 }
