@@ -14,6 +14,7 @@ public interface IMqttMessageHandler
 {
     Task HandleMqttMessage(MqttApplicationMessage message);
 }
+
 public interface IMqttManager : INotifyPropertyChanged
 {
     ManagerStatus Status { get; }

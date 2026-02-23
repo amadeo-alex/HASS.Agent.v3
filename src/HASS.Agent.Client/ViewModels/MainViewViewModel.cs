@@ -38,7 +38,7 @@ public partial class MainViewViewModel : ViewModelBase
 
         FooterMenuItems = new ObservableCollection<MenuItemViewModel>()
         {
-            new() { Header = "Debug", IconKind = PackIconMaterialKind.Bug },
+            new() { Header = "Debug", DestinationType = typeof(DebugPageViewModel), IconKind = PackIconMaterialKind.Bug },
             new() { Header = "Settings", DestinationType = typeof(SettingsPageViewModel), IconKind = PackIconMaterialKind.Cog },
         };
 

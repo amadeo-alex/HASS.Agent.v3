@@ -56,7 +56,7 @@ public partial class App : Application
         _applicationBase = new HassAgentBase();
 
         XXX = _applicationBase.Initialize(LogEventLevel.Debug, ExternalServicesPreInitializer, ExternalServicesPostInitializer, AdditionalLoggerConfiguration);
-        
+
         _logger = _applicationBase.GetService<ILogger<App>>();
         _logger.LogDebug("Application class constructed");
     }
@@ -102,10 +102,10 @@ public partial class App : Application
             loggerConfiguration.Colors[LogLevel.Critical].Foreground = System.Drawing.Color.Red;
             loggerConfiguration.Colors[LogLevel.Trace].Foreground = System.Drawing.Color.Gray;
             loggerConfiguration.MaxLogEntries = 256;
-            
+
             return loggerConfiguration;
         });
-        
+
         services.AddSingleton<ILogDataStore>(sp =>
         {
             var config = sp.GetService<IOptionsMonitor<DataStoreLoggerConfiguration>>();
@@ -113,26 +113,27 @@ public partial class App : Application
             {
                 return new LogDataStore();
             }
-            
+
             var currentConfig = config.CurrentValue;
             return new LogDataStore(currentConfig.MaxLogEntries, currentConfig.DispatcherPriority);
         });
 
         services.AddSingleton<LogDataStoreSink>();
-        
+
         services.AddSingleton<LogViewerControlViewModel>();
         services.AddSingleton<LoggerWindowViewModel>();
         services.AddSingleton<LoggerWindow>();
 
         services.AddSingleton<MainWindowViewModel>();
         services.AddSingleton<MainViewViewModel>();
-        
+
         services.AddSingleton<HomePageViewModel>();
         services.AddSingleton<SettingsPageViewModel>();
         services.AddSingleton<SensorsPageViewModel>();
+        services.AddSingleton<DebugPageViewModel>();
 
         services.AddSingleton<IDialogService, DialogService>();
-        
+
         services.AddSingleton(Dispatcher.UIThread);
     }
 
@@ -153,13 +154,13 @@ public partial class App : Application
             //var testZ = settingsManager.GetConfiguration();
             //var testZ1 = testZ.GetSection("Settings");
 
-                
+
             var testY = _applicationBase._host.Services.GetService<IConfiguration>();
-            
+
             var testX = _applicationBase._host.Services.GetService<IOptions<MqttSettings>>().Value;
             testX.ClientId = "someOtherValue";
             var testQ = _applicationBase._host.Services.GetService<IOptions<MqttSettings>>().Value;
-            
+
             if (_applicationBase.Debug)
             {
                 _logger.LogInformation("[MAIN] DEBUG BUILD - TESTING PURPOSES ONLY");
