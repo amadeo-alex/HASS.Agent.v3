@@ -3,19 +3,102 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:HASS.Agent.Client.ViewModels.Pages"
+             xmlns:u="https://irihi.tech/ursa"
+             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             xmlns:viewModels="clr-namespace:HASS.Agent.Client.ViewModels"
+             xmlns:translations="clr-namespace:HASS.Agent.Translations;assembly=HASS.Agent.Translations"
+             xmlns:echoes="clr-namespace:Echoes;assembly=Echoes.Avalonia"
+             xmlns:converters="clr-namespace:HASS.Agent.Client.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="HASS.Agent.Client.Views.Pages.DebugPageView"
              x:DataType="vm:DebugPageViewModel">
 
-    <ListBox ItemsSource="{Binding DiscoveredDevices}">
-        <ListBox.ItemTemplate>
-            <DataTemplate>
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <TextBlock Text="{Binding DiscoveryModel.Name}" />
-                    <TextBlock Text="{Binding SerialNumber}" />
-                </StackPanel>
-            </DataTemplate>
-        </ListBox.ItemTemplate>
-    </ListBox>
+    <Control.Resources>
+        <converters:BoolToBrushConverter TrueBrush="{StaticResource SemiColorDangerPointerover}"
+                                         FalseBrush="{StaticResource SemiGrey5}" x:Key="BoolToBrushConverter" />
+    </Control.Resources>
+
+    <Grid ColumnDefinitions="*, Auto, Auto">
+
+        <ScrollViewer Name="AnchorTarget" VerticalAlignment="Stretch">
+            <StackPanel Margin="20 0 20 20" Spacing="8">
+                <HeaderedContentControl Theme="{StaticResource GroupBox}"
+                                        u:Anchor.Id="{echoes:Translate {x:Static translations:Strings.DebugNearbyDevicesSection}}">
+                    <HeaderedContentControl.Header>
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                <TextBlock Theme="{DynamicResource TitleTextBlock}"
+                                           Classes="H5"
+                                           Text="{echoes:Translate {x:Static translations:Strings.DebugNearbyDevicesSection}}" />
+                            </StackPanel>
+                        </DockPanel>
+                    </HeaderedContentControl.Header>
+
+                    <StackPanel>
+                        <ListBoxItem>
+                            <Grid ColumnDefinitions="*,3*,Auto">
+                                <TextBlock Grid.Column="0" Text="Name" Theme="{DynamicResource TitleTextBlock}"
+                                           Classes="H6" />
+                                <TextBlock Grid.Column="1" Text="Serial number"
+                                           Theme="{DynamicResource TitleTextBlock}" Classes="H6" />
+                                <TextBlock Grid.Column="2" Text="Actions" Theme="{DynamicResource TitleTextBlock}"
+                                           Classes="H6" />
+                            </Grid>
+                        </ListBoxItem>
+
+                        <ListBox ItemsSource="{Binding DiscoveredDevices}">
+                            <ListBox.ItemTemplate>
+                                <!--TODO(Amadeo): some styling to match rest of the app? prio 200 tho-->
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="*,3*,Auto">
+                                        <TextBlock Grid.Column="0"
+                                                   VerticalAlignment="Center"
+                                                   Text="{Binding Config.DiscoveryModel.Name}" />
+                                        <TextBlock Grid.Column="1"
+                                                   Margin="8 0"
+                                                   VerticalAlignment="Center"
+                                                   Text="{Binding Config.SerialNumber}"
+                                                   Foreground="{Binding Duplicate, Converter={StaticResource BoolToBrushConverter}}" />
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                                            <u:IconButton Icon="{iconPacks:Material Kind=MagnifyExpand}"
+                                                          Theme="{DynamicResource BorderlessIconButton}"
+                                                          Command="{Binding $parent[ListBox].((vm:DebugPageViewModel)DataContext).DetailsCommand}"
+                                                          CommandParameter="{Binding}" />
+                                            <u:IconButton Icon="{iconPacks:Material Kind=TrashCan}"
+                                                          Theme="{DynamicResource BorderlessIconButton}"
+                                                          Command="{Binding $parent[ListBox].((vm:DebugPageViewModel)DataContext).DeleteCommand}"
+                                                          CommandParameter="{Binding}"
+                                                          Foreground="{DynamicResource SemiColorDangerPointerover}"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
+                    </StackPanel>
+
+                </HeaderedContentControl>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <u:Anchor Grid.Column="1"
+                  Name="SectionsAnchor"
+                  Width="200" Margin="24"
+                  ItemsSource="{Binding DebugSections}"
+                  TargetContainer="{Binding #AnchorTarget}">
+            <u:Anchor.Styles>
+                <Style x:DataType="viewModels:AnchorItemViewModel" Selector="u|AnchorItem">
+                    <Setter Property="AnchorId" Value="{Binding AnchorId}" />
+                </Style>
+            </u:Anchor.Styles>
+            <u:Anchor.ItemTemplate>
+                <TreeDataTemplate ItemsSource="{Binding Children}">
+                    <TextBlock Text="{Binding Header}" />
+                </TreeDataTemplate>
+            </u:Anchor.ItemTemplate>
+        </u:Anchor>
+    </Grid>
+
 
 </UserControl>
