@@ -34,7 +34,7 @@ public abstract class AbstractMqttDiscoveryConfigModel
     /// (Optional) Information about the device this entity is a part of to tie it into the device registry. Only works through MQTT discovery and when unique_id is set.
     /// </summary>
     /// <value></value>
-    public AbstractMqttDeviceConfigModel? Device { get; set; }
+    public HomeAssistantDeviceDiscoveryModel? Device { get; set; }
 
     /// <summary>
     /// (Optional) The friendly name of the MQTT entity. Defaults to its name.

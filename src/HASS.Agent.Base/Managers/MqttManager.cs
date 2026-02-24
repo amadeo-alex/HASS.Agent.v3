@@ -65,7 +65,7 @@ public partial class MqttManager : ObservableObject, IMqttManager
     [ObservableProperty]
     private ManagerStatus _status = ManagerStatus.NotInitialized;
 
-    public AbstractMqttDeviceConfigModel DeviceConfigModel { get; set; }
+    public HomeAssistantDeviceDiscoveryModel DeviceConfigModel { get; set; }
 
     public MqttManager(ILogger<MqttManager> logger, ISettingsManager settingsManager, ApplicationInfo applicationInfo, IGuidManager guidManager)
     {
@@ -91,11 +91,11 @@ public partial class MqttManager : ObservableObject, IMqttManager
         Status = ManagerStatus.Initialized;
     }
 
-    private MqttDeviceDiscoveryConfigModel GetDeviceConfigModel()
+    private HomeAssistantDeviceDiscoveryModel GetDeviceConfigModel()
     {
         var deviceName = _applicationSettingsSnapshot.DeviceName;
 
-        return new MqttDeviceDiscoveryConfigModel()
+        return new HomeAssistantDeviceDiscoveryModel()
         {
             Name = deviceName,
             Identifiers = $"hass.agent-{deviceName}",
@@ -131,7 +131,10 @@ public partial class MqttManager : ObservableObject, IMqttManager
             throw new ArgumentException($"handler for {topic} already registered");
         }
 
-        _mqttClient.SubscribeAsync(topic);
+        if (Status == ManagerStatus.Connected || Status == ManagerStatus.Running)
+        {
+            _mqttClient.SubscribeAsync(topic);
+        }
     }
 
     public void UnregisterMessageHandler(string topic)
@@ -383,6 +386,12 @@ public partial class MqttManager : ObservableObject, IMqttManager
         Status = ManagerStatus.Connected;
         _logger.LogInformation("[MQTT] Connected");
 
+        _logger.LogDebug("[MQTT] Subscribing to handlers' topics");
+        foreach (var registeredHandler in _mqttMessageHandlers)
+        {
+            await _mqttClient.SubscribeAsync(registeredHandler.Key);
+        }
+        
         _connectionErrorLogged = false;
     }
 

@@ -50,7 +50,17 @@ public class HomeAssistantDeviceDiscoveryModel
 
 	public override bool Equals(object? obj)
 	{
-		return ToString() == obj?.ToString();
+		if (obj is not HomeAssistantDeviceDiscoveryModel discoveryModel)
+		{
+			return false;
+		}
+
+		if (SerialNumber != discoveryModel.SerialNumber)
+		{
+			return false;
+		}
+
+		return ToString() == discoveryModel.ToString();
 	}
 
 	public override int GetHashCode()

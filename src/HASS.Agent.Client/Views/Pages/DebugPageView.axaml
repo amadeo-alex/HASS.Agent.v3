@@ -6,13 +6,16 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="HASS.Agent.Client.Views.Pages.DebugPageView"
              x:DataType="vm:DebugPageViewModel">
-    
-    <ListBox ItemsSource="{Binding DiscoveredDevices }">
+
+    <ListBox ItemsSource="{Binding DiscoveredDevices}">
         <ListBox.ItemTemplate>
             <DataTemplate>
-                <TextBlock Text="{Binding Name}"/>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="{Binding DiscoveryModel.Name}" />
+                    <TextBlock Text="{Binding SerialNumber}" />
+                </StackPanel>
             </DataTemplate>
         </ListBox.ItemTemplate>
     </ListBox>
-    
+
 </UserControl>

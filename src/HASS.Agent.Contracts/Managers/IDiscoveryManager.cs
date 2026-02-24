@@ -8,7 +8,5 @@ public interface IDiscoveryManager : INotifyPropertyChanged
 {
 	ObservableCollection<ClientConfigModel> NearbyDevices { get; set; }
 	
-	ClientConfigModel ConfigModel { get; set; }
-	
 	Task ClearNearbyDevice(ClientConfigModel config);
 }

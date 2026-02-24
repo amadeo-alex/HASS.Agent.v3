@@ -36,7 +36,7 @@ public class DummySensor : AbstractSingleValueSensor
         //Category = EntityCategory.Parse("Other/Debug");
     }
 
-    public override AbstractMqttDiscoveryConfigModel ConfigureAutoDiscoveryConfig(string discoveryPrefix, AbstractMqttDeviceConfigModel deviceConfigModel)
+    public override AbstractMqttDiscoveryConfigModel ConfigureAutoDiscoveryConfig(string discoveryPrefix, HomeAssistantDeviceDiscoveryModel deviceConfigModel)
     {
         _discoveryConfigModel = new MqttSensorDiscoveryConfigModel()
         {

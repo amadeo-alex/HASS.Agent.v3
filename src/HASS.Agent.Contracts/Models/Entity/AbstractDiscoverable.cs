@@ -47,7 +47,7 @@ public abstract partial class AbstractDiscoverable : IDiscoverable
         Domain = parsed ? domain : throw new InvalidOperationException($"cannot convert {configuredEntity.Domain} to HassDomain");
     }
 
-    public abstract AbstractMqttDiscoveryConfigModel ConfigureAutoDiscoveryConfig(string discoveryPrefix, AbstractMqttDeviceConfigModel deviceConfigModel);
+    public abstract AbstractMqttDiscoveryConfigModel ConfigureAutoDiscoveryConfig(string discoveryPrefix, HomeAssistantDeviceDiscoveryModel deviceConfigModel);
     public abstract AbstractMqttDiscoveryConfigModel? GetAutoDiscoveryConfig();
     //public abstract void ClearAutoDiscoveryConfig();
     public abstract ConfiguredEntity ToConfiguredEntity();

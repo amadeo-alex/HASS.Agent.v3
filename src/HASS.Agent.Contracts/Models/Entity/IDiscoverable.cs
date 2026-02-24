@@ -28,7 +28,7 @@ public interface IDiscoverable
     public abstract Task<string> GetState();
     public abstract Task<string> GetAttributes();
 
-    public AbstractMqttDiscoveryConfigModel ConfigureAutoDiscoveryConfig(string discoveryPrefix, AbstractMqttDeviceConfigModel deviceConfigModel);
+    public AbstractMqttDiscoveryConfigModel ConfigureAutoDiscoveryConfig(string discoveryPrefix, HomeAssistantDeviceDiscoveryModel deviceConfigModel);
     public AbstractMqttDiscoveryConfigModel? GetAutoDiscoveryConfig();
     //public void ClearAutoDiscoveryConfig();
     public void ResetChecks();

@@ -9,4 +9,24 @@ public class ClientFeaturesModel
 	
 	[JsonProperty("notifications")]
 	public bool NotificationsEnabled { get; set; } = true;
+	
+	public override string ToString()
+	{
+		return JsonConvert.SerializeObject(this);
+	}
+
+	public override bool Equals(object? obj)
+	{
+		if (obj is not ClientFeaturesModel featuresModel)
+		{
+			return false;
+		}
+
+		return ToString() == featuresModel.ToString();
+	}
+
+	public override int GetHashCode()
+	{
+		return ToString().GetHashCode();
+	}
 }

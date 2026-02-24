@@ -28,7 +28,7 @@ public class DummySwitch : AbstractCommand
         Domain = HassDomain.Switch;
     }
 
-    public override AbstractMqttDiscoveryConfigModel ConfigureAutoDiscoveryConfig(string discoveryPrefix, AbstractMqttDeviceConfigModel deviceConfigModel)
+    public override AbstractMqttDiscoveryConfigModel ConfigureAutoDiscoveryConfig(string discoveryPrefix, HomeAssistantDeviceDiscoveryModel deviceConfigModel)
     {
         var domain = Domain.ToString().ToLower();
         

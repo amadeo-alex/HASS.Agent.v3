@@ -19,7 +19,7 @@ public interface IMqttManager : INotifyPropertyChanged
 {
     ManagerStatus Status { get; }
     
-    AbstractMqttDeviceConfigModel? DeviceConfigModel { get; }
+    HomeAssistantDeviceDiscoveryModel? DeviceConfigModel { get; }
 
     void RegisterMessageHandler(string topic, IMqttMessageHandler handler);
     void UnregisterMessageHandler(string topic);

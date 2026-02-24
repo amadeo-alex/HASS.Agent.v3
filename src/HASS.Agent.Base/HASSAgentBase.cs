@@ -90,6 +90,7 @@ public class HassAgentBase
                 services.AddSingleton<ISettingsManager, SettingsManager>();
 
                 services.AddSingleton<IMqttManager, MqttManager>();
+                services.AddSingleton<IDiscoveryManager, DiscoveryManager>();
 
                 services.AddSingleton<IEntityTypeRegistry, EntityTypeRegistry>();
                 services.AddSingleton<ISensorManager, SensorManager>();
