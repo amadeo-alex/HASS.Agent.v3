@@ -95,7 +95,7 @@ public partial class DebugPageViewModel : ViewModelBase, INavigationAware
 
                 foreach (ClientConfigModel oldItem in e.OldItems)
                 {
-                    var viewModel = DiscoveredDevices.FirstOrDefault(vm => vm.Config == oldItem);
+                    var viewModel = DiscoveredDevices.FirstOrDefault(vm => vm.Config.Equals(oldItem));
                     if (viewModel != null)
                     {
                         DiscoveredDevices.Remove(viewModel);
@@ -121,12 +121,19 @@ public partial class DebugPageViewModel : ViewModelBase, INavigationAware
         {
             if (group.Count() == 1)
             {
+                var viewModel = group.First();
+                viewModel.Duplicate = false;
+                DiscoveredDevices.Remove(viewModel); //NOTE(Amadeo): those two lines are ugly, but also quick :D
+                DiscoveredDevices.Add(viewModel);
                 continue;
             }
 
             foreach (var viewModel in group)
             {
                 viewModel.Duplicate = true;
+                DiscoveredDevices.Remove(viewModel); //NOTE(Amadeo): those two lines are ugly, but also quick :D
+                DiscoveredDevices.Add(viewModel);
+                
             }
         }
     }
