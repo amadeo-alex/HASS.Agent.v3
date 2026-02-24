@@ -17,6 +17,9 @@ Cancel = "Cancel"
 Save = "Save"
 Sensors = "Sensors"
 Availability = "Availability"
+Confirm = "Confirm"
+Yes = "Yes"
+No = "No"
 
 ClientStatus = "Client Status"
 Mqtt = "MQTT"
@@ -44,6 +47,7 @@ SensorEditDialogSeconds = "seconds"
 SensorEditDialogIgnoreAvailability = "Ignore availability"
 
 DebugNearbyDevicesSection = "Nearby Devices"
+DebugNearbyDevicesRemoveConfirmation = "Are you sure?"
 
 CategoryOther = "Other"
 CategoryDebug = "Debug"

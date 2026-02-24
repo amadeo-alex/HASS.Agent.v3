@@ -48,20 +48,21 @@ public partial class DebugPageViewModel : ViewModelBase, INavigationAware
     }
 
     [RelayCommand]
-    private async Task Details(ClientConfigModelViewModel clientConfig)
+    private async Task Details(ClientConfigModelViewModel clientConfigViewModel)
     {
         var dialogViewModel = new ConfirmDialogViewModel()
         {
             Title = "Nearby device details",
-            Query = JsonConvert.SerializeObject(clientConfig, Formatting.Indented)
+            Query = JsonConvert.SerializeObject(clientConfigViewModel, Formatting.Indented)
         };
 
         await _dialogService.ShowDialogAsync(dialogViewModel);
     }
 
     [RelayCommand]
-    private async Task Delete(ClientConfigModelViewModel clientConfig)
+    private async Task Delete(ClientConfigModelViewModel clientConfigViewModel)
     {
+        await _discoveryManager.ClearNearbyDevice(clientConfigViewModel.Config);
     }
 
     private void NearbyDevicesOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)

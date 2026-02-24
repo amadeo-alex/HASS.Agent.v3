@@ -67,8 +67,8 @@
                                             <u:IconButton Icon="{iconPacks:Material Kind=TrashCan}"
                                                           Theme="{DynamicResource BorderlessIconButton}"
                                                           Command="{Binding $parent[ListBox].((vm:DebugPageViewModel)DataContext).DeleteCommand}"
-                                                          CommandParameter="{Binding}"
-                                                          Foreground="{DynamicResource SemiColorDangerPointerover}"/>
+                                                          Foreground="{DynamicResource SemiColorDangerPointerover}"
+                                                          CommandParameter="{Binding}" />
                                         </StackPanel>
                                     </Grid>
                                 </DataTemplate>

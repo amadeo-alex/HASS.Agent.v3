@@ -44,6 +44,7 @@ public partial class DiscoveryManager : ObservableObject, IDiscoveryManager, IMq
             .Build();
 
         await _mqttManager.PublishAsync(clearMessage);
+        await HandleMqttMessage(clearMessage);
     }
 
     public async Task HandleMqttMessage(MqttApplicationMessage message)
