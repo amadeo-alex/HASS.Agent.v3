@@ -47,7 +47,6 @@ SensorEditDialogSeconds = "seconds"
 SensorEditDialogIgnoreAvailability = "Ignore availability"
 
 DebugNearbyDevicesSection = "Nearby Devices"
-DebugNearbyDevicesRemoveConfirmation = "Are you sure?"
 
 CategoryOther = "Other"
 CategoryDebug = "Debug"

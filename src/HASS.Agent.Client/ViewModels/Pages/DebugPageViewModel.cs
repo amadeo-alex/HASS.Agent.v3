@@ -133,7 +133,6 @@ public partial class DebugPageViewModel : ViewModelBase, INavigationAware
                 viewModel.Duplicate = true;
                 DiscoveredDevices.Remove(viewModel); //NOTE(Amadeo): those two lines are ugly, but also quick :D
                 DiscoveredDevices.Add(viewModel);
-                
             }
         }
     }
