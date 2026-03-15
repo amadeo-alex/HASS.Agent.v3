@@ -1,7 +1,9 @@
 using System.Net;
 using System.Text;
 using HASS.Agent.Contracts.Managers;
+using HASS.Agent.Contracts.Models;
 using HASS.Agent.Contracts.Models.Notifications;
+using HASS.Agent.Contracts.Models.Settings;
 using Microsoft.Extensions.Logging;
 using Microsoft.Windows.AppLifecycle;
 using Microsoft.Windows.AppNotifications;
@@ -32,6 +34,10 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
     private readonly IMqttManager _mqttManager;
     private readonly IHomeAssistantApiManager _homeAssistantApiManager;
 
+    private NotificationSettings _notificationSettingsSnapshot;
+    private ApplicationSettings _applicationSettingsSnapshot;
+    private MqttSettings _mqttSettingsSnapshot;
+    
     private readonly AppNotificationManager _notificationManager = AppNotificationManager.Default;
 
     private readonly Dictionary<string, INotificationActionHandler> _notificationActionHandlers = [];
@@ -45,26 +51,30 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
         _settingsManager = settingsManager;
         _mqttManager = mqttManager;
         _homeAssistantApiManager = homeAssistantApiManager;
+
+        _notificationSettingsSnapshot = settingsManager.GetSettingsSnapshot<NotificationSettings>();
+        _applicationSettingsSnapshot = settingsManager.GetSettingsSnapshot<ApplicationSettings>(); //TODO(Amadeo): refresh on changes
+        _mqttSettingsSnapshot = settingsManager.GetSettingsSnapshot<MqttSettings>();
     }
 
     public void Initialize()
     {
         try
         {
-            if (!_settingsManager.Settings.Notification.Enabled)
+            if (!_notificationSettingsSnapshot.Enabled)
             {
                 _logger.LogInformation("[NOTIFICATIONS] Disabled");
                 return;
             }
 
-            if (!_settingsManager.Settings.Application.LocalApiEnabled && !_settingsManager.Settings.Mqtt.Enabled)
+            if (!_applicationSettingsSnapshot.LocalApiEnabled && !_mqttSettingsSnapshot.Enabled)
             {
                 _logger.LogWarning("[NOTIFICATIONS] Both local API and MQTT are disabled, unable to receive notifications");
                 return;
             }
 
-            if (_settingsManager.Settings.Mqtt.Enabled)
-                _mqttManager.RegisterMessageHandler($"hass.agent/notifications/{_settingsManager.Settings.Application.DeviceName}", this);
+            if (_mqttSettingsSnapshot.Enabled)
+                _mqttManager.RegisterMessageHandler($"hass.agent/notifications/{_applicationSettingsSnapshot.DeviceName}", this);
             else
                 _logger.LogWarning("[NOTIFICATIONS] MQTT is disabled, not all aspects of actions might work as expected");
 
@@ -106,7 +116,7 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
 
             await _homeAssistantApiManager.FireEventAsync(HomeAssistantNotificationEvent, new
             {
-                device_name = _settingsManager.Settings.Application.DeviceName,
+                device_name = _applicationSettingsSnapshot.DeviceName,
                 action,
                 input,
                 uri
@@ -156,7 +166,7 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
 
         try
         {
-            if (!_settingsManager.Settings.Notification.Enabled)
+            if (!_notificationSettingsSnapshot.Enabled)
                 return;
 
             var toastBuilder = new AppNotificationBuilder()
@@ -182,7 +192,7 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
                     var button = new AppNotificationButton(action.Title)
                         .AddArgument(ActionKey, EncodeNotificationParameter(action.Action));
 
-                    if (action.Uri != null)
+                    if (!string.IsNullOrWhiteSpace(action.Uri))
                         button.AddArgument(UriKey, EncodeNotificationParameter(action.Uri));
 
                     toastBuilder.AddButton(button);

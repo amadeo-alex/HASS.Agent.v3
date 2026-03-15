@@ -16,7 +16,6 @@ using Avalonia.Threading;
 using HASS.Agent.Base;
 using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Sensors.SingleValue;
-using HASS.Agent.Client.Models.Log;
 using HASS.Agent.Client.Services;
 using HASS.Agent.Client.ViewModels;
 using HASS.Agent.Client.ViewModels.Pages;
@@ -29,8 +28,6 @@ using HASS.Agent.Contracts.Models.Entity;
 using HASS.Agent.Contracts.Models.Settings;
 using HASS.Agent.Contracts.Models.Update;
 using HASS.Agent.Contracts.Services;
-using LogViewer.Core;
-using LogViewer.Core.ViewModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -92,38 +89,6 @@ public partial class App : Application
 
     private void ExternalServicesPostInitializer(HostBuilderContext context, IServiceCollection services)
     {
-        services.AddSingleton<DataStoreLoggerConfiguration>(_ =>
-        {
-            var loggerConfiguration = new DataStoreLoggerConfiguration();
-            loggerConfiguration.Colors[LogLevel.Information].Foreground = System.Drawing.Color.Gray;
-            loggerConfiguration.Colors[LogLevel.Debug].Foreground = System.Drawing.Color.DarkGray;
-            loggerConfiguration.Colors[LogLevel.Warning].Foreground = System.Drawing.Color.Orange;
-            loggerConfiguration.Colors[LogLevel.Error].Foreground = System.Drawing.Color.DarkRed;
-            loggerConfiguration.Colors[LogLevel.Critical].Foreground = System.Drawing.Color.Red;
-            loggerConfiguration.Colors[LogLevel.Trace].Foreground = System.Drawing.Color.Gray;
-            loggerConfiguration.MaxLogEntries = 256;
-
-            return loggerConfiguration;
-        });
-
-        services.AddSingleton<ILogDataStore>(sp =>
-        {
-            var config = sp.GetService<IOptionsMonitor<DataStoreLoggerConfiguration>>();
-            if (config == null)
-            {
-                return new LogDataStore();
-            }
-
-            var currentConfig = config.CurrentValue;
-            return new LogDataStore(currentConfig.MaxLogEntries, currentConfig.DispatcherPriority);
-        });
-
-        services.AddSingleton<LogDataStoreSink>();
-
-        services.AddSingleton<LogViewerControlViewModel>();
-        services.AddSingleton<LoggerWindowViewModel>();
-        services.AddSingleton<LoggerWindow>();
-
         services.AddSingleton<MainWindowViewModel>();
         services.AddSingleton<MainViewViewModel>();
 
@@ -139,8 +104,8 @@ public partial class App : Application
 
     private void AdditionalLoggerConfiguration(LoggerConfiguration config, IServiceProvider sp)
     {
-        var dataStoreSink = sp.GetRequiredService<LogDataStoreSink>();
-        config.WriteTo.Sink(dataStoreSink);
+        /*var dataStoreSink = sp.GetRequiredService<LogDataStoreSink>();
+        config.WriteTo.Sink(dataStoreSink);*/
     }
 
     public override void OnFrameworkInitializationCompleted()
@@ -244,17 +209,6 @@ public partial class App : Application
             {
                 DataContext = _applicationBase.GetService<MainWindowViewModel>(),
             };
-
-            Task.Run(async () =>
-            {
-                await Task.Delay(1000);
-                await Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    var lw = _applicationBase.GetService<LoggerWindow>();
-                    lw.Show();
-                    lw.Focus();
-                });
-            });
         }
 
         base.OnFrameworkInitializationCompleted();
